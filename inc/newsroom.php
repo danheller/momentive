@@ -44,7 +44,7 @@ function momentive_newsroom_setup() {
 		),
 
 		// Admin + visibility
-		'has_archive'        => true,
+		'has_archive'        => 'newsroom' , // the archive slug
 		'show_in_nav_menus'  => true,
 		'publicly_queryable' => true,
 
@@ -55,7 +55,7 @@ function momentive_newsroom_setup() {
 		'template'           => array(),
 		'template_lock'      => false,
 	);
-	register_post_type( 'press-article', $args );
+	register_post_type( 'press-article', $args ); // individual post slug
 	
 }
 add_action( 'init', 'momentive_newsroom_setup' );

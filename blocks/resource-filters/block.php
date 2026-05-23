@@ -4,23 +4,14 @@
  */
 
 add_action( 'init', function () {
-
-	// Register the editor script manually so we can declare dependencies.
 	wp_register_script(
 		'momentive-resource-filters-editor',
 		get_template_directory_uri() . '/blocks/resource-filters/editor.js',
-		array(
-			'wp-blocks',
-			'wp-block-editor',
-			'wp-components',
-			'wp-element',
-			'wp-i18n',
-		),
+		array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n' ),
 		wp_get_theme()->get( 'Version' ),
 		true
 	);
-	
-	// Register the front-end script (no WP dependencies needed).
+
 	wp_register_script(
 		'momentive-resource-filters',
 		get_template_directory_uri() . '/blocks/resource-filters/filters.js',
@@ -28,15 +19,14 @@ add_action( 'init', function () {
 		wp_get_theme()->get( 'Version' ),
 		true
 	);
-	
-	// Register the stylesheet.
+
 	wp_register_style(
 		'momentive-resource-filters',
 		get_template_directory_uri() . '/blocks/resource-filters/filters.css',
 		array(),
 		wp_get_theme()->get( 'Version' )
 	);
-	
+
 	register_block_type(
 		get_template_directory() . '/blocks/resource-filters/block.json',
 		array(
@@ -50,40 +40,67 @@ add_action( 'init', function () {
 
 
 function momentive_resource_filters_render( array $attributes, string $content ): string {
-    $show_categories = ! empty( $attributes['showCategories'] );
-    $show_post_types = ! empty( $attributes['showPostTypes'] );
-    $show_search     = ! empty( $attributes['showSearch'] );
-    $show_sort       = ! empty( $attributes['showSort'] );
-    $post_types      = array_map( 'sanitize_text_field', $attributes['postTypes'] ?? [] );
+	$show_categories  = ! empty( $attributes['showCategories'] );
+	$show_post_types  = ! empty( $attributes['showPostTypes'] );
+	$show_search      = ! empty( $attributes['showSearch'] );
+	$show_sort        = ! empty( $attributes['showSort'] );
+	$post_types       = array_map( 'sanitize_text_field', $attributes['postTypes'] ?? [] );
 
-	// Categories — shared taxonomy across all post types.
+	// The post type this filter bar is configured for.
+	// Defaults to 'post' so the blog archive works without configuration.
+	$default_post_type = sanitize_key( $attributes['defaultPostType'] ?? 'post' );
+
+	// Categories — filtered to only those used by the configured post type.
+	// This means the newsroom filter shows press-article categories,
+	// the blog shows post categories, etc.
 	$categories = [];
 	if ( $show_categories ) {
-		$categories = get_terms( [
+		$query_args = [
 			'taxonomy'   => 'category',
 			'hide_empty' => true,
 			'exclude'    => [ get_option( 'default_category' ) ],
 			'orderby'    => 'name',
 			'order'      => 'ASC',
-		] );
-		if ( is_wp_error( $categories ) ) {
-			$categories = [];
+		];
+
+		// When a specific non-'post' post type is set, restrict categories
+		// to those that have at least one post of that type.
+		if ( $default_post_type && $default_post_type !== 'post' ) {
+			$posts_of_type = get_posts( [
+				'post_type'      => $default_post_type,
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'post_status'    => 'publish',
+			] );
+
+			if ( ! empty( $posts_of_type ) ) {
+				$query_args['object_ids'] = $posts_of_type;
+			} else {
+				// No posts of this type — return no categories.
+				$categories = [];
+				$show_categories = false;
+			}
+		}
+
+		if ( $show_categories ) {
+			$categories = get_terms( $query_args );
+			if ( is_wp_error( $categories ) ) {
+				$categories = [];
+			}
 		}
 	}
-	
-	// Post types — built from block attribute list.
-	// Each entry: [ 'slug' => 'post', 'label' => 'Blogs' ]
-	// Populated in editor; stored in block attributes so no DB query needed here.
-	
+
 	ob_start();
 	?>
-	<div class="resource-filter-bar">
-		<?php /* ── Filter toggle button (mobile) ── */ ?>
+	<div
+		class="resource-filter-bar"
+		data-default-post-type="<?php echo esc_attr( $default_post_type ); ?>"
+	>
 		<div class="filter-bar-top">
 			<button
 				class="filter-toggle"
 				aria-expanded="false"
-				aria-controls="filter-panel-<?php echo esc_attr( $query_id ); ?>"
+				aria-controls="filter-panel"
 				type="button"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -92,7 +109,12 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				<span class="filter-toggle-label">Filters</span>
 				<span class="filter-count" hidden>0</span>
 			</button>
-	
+			<div class="is-style-button is-style-outline">
+				<button class="filter-reset" type="button" hidden>
+					Remove filters
+				</button>
+			</div>
+
 			<?php if ( $show_search ) : ?>
 			<div class="filter-search-wrapper">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -107,36 +129,26 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				>
 			</div>
 			<?php endif; ?>
-	
+
 			<?php if ( $show_sort ) : ?>
-			<select class="filter-sort" aria-label="Sort results">
-				<option value="">Sort by</option>
-				<option value="date-desc">Latest</option>
-				<option value="date-asc">Oldest</option>
-				<option value="title-asc">Title A–Z</option>
-				<option value="title-desc">Title Z–A</option>
-			</select>
+			<div class="filter-sort-wrapper">
+				<svg viewBox="0 0 53.994804 62" id="up-and-down-arrows" version="1.1" width="53.994804" height="62" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs1" /><path d="m 0.65740253,46.27 c -0.82,0.74 -0.88,2 -0.14,2.82 l 11.06000047,12.25 0.03,0.03 c 0.06,0.06 0.12,0.12 0.19,0.17 0.04,0.03 0.08,0.07 0.12,0.1 0.07,0.05 0.15,0.09 0.23,0.14 0.04,0.02 0.07,0.04 0.11,0.06 0.1,0.04 0.2,0.07 0.31,0.1 0.03,0.01 0.05,0.02 0.08,0.02 0.13,0.03 0.27,0.04 0.41,0.04 0.14,0 0.28,-0.02 0.41,-0.04 0.03,-0.01 0.05,-0.02 0.08,-0.02 0.1,-0.03 0.21,-0.06 0.31,-0.1 0.04,-0.02 0.07,-0.04 0.11,-0.06 0.08,-0.04 0.16,-0.08 0.23,-0.14 0.04,-0.03 0.08,-0.06 0.12,-0.1 0.07,-0.05 0.13,-0.11 0.19,-0.17 l 0.03,-0.03 11.06,-12.25 c 0.74,-0.82 0.68,-2.08 -0.14,-2.82 -0.82,-0.74 -2.09,-0.68 -2.82,0.14 l -7.57,8.39 V 16 c 0,-1.1 -0.9,-2 -2,-2 -1.1,0 -2,0.9 -2,2 V 54.8 L 3.4974025,46.41 c -0.75,-0.82 -2.02,-0.88 -2.83999997,-0.14 z M 40.937403,48 c 1.1,0 2,-0.9 2,-2 V 7.2 l 7.57,8.39 c 0.39,0.44 0.94,0.66 1.49,0.66 0.48,0 0.96,-0.17 1.34,-0.52 0.82,-0.74 0.88,-2 0.14,-2.82 l -11.05,-12.25 -0.03,-0.03 c -0.08,-0.09 -0.17,-0.16 -0.27,-0.24 -0.01,0 -0.01,-0.01 -0.02,-0.01 -0.33,-0.24 -0.73,-0.38 -1.17,-0.38 -0.44,0 -0.84,0.14 -1.17,0.38 -0.01,0 -0.01,0.01 -0.02,0.01 -0.1,0.07 -0.19,0.15 -0.27,0.24 l -0.03,0.03 -11.05,12.25 c -0.74,0.82 -0.68,2.08 0.14,2.82 0.82,0.74 2.08,0.67 2.82,-0.14 l 7.57,-8.39 V 46 c 0.01,1.1 0.91,2 2.01,2 z" id="path1" /></svg>
+				<select class="filter-sort" aria-label="Sort results">
+					<option value="">Sort by</option>
+					<option value="date-desc">Latest</option>
+					<option value="date-asc">Oldest</option>
+					<option value="title-asc">Title A–Z</option>
+					<option value="title-desc">Title Z–A</option>
+				</select>
+			</div>
 			<?php endif; ?>
-	
-			<button class="filter-reset" type="button" hidden>
-				Remove filters
-			</button>
+
 		</div>
-	
-		<?php /* ── Expandable panel ── */ ?>
-		<div
-			class="filter-panel"
-			id="filter-panel-<?php echo esc_attr( $query_id ); ?>"
-			hidden
-		>
+
+		<div class="filter-panel" id="filter-panel" hidden>
+
 			<?php if ( $show_post_types && ! empty( $post_types ) ) : ?>
 			<fieldset class="filter-group">
-				<legend class="filter-group-toggle" aria-expanded="true">
-					Resource type
-					<svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-						<path d="M1.5 4L6 8L10.5 4" stroke="currentColor" stroke-width="1.5"/>
-					</svg>
-				</legend>
 				<div class="filter-group-items">
 					<?php foreach ( $post_types as $pt ) : ?>
 					<label class="filter-item">
@@ -152,15 +164,9 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				</div>
 			</fieldset>
 			<?php endif; ?>
-	
+
 			<?php if ( $show_categories && ! empty( $categories ) ) : ?>
 			<fieldset class="filter-group">
-				<legend class="filter-group-toggle" aria-expanded="true">
-					Topics
-					<svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-						<path d="M1.5 4L6 8L10.5 4" stroke="currentColor" stroke-width="1.5"/>
-					</svg>
-				</legend>
 				<div class="filter-group-items">
 					<?php foreach ( $categories as $cat ) : ?>
 					<label class="filter-item">
@@ -177,12 +183,12 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				</div>
 			</fieldset>
 			<?php endif; ?>
+
 		</div>
-	
-		<?php /* ── Active filter tags ── */ ?>
+
 		<div class="filter-active-tags" aria-live="polite" aria-label="Active filters"></div>
-	
-	</div><!-- .resource-filter-bar -->
+
+	</div>
 	<?php
 	return ob_get_clean();
 }

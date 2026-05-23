@@ -1,8 +1,6 @@
 ( function () {
 	'use strict';
 
-	// ── Helpers ───────────────────────────────────────────────────────────────
-
 	function debounce( fn, ms ) {
 		let timer;
 		return ( ...args ) => {
@@ -11,7 +9,29 @@
 		};
 	}
 
-	// ── Per-bar initialisation ────────────────────────────────────────────────
+	function initLoadMore( grid ) {
+		const queryBlock = grid.closest( '.wp-block-query' );
+		const pagination = queryBlock?.querySelector( '.wp-block-query-pagination' );
+
+		if ( ! pagination ) return null;
+
+		const btn = document.createElement( 'div' );
+		btn.className = 'load-more-wrapper';
+		btn.innerHTML = `
+			<div class="wp-block-buttons is-content-justification-center">
+				<div class="wp-block-button">
+					<button class="wp-block-button__link wp-element-button load-more-btn" type="button">
+						Load More
+					</button>
+				</div>
+			</div>
+		`;
+
+		pagination.insertAdjacentElement( 'afterend', btn );
+		pagination.hidden = true;
+
+		return btn.querySelector( '.load-more-btn' );
+	}
 
 	function findNearestQuery( bar ) {
 		let el = bar.nextElementSibling;
@@ -23,25 +43,18 @@
 		return bar.closest( '.wp-block-group' )
 			?.querySelector( '.wp-block-post-template' ) ?? null;
 	}
-	
-	function findNearestMoreButton( bar ) {
-		let el = bar.nextElementSibling;
-		while ( el ) {
-			const btn = el.querySelector( '.wp-block-query-pagination-next' );
-			if ( btn ) return btn;
-			el = el.nextElementSibling;
-		}
-		return bar.closest( '.wp-block-group' )
-			?.querySelector( '.wp-block-query-pagination-next' ) ?? null;
-	}
-	
+
 	function initFilterBar( bar ) {
-		const grid    = findNearestQuery( bar );
-		const moreBtn = findNearestMoreButton( bar );
-	
+		const grid = findNearestQuery( bar );
 		if ( ! grid ) return;
 
-		// State
+		const moreBtn = initLoadMore( grid );
+
+		// ── Read the default post type from a data attribute set by PHP ───────
+		// This drives renderCard's top-label logic when no post_type filter
+		// is actively selected by the user.
+		const defaultPostType = bar.dataset.defaultPostType || 'post';
+
 		const state = {
 			categories:  [],
 			postTypes:   [],
@@ -53,7 +66,6 @@
 			loading:     false,
 		};
 
-		// Elements
 		const toggle      = bar.querySelector( '.filter-toggle' );
 		const panel       = bar.querySelector( '.filter-panel' );
 		const resetBtn    = bar.querySelector( '.filter-reset' );
@@ -62,15 +74,11 @@
 		const searchInput = bar.querySelector( '.filter-search' );
 		const sortSelect  = bar.querySelector( '.filter-sort' );
 
-		// ── Panel toggle ──────────────────────────────────────────────────────
-
 		toggle?.addEventListener( 'click', () => {
 			const open = toggle.getAttribute( 'aria-expanded' ) === 'true';
 			toggle.setAttribute( 'aria-expanded', String( ! open ) );
 			panel?.toggleAttribute( 'hidden', open );
 		} );
-
-		// ── Collapsible filter groups ─────────────────────────────────────────
 
 		bar.querySelectorAll( '.filter-group-toggle' ).forEach( legend => {
 			legend.addEventListener( 'click', () => {
@@ -79,8 +87,6 @@
 				legend.nextElementSibling?.toggleAttribute( 'hidden', expanded );
 			} );
 		} );
-
-		// ── Checkboxes ────────────────────────────────────────────────────────
 
 		bar.querySelectorAll( 'input[name="category"]' ).forEach( input => {
 			input.addEventListener( 'change', () => {
@@ -104,8 +110,6 @@
 			} );
 		} );
 
-		// ── Search ────────────────────────────────────────────────────────────
-
 		const debouncedSearch = debounce( () => {
 			state.search = searchInput?.value.trim() ?? '';
 			state.page   = 1;
@@ -115,8 +119,6 @@
 
 		searchInput?.addEventListener( 'input', debouncedSearch );
 
-		// ── Sort ──────────────────────────────────────────────────────────────
-
 		sortSelect?.addEventListener( 'change', () => {
 			const [ orderby, order ] = ( sortSelect.value || 'date-desc' ).split( '-' );
 			state.orderby = orderby;
@@ -124,8 +126,6 @@
 			state.page    = 1;
 			fetchPosts();
 		} );
-
-		// ── Reset ─────────────────────────────────────────────────────────────
 
 		resetBtn?.addEventListener( 'click', () => {
 			bar.querySelectorAll( 'input[type="checkbox"]' ).forEach( el => {
@@ -140,10 +140,7 @@
 			fetchPosts();
 		} );
 
-		// ── Load more ─────────────────────────────────────────────────────────
-
-		moreBtn?.addEventListener( 'click', e => {
-			e.preventDefault();
+		moreBtn?.addEventListener( 'click', () => {
 			if ( state.loading ) return;
 			state.page++;
 			fetchPosts( true );
@@ -156,24 +153,31 @@
 			state.loading = true;
 			grid.setAttribute( 'aria-busy', 'true' );
 
+			if ( moreBtn ) {
+				moreBtn.disabled    = true;
+				moreBtn.textContent = 'Loading…';
+			}
+
 			const params = new URLSearchParams( {
-				per_page: 10,
+				per_page: 12,
 				page:     state.page,
 				orderby:  state.orderby,
 				order:    state.order,
 				_embed:   true,
 			} );
 
-			// Categories — REST API takes IDs (already stored as IDs from PHP output)
 			if ( state.categories.length ) {
 				params.set( 'categories', state.categories.join( ',' ) );
 			}
 
-			// Post type — single active type or default to 'posts'
-			// The REST API uses different endpoints per post type.
-			// We build the endpoint URL accordingly.
-			const postType    = state.postTypes.length === 1 ? state.postTypes[0] : 'post';
-			const endpoint    = postTypeEndpoint( postType );
+			// ── Resolve which post type to query ──────────────────────────────
+			// If the user has selected exactly one post_type filter, use that.
+			// Otherwise fall back to the block's configured defaultPostType.
+			const activePostType = state.postTypes.length === 1
+				? state.postTypes[0]
+				: defaultPostType;
+
+			const endpoint = postTypeEndpoint( activePostType );
 
 			if ( state.search ) {
 				params.set( 'search', state.search );
@@ -184,32 +188,40 @@
 				state.totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
 				const posts      = await res.json();
 
-				const html = posts.map( renderCard ).join( '' );
+				// ── Pass activePostType into renderCard ───────────────────────
+				// This fixes the ReferenceError: postType was previously used
+				// inside renderCard but was only defined in fetchPosts's scope.
+				// Passing it explicitly makes the dependency clear.
+				const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
 
 				if ( append ) {
 					grid.insertAdjacentHTML( 'beforeend', html );
 				} else {
 					grid.innerHTML = html;
+					initLowerLabels( grid );
 				}
 
-				// Load more visibility
-				if ( moreBtn ) {
-					moreBtn.hidden = state.page >= state.totalPages;
-				}
 			} catch ( err ) {
 				console.error( 'Resource filter fetch error:', err );
 			} finally {
 				state.loading = false;
 				grid.removeAttribute( 'aria-busy' );
+
+				if ( moreBtn ) {
+					moreBtn.disabled    = false;
+					moreBtn.textContent = 'Load More';
+					moreBtn.closest( '.load-more-wrapper' ).hidden =
+						state.page >= state.totalPages;
+				}
 			}
 		}
 
 		// ── Post type → REST endpoint ─────────────────────────────────────────
-		// Extend this map as CPTs are added to the site.
 
 		function postTypeEndpoint( slug ) {
 			const map = {
 				'post':               '/wp-json/wp/v2/posts',
+				'press-article':      '/wp-json/wp/v2/press-article',
 				'case_studies':       '/wp-json/wp/v2/case_studies',
 				'events':             '/wp-json/wp/v2/events',
 				'guides':             '/wp-json/wp/v2/guides',
@@ -226,14 +238,15 @@
 		}
 
 		// ── Card renderer ─────────────────────────────────────────────────────
-		// Matches the .story-card markup in the block template.
+		// activePostType is now passed as a parameter instead of being
+		// referenced from an outer scope — this was the source of the
+		// ReferenceError when renderCard was called via posts.map().
 
-		function renderCard( post ) {
-			const terms  = post._embedded?.[ 'wp:term' ] ?? [];
-			const cats   = terms.find( group => group[0]?.taxonomy === 'category' ) ?? [];
-			const cat    = cats[0];
-			const media  = post._embedded?.[ 'wp:featuredmedia' ]?.[0];
-			const date   = new Date( post.date ).toLocaleDateString( 'en-US', {
+		function renderCard( post, activePostType ) {
+			const terms   = post._embedded?.[ 'wp:term' ] ?? [];
+			const cats    = terms.find( group => group[0]?.taxonomy === 'category' ) ?? [];
+			const media   = post._embedded?.[ 'wp:featuredmedia' ]?.[0];
+			const date    = new Date( post.date ).toLocaleDateString( 'en-US', {
 				month: 'long', day: 'numeric', year: 'numeric',
 			} );
 			const excerpt = ( post.excerpt?.rendered ?? '' )
@@ -241,44 +254,61 @@
 				.replace( /&hellip;/g, '…' )
 				.slice( 0, 140 );
 
+			const catLinks = cats.map( cat =>
+				`<a href="${ esc( cat.link ) }" rel="tag">${ esc( cat.name ) }</a>`
+			).join( '<span class="wp-block-post-terms__separator"> </span>' );
+
+			const isPost = activePostType === 'post';
+
 			return `<li class="wp-block-post">
 				<div class="wp-block-group story-card">
-					<p class="top-label wp-block-paragraph">Blog</p>
+
+					${ isPost
+						? `<p class="top-label wp-block-paragraph">Blog</p>`
+						: ( cats[0]
+							? `<p class="top-label wp-block-paragraph">${ esc( cats[0].name ) }</p>`
+							: '' )
+					}
+
 					${ media ? `<figure class="wp-block-post-featured-image" style="aspect-ratio:16/9">
-						<a href="${ esc( post.link ) }">
-							<img
-								src="${ esc( media.source_url ) }"
-								alt="${ esc( media.alt_text ) }"
-								loading="lazy"
-								style="width:100%;height:100%;object-fit:cover;"
-							>
+						<a href="${ esc( post.link ) }" tabindex="-1" aria-hidden="true">
+							<img src="${ esc( media.source_url ) }"
+								 alt=""
+								 loading="lazy"
+								 style="width:100%;height:100%;object-fit:cover;">
 						</a>
 					</figure>` : '' }
-					<div class="wp-block-group story-content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained">
-					${ cat ? `<div class="taxonomy-category lower-label wp-block-post-terms">
-						<a href="${ esc( cat.link ) }">${ esc( cat.name ) }</a>
-					</div>` : '' }
 
-					<h3 class="wp-block-post-title">
-						<a href="${ esc( post.link ) }">${ post.title.rendered }</a>
-					</h3>
-					<div class="wp-block-post-excerpt">
-						<p>${ excerpt }…</p>
-					</div>
-					<div class="wp-block-group meta">
-						<a class="wp-block-read-more" href="${ esc( post.link ) }">
-							Read more<span class="screen-reader-text">: ${ post.title.rendered }</span>
-						</a>
-						<div class="wp-block-post-date">
-							<time datetime="${ esc( post.date ) }">${ date }</time>
+					<div class="story-content">
+
+						${ isPost && catLinks
+							? `<div class="taxonomy-category lower-label wp-block-post-terms">
+								${ catLinks }
+							   </div>`
+							: ''
+						}
+
+						<h3 class="wp-block-post-title">
+							<a href="${ esc( post.link ) }">${ post.title.rendered }</a>
+						</h3>
+						<div class="wp-block-post-excerpt">
+							<p>${ excerpt }…</p>
 						</div>
-					</div>
+						<div class="wp-block-group meta">
+							<a class="wp-block-read-more" href="${ esc( post.link ) }">
+								Read more
+								<span class="screen-reader-text">: ${ post.title.rendered }</span>
+							</a>
+							<div class="wp-block-post-date">
+								<time datetime="${ esc( post.date ) }">${ date }</time>
+							</div>
+						</div>
+
 					</div>
 				</div>
 			</li>`;
 		}
 
-		// Minimal HTML escaping for interpolated values.
 		function esc( str ) {
 			return String( str ?? '' )
 				.replace( /&/g, '&amp;' )
@@ -294,24 +324,18 @@
 								( state.search ? 1 : 0 );
 			const hasActive   = totalActive > 0;
 
-			// Badge
 			if ( countBadge ) {
 				countBadge.textContent = totalActive;
 				countBadge.hidden      = ! hasActive;
 			}
 
-			// Toggle label
 			const label = toggle?.querySelector( '.filter-toggle-label' );
 			if ( label ) {
-				label.textContent = hasActive
-					? `Filters (${ totalActive })`
-					: 'Filters';
+				label.textContent = hasActive ? `Filters (${ totalActive })` : 'Filters';
 			}
 
-			// Reset button
 			if ( resetBtn ) resetBtn.hidden = ! hasActive;
 
-			// Active tags
 			renderActiveTags();
 		}
 
@@ -343,12 +367,10 @@
 			activeTags.innerHTML = tags.map( tag => `
 				<span class="active-tag">
 					${ esc( tag.label ) }
-					<button
-						type="button"
-						data-name="${ esc( tag.name ) }"
-						data-value="${ esc( tag.value ) }"
-						aria-label="Remove filter: ${ esc( tag.label ) }"
-					>×</button>
+					<button type="button"
+							data-name="${ esc( tag.name ) }"
+							data-value="${ esc( tag.value ) }"
+							aria-label="Remove filter: ${ esc( tag.label ) }">×</button>
 				</span>
 			` ).join( '' );
 
@@ -365,7 +387,7 @@
 						if ( input ) {
 							input.checked = false;
 							input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
-							return; // change handler calls syncUI + fetchPosts
+							return;
 						}
 					}
 					state.page = 1;
@@ -376,10 +398,46 @@
 		}
 	}
 
+	// ── Lower-label expand behaviour ──────────────────────────────────────────
+
+	function initLowerLabels( container ) {
+		( container ?? document ).querySelectorAll( '.lower-label' ).forEach( el => {
+			el.replaceWith( el.cloneNode( true ) );
+		} );
+
+		( container ?? document ).querySelectorAll( '.lower-label' ).forEach( el => {
+			if ( el.scrollHeight <= el.clientHeight + 2 ) return;
+
+			el.style.cursor = 'pointer';
+			el.setAttribute( 'title', 'Show all categories' );
+			el.setAttribute( 'role', 'button' );
+			el.setAttribute( 'tabindex', '0' );
+
+			function toggle( e ) {
+				if ( e.target.tagName === 'A' ) return;
+				el.classList.toggle( 'is-expanded' );
+				el.setAttribute( 'title',
+					el.classList.contains( 'is-expanded' )
+						? 'Show fewer categories'
+						: 'Show all categories'
+				);
+			}
+
+			el.addEventListener( 'click', toggle );
+			el.addEventListener( 'keydown', e => {
+				if ( e.key === 'Enter' || e.key === ' ' ) {
+					e.preventDefault();
+					toggle( e );
+				}
+			} );
+		} );
+	}
+
 	// ── Boot ──────────────────────────────────────────────────────────────────
 
 	document.addEventListener( 'DOMContentLoaded', () => {
 		document.querySelectorAll( '.resource-filter-bar' ).forEach( initFilterBar );
+		initLowerLabels( document );
 	} );
 
 } () );

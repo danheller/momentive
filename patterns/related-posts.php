@@ -13,6 +13,12 @@ if ( ! is_singular( 'post' ) ) return;
 
 $post_id    = get_the_ID();
 $categories = get_the_category( $post_id );
+$post_type  = get_post_type();
+$rel_head   = 'Explore more articles';
+
+if ( 'press-article' == $post_type ) {
+	$rel_head = 'Recommended for you';
+}
 
 if ( empty( $categories ) ) return;
 
@@ -20,7 +26,7 @@ if ( empty( $categories ) ) return;
 $category_id = $categories[0]->term_id;
 
 $related = new WP_Query( [
-	'post_type'           => 'post',
+	'post_type'           => $post_type,
 	'posts_per_page'      => 3,
 	'post__not_in'        => [ $post_id ],
 	'cat'                 => $category_id,
@@ -34,63 +40,46 @@ if ( ! $related->have_posts() ) return;
 ?>
 
 <section class="related-posts" aria-labelledby="related-posts-heading">
-	<div class="related-posts__inner">
+	<h2 class="related-posts__heading" id="related-posts-heading">
+		<?php echo $rel_head; ?>
+	</h2>
 
-		<h2 class="related-posts__heading" id="related-posts-heading">
-			Recommended for you
-		</h2>
+	<ul class="related-posts__grid" role="list">
+		<?php while ( $related->have_posts() ) : $related->the_post(); ?>
+		<li class="related-posts__item">
+			<?php 
+			get_template_part( 'patterns/story-card' ); 
+			?>
+		</li>
+		<?php endwhile; wp_reset_postdata(); ?>
+	</ul>
 
-		<ul class="related-posts__grid" role="list">
-			<?php while ( $related->have_posts() ) : $related->the_post(); ?>
-			<li class="related-posts__item">
-				<div class="story-card">
-
-					<?php
-					$cats = get_the_category();
-					if ( ! empty( $cats ) ) :
-					?>
-					<div class="taxonomy-category top-label">
-						<a href="<?php echo esc_url( get_category_link( $cats[0]->term_id ) ); ?>">
-							<?php echo esc_html( $cats[0]->name ); ?>
-						</a>
-					</div>
-					<?php endif; ?>
-
-					<?php if ( has_post_thumbnail() ) : ?>
-					<figure style="aspect-ratio:16/9;">
-						<a href="<?php the_permalink(); ?>">
-							<?php the_post_thumbnail( 'large', [
-								'style' => 'width:100%;height:100%;object-fit:cover;',
-								'alt'   => get_the_title(),
-							] ); ?>
-						</a>
-					</figure>
-					<?php endif; ?>
-					<div class="story-content">
-						<h3 class="wp-block-post-title">
-							<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-						</h3>
-	
-						<div class="wp-block-post-excerpt">
-							<p><?php echo wp_trim_words( get_the_excerpt(), 20, '…' ); ?></p>
-						</div>
-	
-						<div class="meta">
-							<a class="wp-block-read-more" href="<?php the_permalink(); ?>">
-								Read more
-								<span class="screen-reader-text">: <?php the_title(); ?></span>
-							</a>
-							<div class="wp-block-post-date">
-								<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>">
-									<?php echo esc_html( get_the_date( 'F j, Y' ) ); ?>
-								</time>
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<?php endwhile; wp_reset_postdata(); ?>
-		</ul>
-
+	<?php
+	// Map post types to their archive URL and label.
+	// get_post_type_archive_link() returns false if the post type
+	// has no archive, so we can extend this to other CPTs safely.
+	$archive_links = [
+		'press-article' => [
+			'url'   => get_post_type_archive_link( 'press-article' ) ?: '/newsroom/',
+			'label' => 'View All',
+		],
+		'case_studies' => [
+			'url'   => get_post_type_archive_link( 'case_studies' ) ?: '/case-studies/',
+			'label' => 'View All',
+		],
+	];
+	if ( isset( $archive_links[ $post_type ] ) ) :
+		$link = $archive_links[ $post_type ];
+	?>
+	<div class="related-posts__footer">
+		<div class="wp-block-buttons is-content-justification-center">
+			<div class="wp-block-button is-style-outline">
+				<a class="wp-block-button__link wp-element-button"
+				   href="<?php echo esc_url( $link['url'] ); ?>">
+					<?php echo esc_html( $link['label'] ); ?>
+				</a>
+			</div>
+		</div>
 	</div>
+	<?php endif; ?>
 </section>

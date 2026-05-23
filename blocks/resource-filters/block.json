@@ -10,25 +10,11 @@
 		"inserter": true
 	},
 	"attributes": {
-		"showCategories": {
-			"type": "boolean",
-			"default": true
-		},
-		"showPostTypes": {
-			"type": "boolean",
-			"default": false
-		},
-		"showSearch": {
-			"type": "boolean",
-			"default": false
-		},
-		"showSort": {
-			"type": "boolean",
-			"default": true
-		},
-		"postTypes": {
-			"type": "array",
-			"default": []
-		}
+		"defaultPostType": { "type": "string",  "default": "post"  },
+		"showCategories":  { "type": "boolean", "default": true    },
+		"showPostTypes":   { "type": "boolean", "default": false   },
+		"showSearch":      { "type": "boolean", "default": false   },
+		"showSort":        { "type": "boolean", "default": true    },
+		"postTypes":       { "type": "array",   "default": []      }
 	}
 }

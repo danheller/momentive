@@ -76,7 +76,7 @@ $screen-small:    40em  !default;  /* 640px  */
 $screen-medium:   48em  !default;  /* 768px  */
 $screen-mediumish: 56em !default;  /* 896px  */
 $screen-large:    67.5em !default; /* 1080px */
-$screen-largish:  77.5em !default; /* 1240px */
+$screen-largish:  74em !default; /* 1240px */
 $screen-xlarge:   90em  !default;  /* 1440px */
 $screen-xxlarge: 120em  !default;  /* 1920px */
 
@@ -397,7 +397,7 @@ textarea {
 
 input:focus,
 textarea:focus {
-	background-color: var(--wp--preset--color--neutral);
+//	background-color: var(--wp--preset--color--neutral);
 	outline: none;
 }
 
@@ -418,8 +418,7 @@ textarea {
 
 ::placeholder {
 	color: var(--wp--preset--color--contrast);
-	font-size: var(--wp--preset--font-size--small);
-	opacity: 0.5;
+	opacity: 0.7;
 }
 
 
@@ -458,6 +457,15 @@ figure {
 	border-bottom: 1px solid var(--menu-border-color);
 }
 
+.content-width {
+	max-width: var(--wp--style--global--content-size);
+	margin-left: auto;
+	margin-right: auto;
+	@media #{$largish-up} {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
 
 /*==============================================================
   2.2 - Visibility Utilities
@@ -531,23 +539,26 @@ figure {
 // available as .is-style-button on navigation items.
 .is-style-button {
 	color: var(--button-text-color);
-	a {
+	a, button {
 		background: var(--button-background);
 		border-radius: 3rem;
 		padding: .75rem 1.5rem;
 		transition: background .3s ease;
 		font-weight: 600;
 		font-size: 1rem;
+		color: var(--button-text-color);
+		text-decoration: none;
 		&:hover {
 			background: color-mix(in srgb, var(--button-background), black 20%);
 		}
 	}
 	&.is-style-outline {
 		color: var(--button-outline-text-color);
-		a {
+		a, button {
 			border: 1px solid var(--button-outline-border);
 			background: transparent;
 			transition: background .3s ease, box-shadow .3s ease;
+			color: var(--button-outline-text-color);
 			&:hover {
 				box-shadow: 0 0 0 .1rem var(--button-background);
 				background: var(--button-outline-background);
@@ -563,7 +574,7 @@ figure {
 .is-style-pill {
 	display: inline-block;
 	font-size: .75rem;
-	padding: .5rem .75rem;
+	padding: .375rem .75rem;
 	border-radius: 3rem;
 	background: var(--light-accent-color);
 	margin-bottom: .375rem;
@@ -730,11 +741,11 @@ figure {
 
 .wp-block-quote {
 	border: none;
-    padding: 0 0 0 1.25rem;
-    margin: 2.25rem 0;
-    border-left: .1rem solid var(--midtone-color);
-    --wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
-    p {
+	padding: 0 0 0 1.25rem;
+	margin: 2.25rem 0;
+	border-left: .1rem solid var(--midtone-color);
+	--wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
+	p {
 		font-style: italic;
 	}
 }
@@ -750,6 +761,7 @@ figure {
 	@extend %has-after;
 	font-weight: 600;
 	padding-right: 1rem;
+	text-decoration: none;
 	&:after {
 		border-right:  .0625rem solid rgb(34,34,34);
 		border-bottom: .0625rem solid rgb(34,34,34);
@@ -1533,9 +1545,9 @@ body.home {
 			.read-more {
 				&:after {
 					transform: rotate(-45deg) translate( .25rem, .25rem );
-					border-color: var(--button-background);
+					border-color: var(--secondary-color);
 				}
-				a { color: var(--button-background); }
+				a { color: var(--secondary-color); }
 			}
 		}
 	}
@@ -1817,10 +1829,10 @@ body.home {
 	&:hover {
 		box-shadow: rgba(0, 0, 0, 0.125) 0 0 .75rem 0;
 		.wp-block-read-more {
-			color: var(--button-background);
+			color: var(--secondary-color);
 			&:after {
 				transform: rotate(-45deg) translate( .25rem, .25rem );
-				border-color: var(--button-background);
+				border-color: var(--secondary-color);
 			}
 		}
 		img {
@@ -1877,10 +1889,15 @@ body.home {
 		}
 	}
 	
-	.wp-block-post-excerpt { margin-top: 1rem; }
+	.wp-block-post-excerpt { 
+		margin: 0;
+		p {
+			margin-top: 1rem;
+		}
+	}
 
 	.wp-block-post-title {
-		margin-top: 0;
+		margin: 0;
 		font-size: var(--wp--preset--font-size--medium);
 		line-height: 1.5;
 		width: 100%;
@@ -1922,8 +1939,65 @@ body.home {
 /* shared by single post */
 
 .lower-label {
+	position: relative;
+	overflow: hidden;
+	max-height: 3em; // shows roughly one line of tags
+	transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+            padding 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 	margin: .25rem 0 .75rem;
 	width: 100%;
+
+	&[role='button'] {
+		z-index: 3;
+		&:before {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;			
+			text-align: center;
+			font-size: .75rem;
+			content: 'More tags';
+			background: var(--wp--preset--color--base, #fff);
+			padding: 0 .5rem 0 0;
+			height: .875rem;
+			line-height: 1;
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			bottom: .375rem;
+			left: calc(50% + 2rem);
+			height: .375rem;
+			width: .375rem;
+			border-bottom: .0625rem solid var(--text-color);
+			border-left: .0625rem solid var(--text-color);
+			transform: rotate(-45deg);
+			transform-origin: 33% 66%;
+			pointer-events: none;
+			transition: transform .3s .5s;
+		}
+		&:hover {
+			&:before {
+				color: var(--secondary-color);
+			}
+			&:after {
+				border-color: var(--secondary-color);
+			}
+		}
+	}
+
+
+	&.is-expanded {
+		max-height: 16em;
+		padding-bottom: 1rem; // generous upper bound
+		&:before {
+			content: 'Less tags';
+		}
+		&:after {
+			transform: rotate(135deg);
+		}
+	}
+
 	a {
 		@extend .is-style-pill;
 	}
@@ -1931,10 +2005,13 @@ body.home {
 
 .related-posts {
 	padding: 2rem 0 4rem;
-
+	&__inner {
+		margin: 0 auto;
+		padding: 0 var(--wp--style--root--padding-right);
+	}
 
 	&__heading {
-		font-size: clamp( 1.5rem, 2vw, 2rem );
+		font-size: var(--wp--preset--font-size--xxx-large);
 		margin: 0 0 2rem;
 	}
 
@@ -1954,12 +2031,9 @@ body.home {
 	&__item {
 		display: flex;
 		flex-direction: column;
-
-		.story-card {
-			height: 100%;
-		}
 	}
 }
+
 
 
 /*--------------------------------------------------------------
@@ -2259,6 +2333,36 @@ body.single-press-article {
 	}
 }
 
+.wp-block-query-pagination {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	&[hidden] {
+		display: none;
+	}
+	a, span.current {
+		@extend .is-style-pill;
+	}
+	.wp-block-query-pagination-numbers {
+		display: flex;
+		margin: 0 auto;
+		gap: .5rem;
+		a {
+			background: rgb(239, 239, 239);
+		}
+		span.current {
+			background: var(--extralight-accent-color)
+		}
+	}
+}
+
+.load-more-wrapper {
+	padding: 2rem 0 4rem;
+	.wp-block-buttons {
+		margin: 0 auto;
+		width: fit-content;
+	}
+}
 
 /*==============================================================
   8.0 - Animations

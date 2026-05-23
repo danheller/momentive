@@ -239,6 +239,35 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 	updateFooterGradient();
 	window.addEventListener('resize', updateFooterGradient);
 
+	document.querySelectorAll( '.lower-label' ).forEach( function ( el ) {
+		// Only activate if content overflows
+		if ( el.scrollHeight <= el.clientHeight + 2 ) return;
+
+		el.style.cursor = 'pointer';
+		el.setAttribute( 'title', 'Show all categories' );
+		el.setAttribute( 'role', 'button' );
+		el.setAttribute( 'tabindex', '0' );
+
+		function toggle( e ) {
+			// Don't toggle if the click was on a category link
+//			if ( e.target.tagName === 'A' ) return;
+			el.classList.toggle( 'is-expanded' );
+			el.setAttribute( 'title',
+				el.classList.contains( 'is-expanded' )
+					? 'Show fewer categories'
+					: 'Show all categories'
+			);
+		}
+
+		el.addEventListener( 'click', toggle );
+		el.addEventListener( 'keydown', function ( e ) {
+			if ( e.key === 'Enter' || e.key === ' ' ) {
+				e.preventDefault();
+				toggle( e );
+			}
+		} );
+	} );
+
 } () );
 
 function setupautosliding( el, splidenum ) {
@@ -317,17 +346,17 @@ function setupautosliding( el, splidenum ) {
 }
 
 function getContentLeftOffset() {
-    const vw = window.innerWidth;
-    
-    // Find the actual content container and measure it directly
-    const contentEl = document.querySelector('.is-layout-constrained, .wp-block-group');
-    if (contentEl) {
-        const rect = contentEl.getBoundingClientRect();
-        return rect.left; // this IS the left offset from viewport
-    }
-    
-    // fallback
-    return 0;
+	const vw = window.innerWidth;
+	
+	// Find the actual content container and measure it directly
+	const contentEl = document.querySelector('.is-layout-constrained, .wp-block-group');
+	if (contentEl) {
+		const rect = contentEl.getBoundingClientRect();
+		return rect.left; // this IS the left offset from viewport
+	}
+	
+	// fallback
+	return 0;
 }
 
 function getLastAllowedIndex(splideInstance) {
@@ -469,5 +498,3 @@ function setupslider(which, splid) {
 	
 	splide[splid].mount();
 }
-
-
