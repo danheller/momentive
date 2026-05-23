@@ -1,0 +1,17 @@
+{
+    "name": "momentive/post-byline",
+    "title": "Post Byline",
+    "description": "Author photo, name, modified date, and reading time for a post.",
+    "category": "momentive",
+    "icon": "admin-users",
+    "apiVersion": 3,
+    "supports": {
+        "html": false,
+        "inserter": true
+    },
+    "usesContext": [ "postId" ],
+    "attributes": {
+        "showModified":    { "type": "boolean", "default": true },
+        "showReadingTime": { "type": "boolean", "default": true }
+    }
+}

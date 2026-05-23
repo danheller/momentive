@@ -1,0 +1,124 @@
+/**
+ * Icon Block Frontend Styles
+ * Save as: /blocks/icon-block/style.css
+ */
+
+:root {
+
+	--dark-purple: #411a50;
+	--sky-blue: #a3dcff;
+	--mint: #b9f4ea;
+	--pink: #e8B5e4;
+	--light-sky-blue: #d3ebfd;
+	--light-purple: #d1cded;
+	--white: #fff;
+
+    --lavender: #C8B4E6;
+
+    
+    /* Default icon colors */
+    --icon-stroke: var(--dark-purple);
+    --icon-fill: transparent;
+}
+
+.svg-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    position: relative;
+}
+
+.svg-icon svg {
+    width: 3rem;
+    height: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Shape backgrounds */
+.svg-icon.circle-bg::before,
+.svg-icon.square-bg::before,
+.svg-icon.tilted-square-bg::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.svg-icon.circle-bg::before {
+    border-radius: 50%;
+}
+
+.svg-icon.square-bg::before {
+    border-radius: 0.5rem;
+}
+
+.svg-icon.tilted-square-bg::before {
+    border-radius: 0.5rem;
+    transform: translate(-50%, -50%) rotate(15deg);
+}
+
+/* Background colors */
+.svg-icon.fill-pink::before {
+    background-color: var(--pink);
+}
+
+.svg-icon.fill-purple::before {
+    background-color: var(--purple);
+}
+
+.svg-icon.fill-blue::before {
+    background-color: var(--blue);
+}
+
+.svg-icon.fill-mint::before {
+    background-color: var(--mint);
+}
+
+.svg-icon.fill-lavender::before {
+    background-color: var(--lavender);
+}
+
+/* Overlay positioning for Media & Text blocks */
+.svg-icon.overlay-icon {
+    position: absolute;
+    width: 4rem;
+    height: 4rem;
+    z-index: 10;
+}
+
+.svg-icon.overlay-icon svg {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.svg-icon.overlay-icon.top-left {
+    top: -1rem;
+    left: -1rem;
+}
+
+.svg-icon.overlay-icon.top-right {
+    top: -1rem;
+    right: -1rem;
+}
+
+.svg-icon.overlay-icon.bottom-left {
+	bottom: 3rem;
+	left: 0;
+}
+
+.svg-icon.overlay-icon.bottom-right {
+    bottom: 3rem;
+    left: calc(100% - 5rem);
+}
+
+/* Ensure parent figure has position: relative */
+.wp-block-media-text figure {
+    position: relative;
+}

@@ -1,0 +1,26 @@
+{
+	"name": "momentive/table-of-contents",
+	"apiVersion": 3,
+	"title": "Table of Contents",
+	"description": "Auto-generated in-page navigation from post headings.",
+	"category": "momentive",
+	"icon": "list-view",
+	"supports": {
+		"html": false,
+		"inserter": true
+	},
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Contents"
+		},
+		"maxLevel": {
+			"type": "integer",
+			"default": 2
+		},
+		"defaultExpanded": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+}

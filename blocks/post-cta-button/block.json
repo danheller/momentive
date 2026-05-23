@@ -1,0 +1,19 @@
+{
+    "name": "momentive/post-cta-button",
+    "title": "Post CTA Button",
+    "description": "Renders an optional CTA button from the post's ACF cta_button field.",
+    "category": "momentive",
+    "icon": "button",
+    "apiVersion": 3,
+    "supports": {
+        "html": false,
+        "inserter": true
+    },
+    "attributes": {
+        "style": {
+            "type": "string",
+            "default": "filled",
+            "enum": ["filled", "outline"]
+        }
+    }
+}

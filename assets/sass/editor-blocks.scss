@@ -1,0 +1,1579 @@
+/*
+Theme Name: momentive
+Description: Used to style blocks in the editor.
+*/
+
+
+
+/*--------------------------------------------------------------
+0.1 - Breakpoints
+--------------------------------------------------------------*/
+
+
+// custom responsive mix
+$screen-xxsmall: 30em !default;		/* 480px */
+$screen-xsmall: 35em !default;		/* 560px */
+$screen-small: 40em !default; 		/* 640px */
+$screen-medium: 48em !default; 		/* 768px */
+$screen-mediumish: 56em !default;   /* 896px */
+$screen-large: 67.5em !default; 	/* 1080px */
+$screen-largish: 77.5em !default; 	/* 1240px */
+$screen-xlarge: 90em !default; 		/* 1440px */
+$screen-xxlarge: 120em !default; 	/* 1920px */
+
+// Here we define the lower and upper bounds for each media size
+$base-font: 16 !default;
+$increment: calc( 1 / $base-font );
+
+$xxsmall-base: 0em;
+$xxsmall-top: $screen-xsmall;
+
+$xsmall-base: $screen-xxsmall + $increment;
+$xsmall-top: $screen-xsmall;
+
+$small-base: $screen-xsmall + $increment;
+$small-top: $screen-small;
+
+$medium-base: $screen-small + $increment;
+$medium-top: $screen-medium;
+
+$mediumish-base: $screen-medium + $increment;
+$mediumish-top: $screen-mediumish;
+
+$large-base: $screen-medium + $increment;
+$large-top: $screen-large;
+
+$largish-base: $screen-large + $increment;
+$largish-top: $screen-largish;
+
+$xlarge-base: $screen-large + $increment;
+$xlarge-top: $screen-xlarge;
+
+$xxlarge-base: $screen-xlarge + $increment;
+$xxlarge-top: $screen-xxlarge;
+
+// Media Queries
+$screen: "only screen" !default;
+
+$landscape: "#{$screen} and (orientation: landscape)" !default;
+$portrait: "#{$screen} and (orientation: portrait)" !default;
+
+$xxsmall-below: "#{$screen} and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-range: "#{$screen} and (min-width: #{$xxsmall-base}) and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-up: "#{$screen} and (min-width: #{$xxsmall-top})" !default;
+
+$xsmall-below: "#{$screen} and (max-width: #{$xsmall-top})" !default;
+$xsmall-range: "#{$screen} and (min-width: #{$xsmall-base}) and (max-width: #{$xsmall-top})" !default;
+$xsmall-up: "#{$screen} and (min-width: #{$xsmall-top})" !default;
+
+$small-below: "#{$screen} and (max-width: #{$small-top})" !default;
+$small-range: "#{$screen} and (min-width: #{$small-base}) and (max-width: #{$small-top})" !default;
+$small-up: "#{$screen} and (min-width: #{$small-top})" !default;
+
+$medium-below: "#{$screen} and (max-width: #{$medium-top})" !default;
+$medium-range: "#{$screen} and (min-width: #{$medium-base}) and (max-width: #{$medium-top})" !default;
+$medium-up: "#{$screen} and (min-width: #{$medium-top})" !default;
+
+$mediumish-below: "#{$screen} and (max-width: #{$mediumish-top})" !default;
+$mediumish-range: "#{$screen} and (min-width: #{$mediumish-base}) and (max-width: #{$mediumish-top})" !default;
+$mediumish-up: "#{$screen} and (min-width: #{$mediumish-top})" !default;
+
+$large-below: "#{$screen} and (max-width: #{$large-top})" !default;
+$large-range: "#{$screen} and (min-width: #{$large-base}) and (max-width: #{$large-top})" !default;
+$large-up: "#{$screen} and (min-width: #{$large-top})" !default;
+
+$largish-below: "#{$screen} and (max-width: #{$largish-top})" !default;
+$largish-range: "#{$screen} and (min-width: #{$largish-base}) and (max-width: #{$largish-top})" !default;
+$largish-up: "#{$screen} and (min-width: #{$largish-top})" !default;
+
+
+$xlarge-below: "#{$screen} and (max-width: #{$xlarge-top})" !default;
+$xlarge-range: "#{$screen} and (min-width: #{$xlarge-base}) and (max-width: #{$xlarge-top})" !default;
+$xlarge-up: "#{$screen} and (min-width: #{$xlarge-top})" !default;
+
+$xxlarge-below: "#{$screen} and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-range: "#{$screen} and (min-width: #{$xxlarge-base}) and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-up: "#{$screen} and (min-width: #{$xxlarge-top})" !default;
+
+/*--------------------------------------------------------------
+0.3 - Variables
+--------------------------------------------------------------*/
+
+
+:root {
+	// Layout — mirrors theme.json content/wide size settings
+	--wp--style--global--narrow-size:  40rem;
+
+	// Base palette
+	--light-color:           #fff;
+	--dark-color:            #000;
+	--text-color:            rgb(34, 34, 34);
+	--light-text-color:      rgb(88, 88, 88);
+	--contrast-text-color:   var(--dark-color);
+
+	// Accent — primary brand blue
+	// NOTE: consider deriving the lighter variants via color-mix()
+	// rather than hardcoding them, so a single token change cascades.
+	--accent-color:               rgb(0, 120, 255);
+	--light-accent-color:         #C1E6F7;
+	--extralight-accent-color:    rgb(224, 243, 251);
+	--superlight-accent-color:    rgb(239, 249, 253);
+	--aqua-color:                 #daf7fb;
+
+	// Buttons — orange CTA
+	--button-background:          #f26522;
+	--button-inactive-background: #c8cddf;
+	--button-text-color:          var(--light-color);
+	--button-outline-border:      #f26522;
+	--button-outline-background:  var(--light-color);
+	--button-outline-text-color:  #f26522;
+
+	// Navigation / menus
+	--menu-border-color:           rgb(219, 225, 243);
+	--menu-title-text-color:       var(--dark-color);
+	--menu-title-text-color-hover: rgb(19, 40, 112);
+
+	// Alert / dark band (announcement bar, dark cards)
+	--alert-background:  rgb(20, 29, 60);
+	--alert-text-color:  var(--light-color);
+
+	// Elevation
+	--shadow: rgba(0, 0, 0, 0.35) 0 0 1.25rem 0;
+
+	// Icons
+	--icon-fill: var(--dark-color);
+}
+
+
+// Theme specific variables in pixels - default is [16]
+$base-font: 16;
+$screen-small: 46em;
+$screen-medium: 52em;
+$screen-large: 75em;
+
+
+/*--------------------------------------------------------------
+1.0 - Resets
+--------------------------------------------------------------*/
+
+html,body,div,span,applet,object,iframe,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video,h1,h2,h3,h4,h5,h6{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}
+html{scroll-behavior:smooth}body{line-height:1}a{text-decoration-skip-ink:auto}a[href^="tel"]{color:inherit;text-decoration:none}button{border:none;}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';}q{display:inline;font-style:italic}q:before{content:'"';font-style:normal}q:after{content:'"';font-style:normal}textarea,button,input[type="text"],input[type="button"],input[type="submit"],input[type="reset"],input[type="search"],input[type="password"]{-webkit-appearance:none;appearance:none;border-radius:0}input::placeholder,textarea::placeholder{color:rgb(127,127,127)!important;}input[type="search"]{-webkit-appearance:textfield}table{border-collapse:collapse;border-spacing:0}th,td{padding:2px}big{font-size:120%}small,sup,sub{font-size:80%}sup{vertical-align:super}sub{vertical-align:sub}dd{margin-left:20px}kbd,tt{font-family:courier;font-size:12px}ins{text-decoration:underline}del,strike,s{text-decoration:line-through}dt{font-weight:bold}address,cite,var{font-style:italic}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+
+.center {
+	text-align: center;
+}
+
+.hide {
+	opacity: 0;
+	transition: opacity .3s ease;
+}
+
+%has-before {
+	position: relative;
+	&:before {
+		position: absolute;
+		content: '';
+	}
+}
+
+%has-after {
+	position: relative;
+	&:after {
+		position: absolute;
+		content: '';
+	}
+}
+
+%hidetext {
+	text-indent: -1000rem;
+	overflow: hidden;
+}
+
+%minimal-select {
+	@extend %has-after;
+	&:after {
+		width: .5rem;
+		height: .5rem;
+		right: 1rem;
+		top: 1.75rem;
+		border-right: .125rem solid rgb(var(--secondary));
+		border-bottom: .125rem solid rgb(var(--secondary));
+		transform: rotate(45deg);
+		pointer-events: none;
+	}
+	select {
+		padding-right: 4rem;
+		font-size: 1rem;
+		line-height: 1.5;
+		width: 100%;
+		border: 0;
+		border-radius: .25rem;
+		border: 1px solid rgba( var(--primary), .7 );
+		border-radius: .25rem;
+		width: 100%;
+		background-color: rgba(var(--black), .3);
+		padding: 1rem;
+		font-size: 1rem;
+		margin: .5rem 0;
+		color: rgb(var(--white));
+		appearance: none;
+		&:focus {
+		}
+	}
+}
+
+%nomargin {
+	margin: 0;
+}
+
+%nopadding {
+	padding: 0;
+}
+
+%clearfix {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+		margin-bottom: -2px;
+	}
+}
+
+%to-edge {
+	@media #{$large-below} {
+		margin-left: -1.5rem;
+		margin-right: -1.5rem;	
+	}
+}
+
+
+
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+1.0 General Typography
+2.0 General Block Settings
+3.0 Blocks - Common Blocks
+4.0 Blocks - Formatting
+5.0 Blocks - Layout Elements
+6.0 Blocks - Widgets
+
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+1.0 General Typography
+--------------------------------------------------------------*/
+
+html, body, textarea, input, select, option, html *:where(.editor-styles-wrapper) {
+	font-family: var(--sans);
+}
+
+.edit-post-visual-editor .editor-block-list__block,
+.editor-default-block-appender textarea.editor-default-block-appender__content {
+	font-size: 15px;
+	font-size: 0.9375rem;
+}
+
+.editor-default-block-appender textarea.editor-default-block-appender__content {
+	font-family: "Source Sans Pro", "Helvetica Neue", helvetica, arial, sans-serif;
+}
+
+.edit-post-visual-editor .editor-block-list__block {
+	color: #333;
+}
+
+.editor-post-title__block .editor-post-title__input {
+	color: #333;
+	font-family: "Source Sans Pro", "Helvetica Neue", helvetica, arial, sans-serif;
+	font-size: 20px;
+	font-size: 1.25rem;
+	font-weight: 300;
+}
+
+.introduction, .is-style-introduction {
+	font-size: 125%;
+}
+
+@media screen and (min-width: 30em) {
+
+	.edit-post-visual-editor .editor-block-list__block {
+		font-size: 18px;
+		font-size: 1.125rem;
+	}
+
+	.editor-post-title__block .editor-post-title__input {
+		font-size: 26px;
+		font-size: 1.625rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h1 {
+		font-size: 30px;
+		font-size: 1.875rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h2 {
+		font-size: 26px;
+		font-size: 1.625rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h3 {
+		font-size: 22px;
+		font-size: 1.375rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h4 {
+		font-size: 18px;
+		font-size: 1.125rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h5 {
+		font-size: 13px;
+		font-size: 0.8125rem;
+	}
+
+	.edit-post-visual-editor .editor-block-list__block h6 {
+		font-size: 16px;
+		font-size: 1rem;
+	}
+}
+
+@media screen and (min-width: 48em) {
+
+	.edit-post-visual-editor .editor-block-list__block {
+		font-size: 16px;
+		font-size: 1rem;
+	}
+
+	.editor-rich-text__tinymce.mce-content-body {
+		line-height: 1.5;
+	}
+}
+
+/* Typography for Arabic Font */
+
+html[lang="ar"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="ary"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="azb"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="fa-IR"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="haz"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="ps"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="ur"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: Tahoma, Arial, sans-serif;
+}
+
+html[lang="ar"] .edit-post-visual-editor h1,
+html[lang="ar"] .edit-post-visual-editor h2,
+html[lang="ar"] .edit-post-visual-editor h3,
+html[lang="ar"] .edit-post-visual-editor h4,
+html[lang="ar"] .edit-post-visual-editor h5,
+html[lang="ar"] .edit-post-visual-editor h6,
+html[lang="ary"] .edit-post-visual-editor h1,
+html[lang="ary"] .edit-post-visual-editor h2,
+html[lang="ary"] .edit-post-visual-editor h3,
+html[lang="ary"] .edit-post-visual-editor h4,
+html[lang="ary"] .edit-post-visual-editor h5,
+html[lang="ary"] .edit-post-visual-editor h6,
+html[lang="azb"] .edit-post-visual-editor h1,
+html[lang="azb"] .edit-post-visual-editor h2,
+html[lang="azb"] .edit-post-visual-editor h3,
+html[lang="azb"] .edit-post-visual-editor h4,
+html[lang="azb"] .edit-post-visual-editor h5,
+html[lang="azb"] .edit-post-visual-editor h6,
+html[lang="fa-IR"] .edit-post-visual-editor h1,
+html[lang="fa-IR"] .edit-post-visual-editor h2,
+html[lang="fa-IR"] .edit-post-visual-editor h3,
+html[lang="fa-IR"] .edit-post-visual-editor h4,
+html[lang="fa-IR"] .edit-post-visual-editor h5,
+html[lang="fa-IR"] .edit-post-visual-editor h6,
+html[lang="haz"] .edit-post-visual-editor h1,
+html[lang="haz"] .edit-post-visual-editor h2,
+html[lang="haz"] .edit-post-visual-editor h3,
+html[lang="haz"] .edit-post-visual-editor h4,
+html[lang="haz"] .edit-post-visual-editor h5,
+html[lang="haz"] .edit-post-visual-editor h6,
+html[lang="ps"] .edit-post-visual-editor h1,
+html[lang="ps"] .edit-post-visual-editor h2,
+html[lang="ps"] .edit-post-visual-editor h3,
+html[lang="ps"] .edit-post-visual-editor h4,
+html[lang="ps"] .edit-post-visual-editor h5,
+html[lang="ps"] .edit-post-visual-editor h6,
+html[lang="ur"] .edit-post-visual-editor h1,
+html[lang="ur"] .edit-post-visual-editor h2,
+html[lang="ur"] .edit-post-visual-editor h3,
+html[lang="ur"] .edit-post-visual-editor h4,
+html[lang="ur"] .edit-post-visual-editor h5,
+html[lang="ur"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Chinese Font */
+
+html[lang^="zh-"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "PingFang TC", "Helvetica Neue", Helvetica, STHeitiTC-Light, Arial, sans-serif;
+}
+
+html[lang="zh-CN"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "PingFang SC", "Helvetica Neue", Helvetica, STHeitiSC-Light, Arial, sans-serif;
+}
+
+html[lang^="zh-"] .edit-post-visual-editor h1,
+html[lang^="zh-"] .edit-post-visual-editor h2,
+html[lang^="zh-"] .edit-post-visual-editor h3,
+html[lang^="zh-"] .edit-post-visual-editor h4,
+html[lang^="zh-"] .edit-post-visual-editor h5,
+html[lang^="zh-"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Cyrillic Font */
+
+html[lang="bg-BG"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="ru-RU"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="uk"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+}
+
+html[lang="bg-BG"] .edit-post-visual-editor h1,
+html[lang="bg-BG"] .edit-post-visual-editor h2,
+html[lang="bg-BG"] .edit-post-visual-editor h3,
+html[lang="bg-BG"] .edit-post-visual-editor h4,
+html[lang="bg-BG"] .edit-post-visual-editor h5,
+html[lang="bg-BG"] .edit-post-visual-editor h6,
+html[lang="ru-RU"] .edit-post-visual-editor h1,
+html[lang="ru-RU"] .edit-post-visual-editor h2,
+html[lang="ru-RU"] .edit-post-visual-editor h3,
+html[lang="ru-RU"] .edit-post-visual-editor h4,
+html[lang="ru-RU"] .edit-post-visual-editor h5,
+html[lang="ru-RU"] .edit-post-visual-editor h6,
+html[lang="uk"] .edit-post-visual-editor h1,
+html[lang="uk"] .edit-post-visual-editor h2,
+html[lang="uk"] .edit-post-visual-editor h3,
+html[lang="uk"] .edit-post-visual-editor h4,
+html[lang="uk"] .edit-post-visual-editor h5,
+html[lang="uk"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+/* Typography for Devanagari Font */
+
+html[lang="bn-BD"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="hi-IN"] .edit-post-visual-editor .editor-block-list__block,
+html[lang="mr-IN"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: Arial, sans-serif;
+}
+
+html[lang="bn-BD"] .edit-post-visual-editor h1,
+html[lang="bn-BD"] .edit-post-visual-editor h2,
+html[lang="bn-BD"] .edit-post-visual-editor h3,
+html[lang="bn-BD"] .edit-post-visual-editor h4,
+html[lang="bn-BD"] .edit-post-visual-editor h5,
+html[lang="bn-BD"] .edit-post-visual-editor h6,
+html[lang="hi-IN"] .edit-post-visual-editor h1,
+html[lang="hi-IN"] .edit-post-visual-editor h2,
+html[lang="hi-IN"] .edit-post-visual-editor h3,
+html[lang="hi-IN"] .edit-post-visual-editor h4,
+html[lang="hi-IN"] .edit-post-visual-editor h5,
+html[lang="hi-IN"] .edit-post-visual-editor h6,
+html[lang="mr-IN"] .edit-post-visual-editor h1,
+html[lang="mr-IN"] .edit-post-visual-editor h2,
+html[lang="mr-IN"] .edit-post-visual-editor h3,
+html[lang="mr-IN"] .edit-post-visual-editor h4,
+html[lang="mr-IN"] .edit-post-visual-editor h5,
+html[lang="mr-IN"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Greek Font */
+
+html[lang="el"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+html[lang="el"] .edit-post-visual-editor h1,
+html[lang="el"] .edit-post-visual-editor h2,
+html[lang="el"] .edit-post-visual-editor h3,
+html[lang="el"] .edit-post-visual-editor h4,
+html[lang="el"] .edit-post-visual-editor h5,
+html[lang="el"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+/* Typography for Gujarati Font */
+
+html[lang="gu-IN"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: Arial, sans-serif;
+}
+
+html[lang="gu-IN"] .edit-post-visual-editor h1,
+html[lang="gu-IN"] .edit-post-visual-editor h2,
+html[lang="gu-IN"] .edit-post-visual-editor h3,
+html[lang="gu-IN"] .edit-post-visual-editor h4,
+html[lang="gu-IN"] .edit-post-visual-editor h5,
+html[lang="gu-IN"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Hebrew Font */
+
+html[lang="he-IL"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "Arial Hebrew", Arial, sans-serif;
+}
+
+html[lang="he-IL"] .edit-post-visual-editor h1,
+html[lang="he-IL"] .edit-post-visual-editor h2,
+html[lang="he-IL"] .edit-post-visual-editor h3,
+html[lang="he-IL"] .edit-post-visual-editor h4,
+html[lang="he-IL"] .edit-post-visual-editor h5,
+html[lang="he-IL"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Japanese Font */
+
+html[lang="ja"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
+}
+
+html[lang="ja"] .edit-post-visual-editor h1,
+html[lang="ja"] .edit-post-visual-editor h2,
+html[lang="ja"] .edit-post-visual-editor h3,
+html[lang="ja"] .edit-post-visual-editor h4,
+html[lang="ja"] .edit-post-visual-editor h5,
+html[lang="ja"] .edit-post-visual-editor h6 {
+	font-weight: 700;
+}
+
+/* Typography for Korean font */
+
+html[lang="ko-KR"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", Dotum, sans-serif;
+}
+
+html[lang="ko-KR"] .edit-post-visual-editor h1,
+html[lang="ko-KR"] .edit-post-visual-editor h2,
+html[lang="ko-KR"] .edit-post-visual-editor h3,
+html[lang="ko-KR"] .edit-post-visual-editor h4,
+html[lang="ko-KR"] .edit-post-visual-editor h5,
+html[lang="ko-KR"] .edit-post-visual-editor h6 {
+	font-weight: 600;
+}
+
+/* Typography for Thai Font */
+
+html[lang="th"] .edit-post-visual-editor .editor-block-list__block {
+	line-height: 1.8;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+html[lang="th"] .edit-post-visual-editor h1,
+html[lang="th"] .edit-post-visual-editor h2,
+html[lang="th"] .edit-post-visual-editor h3,
+html[lang="th"] .edit-post-visual-editor h4,
+html[lang="th"] .edit-post-visual-editor h5,
+html[lang="th"] .edit-post-visual-editor h6 {
+	line-height: 1.65;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Remove letter-spacing for all non-latin alphabets */
+
+html[lang="ar"] .edit-post-visual-editor *,
+html[lang="ary"] .edit-post-visual-editor *,
+html[lang="azb"] .edit-post-visual-editor *,
+html[lang="haz"] .edit-post-visual-editor *,
+html[lang="ps"] .edit-post-visual-editor *,
+html[lang^="zh-"] .edit-post-visual-editor *,
+html[lang="bg-BG"] .edit-post-visual-editor *,
+html[lang="ru-RU"] .edit-post-visual-editor *,
+html[lang="uk"] .edit-post-visual-editor *,
+html[lang="bn-BD"] .edit-post-visual-editor *,
+html[lang="hi-IN"] .edit-post-visual-editor *,
+html[lang="mr-IN"] .edit-post-visual-editor *,
+html[lang="el"] .edit-post-visual-editor *,
+html[lang="gu-IN"] .edit-post-visual-editor *,
+html[lang="he-IL"] .edit-post-visual-editor *,
+html[lang="ja"] .edit-post-visual-editor *,
+html[lang="ko-KR"] .edit-post-visual-editor *,
+html[lang="th"] .edit-post-visual-editor * {
+	letter-spacing: 0 !important;
+}
+
+/*--------------------------------------------------------------
+2.0 General Block Settings
+--------------------------------------------------------------*/
+
+/* Main column width */
+
+.editor-styles-wrapper {
+	max-width: 100% !important; /* Override where editor-style.css is affecting this. */
+}
+
+.wp-block {
+//	max-width: 720px; /* Based on one-column post width; 644px + 30px to account for padding. */
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+.acf-fields > .acf-field {
+	padding-left: 1.5rem !important;
+	padding-right: 1.5rem !important;
+}
+
+.acf-tab-group {
+	padding: 10px 13px 0 !important;
+}
+
+/* Alignments */
+
+.edit-post-visual-editor .alignleft {
+	margin-right: 1.5em;
+}
+
+.edit-post-visual-editor .alignright {
+	margin-left: 1.5em;
+}
+
+.edit-post-visual-editor .alignright, .edit-post-visual-editor .alignleft {
+	max-width: 50%;
+}
+
+/* Link styles */
+
+.edit-post-visual-editor a,
+.editor-block-list__block a,
+.wp-block-freeform.block-library-rich-text__tinymce a {
+	color: #222;
+}
+
+/* List styles */
+
+.edit-post-visual-editor ul:not(.wp-block-gallery),
+.editor-block-list__block ul:not(.wp-block-gallery),
+.block-library-list ul,
+.edit-post-visual-editor ol,
+.editor-block-list__block ol,
+.block-library-list ol,
+.block-library-list .editor-rich-text__tinymce {
+	padding: 0;
+}
+
+.edit-post-visual-editor ul:not(.wp-block-gallery),
+.editor-block-list__block ul:not(.wp-block-gallery),
+.block-library-list ul {
+	list-style: disc;
+}
+
+.edit-post-visual-editor ol,
+.editor-block-list__block ol,
+.block-library-list ol {
+	list-style: decimal;
+}
+
+.edit-post-visual-editor li > ul:not(.wp-block-gallery),
+.editor-block-list__block li > ul:not(.wp-block-gallery),
+.block-library-list li > ul:not(.wp-block-gallery),
+.edit-post-visual-editor li > ol,
+.editor-block-list__block li > ol,
+.block-library-list li > ol {
+	margin-bottom: 0;
+	margin-left: 1.5em;
+}
+
+.edit-post-visual-editor li,
+.editor-block-list__block li,
+.block-library-list li {
+	margin: 0;
+}
+
+.editor-styles-wrapper ul, .editor-styles-wrapper ol {
+	padding: 0 0 0 2em !important;
+}
+
+.rtl .editor-styles-wrapper ul ul,
+.rtl .editor-styles-wrapper ol ol,
+.rtl .editor-styles-wrapper ul ol,
+.rtl .editor-styles-wrapper ol ul {
+	margin-left: 0;
+	margin-right: 1.5em;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce ul:not(.wp-block-gallery),
+.wp-block-freeform.block-library-rich-text__tinymce ol {
+	margin-left: 0;
+	padding-left: 1.5em;
+}
+
+.rtl .wp-block-freeform.block-library-rich-text__tinymce ul:not(.wp-block-gallery),
+.rtl .wp-block-freeform.block-library-rich-text__tinymce ol {
+	padding: 0;
+}
+
+/* Quote styles */
+
+.editor-block-list__block blockquote p {
+	font-size: 18px;
+	font-size: 1.125rem;
+}
+
+.editor-block-list__block blockquote.alignright p,
+.editor-block-list__block blockquote.alignleft p {
+	font-size: 13px;
+	font-size: 0.8125rem;
+}
+
+.editor-block-list__block blockquote cite {
+	display: block;
+	font-style: normal;
+	font-weight: 600;
+	margin-top: 0.5em;
+}
+
+/* Caption styles*/
+
+[class^="wp-block-"]:not(.wp-block-gallery) figcaption {
+	font-style: italic;
+	margin-bottom: 1.5em;
+	text-align: left;
+}
+
+.rtl [class^="wp-block-"]:not(.wp-block-gallery) figcaption {
+	text-align: right;
+}
+
+/* Code styles */
+
+.wp-block-freeform.block-library-rich-text__tinymce code {
+	background: transparent;
+}
+
+/* Table styles */
+
+.rtl .editor-block-list__block th {
+	text-align: right;
+}
+
+/*--------------------------------------------------------------
+3.0 Blocks - Common Blocks
+--------------------------------------------------------------*/
+
+/* Paragraph */
+
+.wp-block-paragraph.has-drop-cap:not(:focus)::first-letter {
+	font-size: 5em;
+	margin-top: 0.075em;
+}
+
+.wp-block-paragraph.has-background {
+	padding: 20px 30px;
+}
+
+/* Gallery */
+
+.wp-block-gallery figcaption {
+	font-style: italic;
+}
+
+/* Quote */
+
+.wp-block-quote {
+	color: #666;
+	font-size: 18px;
+	font-size: 1.125rem;
+	font-style: italic;
+	line-height: 1.7;
+}
+
+.wp-block-quote:not(.is-large):not(.is-style-large) {
+	border: 0;
+	padding: 0;
+}
+
+.wp-block-quote .wp-block-quote__citation {
+	color: inherit;
+	display: block;
+	font-size: inherit;
+	font-style: normal;
+	font-weight: 600;
+	margin-top: 0.5em;
+}
+
+.wp-block-quote.alignleft,
+.wp-block-quote.alignright {
+	color: #666;
+	width: 48%;
+}
+
+.wp-block-quote.alignleft p,
+.wp-block-quote.alignright p,
+.wp-block-quote.alignleft .wp-block-quote__citation,
+.wp-block-quote.alignright .wp-block-quote__citation {
+	font-size: 13px;
+	font-size: 0.8125rem;
+}
+
+.wp-block-quote.alignleft p:last-of-type,
+.wp-block-quote.alignright p:last-of-type {
+	margin-bottom: 0;
+}
+
+.wp-block-quote.is-large .wp-block-quote__citation,
+.wp-block-quote.is-style-large .wp-block-quote__citation {
+	text-align: right;
+}
+
+.rtl .wp-block-quote.is-large .wp-block-quote__citation,
+.rtl .wp-block-quote.is-style-large .wp-block-quote__citation {
+	text-align: left;
+}
+
+@media screen and (min-width: 30em) {
+	.wp-block-quote.alignleft p,
+	.wp-block-quote.alignright p,
+	.wp-block-quote.alignleft .wp-block-quote__citation,
+	.wp-block-quote.alignright .wp-block-quote__citation,
+	.wp-block-quote footer {
+		font-size: 14px;
+		font-size: 0.875rem;
+	}
+}
+
+@media screen and (min-width: 48em) {
+	.wp-block-quote.alignleft p,
+	.wp-block-quote.alignright p,
+	.wp-block-quote.alignleft .wp-block-quote__citation,
+	.wp-block-quote.alignright .wp-block-quote__citation {
+		font-size: 13px;
+		font-size: 0.8125rem;
+	}
+
+	.wp-block-quote.alignleft {
+		margin-left: -17.5%;
+		width: 48%;
+	}
+
+	.wp-block-quote.alignright {
+		margin-right: -17.5%;
+		width: 48%;
+	}
+}
+
+/* File */
+
+.wp-block-file .wp-block-file__textlink {
+	-webkit-box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 1px 0 rgba(0, 0, 0, 1);
+	box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 1px 0 rgba(0, 0, 0, 1);
+}
+
+.wp-block-file .wp-block-file__button {
+	background-color: #222;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: #fff;
+	display: inline-block;
+	font-size: 14px;
+	font-size: 0.875rem;
+	font-weight: 800;
+	padding: 0.7em 2em;
+	-webkit-transition: background-color 0.2s ease-in-out;
+	transition: background-color 0.2s ease-in-out;
+	white-space: nowrap;
+}
+
+/*--------------------------------------------------------------
+4.0 Blocks - Formatting
+--------------------------------------------------------------*/
+
+/* Code */
+
+.editor-styles-wrapper {
+    margin-left: 1.5rem !important;
+    margin-right: 1.5rem !important;
+}
+
+.editor-styles-wrapper .wp-block-code {
+	border: 0;
+	padding: 0;
+	background-color: transparent;
+}
+
+.editor-styles-wrapper .wp-block-code code {
+	font-size: inherit;
+}
+
+/* Classic */
+
+.wp-block-freeform.block-library-rich-text__tinymce li,
+.wp-block-freeform.block-library-rich-text__tinymce p {
+	line-height: 1.5;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce blockquote {
+	border: 0;
+	padding: 0;
+}
+
+/* Pullquote */
+
+.wp-block-pullquote {
+	border: 0;
+}
+
+.wp-block-pullquote.alignleft blockquote > .editor-rich-text p,
+.wp-block-pullquote.alignright blockquote > .editor-rich-text p {
+	font-size: 20px;
+}
+
+
+.wp-block-pullquote .wp-block-pullquote__citation {
+	font-size: inherit;
+	font-weight: 600;
+	text-transform: none;
+}
+
+/* Table */
+
+table.wp-block-table {
+	border-collapse: collapse;
+	margin: 0 0 1.5em;
+	width: 100%;
+}
+
+table.wp-block-table thead th {
+	border: 0;
+	border-bottom: 2px solid #bbb;
+	padding-bottom: 0.5em;
+}
+
+table.wp-block-table th {
+	padding: 0.4em;
+	text-align: left;
+}
+
+table.wp-block-table tr {
+	border-bottom: 1px solid #eee;
+}
+
+table.wp-block-table th,
+table.wp-block-table td {
+	border: 0;
+	padding: 0.4em;
+}
+
+table.wp-block-table th:first-child,
+table.wp-block-table td:first-child {
+	padding-left: 0;
+}
+
+table.wp-block-table th:last-child,
+table.wp-block-table td:last-child {
+	padding-right: 0;
+}
+
+.wp-block-table__cell-content {
+	padding: 0;
+}
+
+.rtl table.wp-block-table th,
+.rtl table.wp-block-table td {
+	text-align: right;
+}
+
+/* Verse */
+
+.editor-styles-wrapper .wp-block-verse {
+	font-family: inherit;
+}
+
+/*--------------------------------------------------------------
+5.0 Blocks - Layout Elements
+--------------------------------------------------------------*/
+
+/* Separator */
+
+.edit-post-visual-editor .wp-block-separator {
+	border: 0;
+}
+
+/* Buttons */
+
+.wp-block-button .wp-block-button__link {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	display: inline-block;
+	font-size: 14px;
+	font-size: 0.875rem;
+	font-weight: 800;
+	line-height: 1.66;
+	margin-top: 2em;
+	padding: 0.7em 2em;
+	-webkit-transition: background-color 0.2s ease-in-out;
+	transition: background-color 0.2s ease-in-out;
+	white-space: nowrap;
+}
+
+.wp-block-button .wp-block-button__link[data-is-placeholder-visible="true"] {
+	height: auto;
+}
+
+.wp-block-button__link {
+	background-color: #222;
+	color: #fff;
+}
+
+.is-style-outline .wp-block-button__link {
+	color: #222;
+}
+
+/* Media & Text */
+
+.wp-block-media-text *:last-child {
+	margin-bottom: 0;
+}
+
+/*--------------------------------------------------------------
+6.0 Blocks - Widgets
+--------------------------------------------------------------*/
+
+.show-in-editor {
+	display: block !important;
+}
+
+.edit-post-visual-editor__post-title-wrapper {
+	padding: 1rem 0;
+	background: #f0f0f0;
+	margin: 0 -1.5rem 2rem !important;
+	h1 {
+		font-size: 2.5rem !important;
+		font-weight: 400;
+		line-height: 1;
+		max-width: 60rem;
+		&:before {
+			content: 'Page title';
+			font-size: .8rem !important;
+			color: #777;
+			display: block;
+			margin-bottom: .25rem;
+		}
+	}
+}
+
+/* Archives, Categories & Latest Posts */
+
+[data-align="center"] .wp-block-archives ul,
+[data-align="center"] .wp-block-categories ul,
+[data-align="center"] .wp-block-latest-posts ul {
+	list-style-position: inside;
+}
+
+/* Latest Comments */
+
+.editor-block-list__block ol.wp-block-latest-comments > li:before {
+	content: '';
+}
+
+.wp-block-latest-comments article {
+	margin-bottom: 4em;
+}
+
+.wp-block-latest-comments .avatar,
+.wp-block-latest-comments__comment-avatar {
+	border-radius: 0;
+}
+
+.wp-block-latest-comments__comment-meta {
+	font-size: 16px;
+	font-size: 1rem;
+	margin-bottom: 0.4em;
+}
+
+.editor-block-list__block .wp-block-latest-comments__comment-meta a {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	font-weight: 700;
+}
+
+.wp-block-latest-comments__comment-date {
+	color: #767676;
+	font-size: 10px;
+	font-size: 0.625rem;
+	font-weight: 800;
+	letter-spacing: 0.1818em;
+	margin-top: 0.4em;
+	text-transform: uppercase;
+}
+
+.editor-block-list__block .wp-block-latest-comments__comment-excerpt p {
+	font-size: 14px;
+	font-size: 0.875rem;
+}
+
+/* Latest Posts */
+
+.edit-post-visual-editor .wp-block-latest-posts.is-grid {
+	list-style: none;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.acf-block-preview > div {
+	padding: 2rem 1.25rem 1.25rem;
+	@extend %has-before;
+	border: 1px solid rgba( var( --gray ), .3 );
+	border-radius: .25rem;
+
+	a {
+		pointer-events: none;
+	}
+	&:before {
+		z-index: 1;
+		top: .625rem;
+		display: inline-block;
+		font-size: .75rem;
+		font-weight: 300;
+		color: rgb( var( --gray ) );
+	}
+	&.hero {
+		&:before {
+			content: 'Hero Block: Use sidebar to edit';
+		}
+	}
+	&.results {
+		&:before {
+			content: 'Results Block: Use sidebar to edit';
+		}
+	}
+	&.vertical-accordion-wrapper {
+		&:before {
+			content: 'Vertical Accordion Block: Use sidebar to edit';
+		}
+	
+	}
+	
+}
+
+.editor-styles-wrapper {
+	line-height: 1.5;
+
+	.is-style-uppercase {
+		text-transform: uppercase;
+		font-size: .875rem;
+		font-weight: 550;
+		letter-spacing: .1rem;
+	}
+	
+	.is-style-eyebrow {
+		@extend .is-style-uppercase;
+		color: var(--accent-color);
+		letter-spacing: .2rem;
+	}
+
+	.is-root-container {
+		h1, h2, h3, h4, h5, h6 {
+			line-height: 1.2;
+			@extend %has-before;
+			padding-top: 1.25rem;
+			&:before {
+				top: .2rem;
+				font-size: .75rem;
+				font-weight: 300;
+				color: #222;
+				text-shadow: .05rem .05rem 0 #fff;
+			}
+		}
+	
+		h1 {
+	/*		font-size: 3rem;*/
+			max-width: var(--wp--style--global--content-size);	
+			&:before {
+				content: 'H1';
+			}
+		}
+		
+		h2 {
+	/*		font-size: 2.5rem;*/
+			&:before {
+				content: 'H2';
+			}
+		}
+		
+		h3 {
+	/*		font-size: 1.5rem;*/
+			&:before {
+				content: 'H3';
+			}
+		}
+	
+		h4 {
+	/*		font-size: 1.25rem;*/
+			&:before {
+				content: 'H4';
+			}
+		}
+	
+		h5 {
+			&:before {
+				content: 'H5';
+			}
+		}
+	
+		h6 {
+			&:before {
+				content: 'H6';
+			}
+		}
+	}
+	
+	.shape-circle {
+		--icon-fill: var(--accent);
+		width: 3rem;
+		height: 3rem;
+		background: var(--extralight-accent);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto;
+		img, svg {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	}
+	
+	.svg-icon {
+		display: flex;
+		margin: 0 auto;
+	}
+	
+	.icon-label {
+		margin: .5rem 0;
+		font-size: .75rem;
+		text-align: center;
+	}
+	
+	.solutions-slider {
+		ul {
+			padding-left: 0 !important;
+			display: grid;
+			grid-template-columns: repeat( 5, 1fr );
+			gap: 1rem;
+			li {
+				margin: 0;
+				.wp-block, .acf-block-body, .acf-block-body > div, .acf-block-preview, .solution {
+					height: 100%;
+				}
+			}
+		}
+		.solution-icon {
+			width: 3rem;
+			height: 3rem;
+		}
+		.solution {
+			background: #777;
+			color: #fff;
+		}
+	}
+
+	.testimonials-slider {
+		display: grid;
+		grid-template-columns: repeat( 3, 1fr );
+		gap: 1rem;
+		.testimonial {
+			margin: 0;
+			padding: 1rem;
+			border: 1px solid #ccc;
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			figure {
+				border-radius: 50%;
+				overflow: hidden;
+				width: 4.5rem;
+			}
+		}
+		.attribution {
+			padding-top: 1rem;
+			margin: auto 1rem 0;
+			width: 100%;
+			display: grid;
+			grid-template-columns: 4.5rem 1fr;
+			gap: .25rem 1rem;
+			grid-template-areas: 
+				"Image Name"
+				"Image Organization";
+			justify-content: start;
+			align-content: center;
+		
+			figure {
+				border-radius: 50%;
+				overflow: hidden;
+				width: 4.5rem;
+				height: 4.5rem;
+				grid-area: Image;
+				margin: 0;
+			}
+		
+			p {
+				margin: 0;
+				width: 100%;
+				text-align: left;
+				align-self: end;
+			}
+		
+			.name {
+				font-weight: 550;
+				grid-area: Name;
+				align-self: end;
+			}
+		
+			.organization {
+				grid-area: Organization;
+				align-self: start;
+			}
+		}
+	}
+
+	.news-slider {
+		.wp-block-query > ul {
+			list-style: none;
+			padding-left: 0 !important;
+			display: grid;
+			grid-template-columns: repeat( 3, 1fr );
+			gap: 1rem;
+			li {
+				margin: 0;
+				height: 100%;
+			}
+		}
+	}
+	
+	.trust, .highlights {
+		margin: 5rem 0;
+	}
+	
+	.block-editor-block-list__layout.is-root-container > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+		max-width: 60rem;
+	}
+	
+	.product-suite {
+	}
+}
+
+.read-more {
+	@extend %has-after;
+	font-weight: 600;
+	padding-right: 1rem;
+	&:after {
+		border-right:  .0625rem solid rgb(34,34,34);
+		border-bottom: .0625rem solid rgb(34,34,34);
+		width:  .5rem;
+		height: .5rem;
+		transition: transform .3s ease, border-color .3s;
+		transform: rotate(-45deg);
+		transform-origin: 50% 50%;
+		top: .625rem;
+		margin-left: .375rem;
+	}
+}
+
+
+.story-card {
+	height: 100%;
+	padding: 0;
+	border: 1px solid var(--menu-border-color);
+	display: flex;
+	flex-direction: column;
+	border-radius: 1rem;
+	transition: box-shadow .3s ease;
+	position: relative;
+	overflow: hidden;
+
+	figure {
+		z-index: 0;
+		margin: 0;
+		overflow: clip;
+		img {
+			transition-duration: .5s;
+			transition-property: transform;
+			transition-timing-function: ease;
+		}
+	}
+
+	// When the figure is the first child of a flow layout, it needs
+	// extra margin compensation for the card's top padding.
+	&.is-layout-flow figure:first-child {
+		margin-top: -1rem;
+	}
+	
+	.story-content {
+		@extend %nomargin;
+		padding: 1rem 1.5rem 1.5rem;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	// label pill — absolute-positioned over the featured image.
+	.top-label {
+		position: absolute;
+		top: .75rem; left: .75rem;
+		background: #172A43;
+		font-size: .875rem;
+		line-height: 1;
+		font-weight: 400;
+		color: var(--light-color);
+		padding: .75rem 1rem;
+		border-radius: 3rem;
+		margin: 0;
+		z-index: 1;
+		a {
+			line-height: 1;
+			color: var(--light-color);
+			pointer-events: none;
+			cursor: default;
+			text-decoration: none;
+		}
+	}
+	
+	.lower-label {
+		margin: .25rem 0 .75rem;
+		width: 100%;
+		a {
+			display: inline-block;
+			font-size: .75rem;
+			padding: .5rem .75rem;
+			border-radius: 3rem;
+			background: var(--light-accent-color);
+			margin-bottom: .375rem;
+			text-decoration: none;
+		}
+	}
+
+	.wp-block-post-excerpt { margin-top: 1rem; }
+
+	.wp-block-post-title {
+		margin-top: 0;
+		font-size: 1.125rem;
+		line-height: 1.5;
+		width: 100%;
+
+		// Full-card click target layered over the card.
+		a {
+			&:after {
+				content: '';
+				position: absolute;
+				inset: 0;
+			}
+		}
+	}
+
+	p {
+		font-size: 1rem;
+		line-height: 1.5;
+		margin-bottom: 1rem;
+	}
+
+	.wp-block-post-date {
+		font-size: .875rem;
+		font-weight: 400;
+	}
+
+	.meta {
+		width: 100%;
+		font-size: 1rem;
+		margin-top: auto;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.wp-block-read-more {
+		@extend .read-more;
+	}
+
+	.is-style-bg-dots {
+		@extend %has-after;
+		position: relative;
+		&:after {
+			z-index: 0;
+			top: 0; left: 0;
+			height: 100%; width: 100%;
+			background: url(../images/dot-background.svg) center center;
+			pointer-events: none;
+			filter: invert(43%) sepia(96%) saturate(5806%)
+					hue-rotate(201deg) brightness(93%) contrast(101%);
+		}
+		// Ensure block content sits above the SVG layer
+		> * { position: relative; z-index: 1; }
+	}
+	
+	.is-style-bg-rings {
+		@extend %has-after;
+		&:after {
+			z-index: 0;
+			top: 0; left: 0;
+			height: 100%; width: 100%;
+			background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
+			pointer-events: none;
+			background-size: 135vw;
+		}
+		
+		> * { position: relative; z-index: 1; }
+	}
+	
+	.is-style-bg-dark {
+		background: var(--alert-background);
+		color: var(--light-color);
+		// Cascade light text color down to headings and links
+		h1, h2, h3, h4, h5, h6 { color: var(--light-color); }
+		a { color: var(--light-color); }
+	}
+	
+	.is-style-bg-light-blue {
+		background: var(--superlight-accent-color);
+	}
+	
+	.is-style-bg-blue-ellipse {
+		@extend %has-after;
+		background: var(--superlight-accent-color);
+		&:after {
+			z-index: 0;
+			top: 0; left: 0;
+			height: 100%; width: 100%;
+			background: url(../images/bg-ellipse-1.svg) center bottom no-repeat;
+			pointer-events: none;
+			background-size: 140vw;
+		}
+		
+		> * { position: relative; z-index: 1; }
+	
+	}
+
+}
+
+
+.is-style-has-swoop {
+	strong {
+		font-weight: inherit;
+		position: relative;
+		display: inline;
+		white-space: nowrap; /* prevents the SVG wrapping to a new line mid-word */
+		&:after {
+			position: absolute;
+			left:  -4%;          /* a little overhang looks natural */
+			width: 108%;
+			height: 1em;
+			bottom: -0.125em;      /* tune per swoop shape */
+			overflow: visible;
+			pointer-events: none;
+			content: '';
+			z-index: 0;
+			background: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20150%22%20preserveAspectRatio%3D%22none%22%20aria-hidden%3D%22true%22%3E%3Cpath%20fill%3D%22transparent%22%20stroke%3D%22rgb(0%2C%20120%2C%20255)%22%20stroke-width%3D%22.75rem%22%20d%3D%22M7.7%2C145.6C109%2C125%2C299.9%2C116.2%2C401%2C121.3c42.1%2C2.2%2C87.6%2C11.8%2C87.3%2C25.7%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');
+			background-position: center center;
+			background-size: contain;
+		}
+	}
+}

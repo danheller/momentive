@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "momentive/icon-shuffle",
+  "version": "1.0.0",
+  "title": "Icon Shuffle Grid",
+  "category": "media",
+  "icon": "grid-view",
+  "description": "Displays a grid of icon thumbnails that cycle through a pool of images.",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"]
+  },
+  "attributes": {
+    "images": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id":  { "type": "integer" },
+          "url": { "type": "string" },
+          "alt": { "type": "string" }
+        }
+      }
+    },
+    "columns": {
+      "type": "integer",
+      "default": 5
+    },
+    "cellCount": {
+      "type": "integer",
+      "default": 14
+    },
+    "cellSize": {
+      "type": "integer",
+      "default": 24
+    },
+    "interval": {
+      "type": "integer",
+      "default": 350,
+      "description": "Milliseconds between each individual cell swap."
+    },
+    "transitionDuration": {
+      "type": "integer",
+      "default": 600,
+      "description": "Milliseconds for the crossfade transition."
+    },
+    "centerImage": {
+      "type": "object",
+      "default": null,
+      "properties": {
+        "id":  { "type": "integer" },
+        "url": { "type": "string" },
+        "alt": { "type": "string" }
+      }
+    },
+    "centerCellIndex": {
+      "type": "integer",
+      "default": 7,
+      "description": "Zero-based grid position reserved for the center image. Default 7 = column 3, row 2 of a 5-column grid."
+    }
+  },
+  "textdomain": "momentive"
+}

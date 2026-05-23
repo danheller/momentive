@@ -1,0 +1,34 @@
+{
+	"name": "momentive/resource-filters",
+	"title": "Resource Filters",
+	"description": "Filter and sort bar for post query loops.",
+	"category": "momentive",
+	"icon": "filter",
+	"apiVersion": 3,
+	"supports": {
+		"html": false,
+		"inserter": true
+	},
+	"attributes": {
+		"showCategories": {
+			"type": "boolean",
+			"default": true
+		},
+		"showPostTypes": {
+			"type": "boolean",
+			"default": false
+		},
+		"showSearch": {
+			"type": "boolean",
+			"default": false
+		},
+		"showSort": {
+			"type": "boolean",
+			"default": true
+		},
+		"postTypes": {
+			"type": "array",
+			"default": []
+		}
+	}
+}

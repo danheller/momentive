@@ -1,0 +1,22 @@
+{
+    "name": "momentive/social-share",
+    "title": "Social Share",
+    "description": "Share buttons for the current post.",
+    "category": "momentive",
+    "icon": "share",
+    "apiVersion": 3,
+    "supports": {
+        "html": false,
+        "inserter": true
+    },
+    "attributes": {
+        "heading": {
+            "type": "string",
+            "default": "Share this post"
+        },
+        "showLinkedIn": { "type": "boolean", "default": true },
+        "showX":        { "type": "boolean", "default": true },
+        "showFacebook": { "type": "boolean", "default": true },
+        "showCopyLink": { "type": "boolean", "default": true }
+    }
+}

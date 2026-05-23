@@ -1,0 +1,103 @@
+.toc-block {
+	background: #F7F7F7; // var(--superlight-accent-color, #eff9fd);
+	border-radius: 1rem;
+	padding: 1.875rem 1.25rem;
+	font-size: 1rem;
+}
+
+/* Header row */
+.toc-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.toc-title {
+	font-weight: 600;
+	font-size: 1.5rem;
+	color: var(--text-color, rgb(34, 34, 34));
+}
+
+/* Toggle button */
+.toc-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: var(--light-text-color, rgb(88, 88, 88));
+	border-radius: 0.25rem;
+	flex-shrink: 0;
+	transition: color 0.2s ease;
+}
+
+.toc-toggle:hover {
+	color: var(--text-color, rgb(34, 34, 34));
+}
+
+.toc-toggle-icon {
+	display: block;
+	transition: transform 0.25s ease;
+	width: 1.5rem;
+	height: 1.5rem;
+	transform: rotate(180deg);
+}
+
+.toc-toggle[aria-expanded="false"] .toc-toggle-icon {
+	transform: rotate(0deg);
+}
+
+/* List */
+.toc-list {
+	list-style: none;
+	margin: 0;
+	padding: 1.5rem 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	transition: max-height .3s ease, padding .6s ease;
+
+	/* Scrollable when TOC is very long */
+	max-height: 80vh;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.toc-list[hidden] {
+	max-height: 0;
+	padding: 0;
+}
+
+/* Items */
+.toc-item {
+	line-height: 1.35;
+}
+
+.toc-item--h3 {
+	padding-left: 1rem;
+	font-size: 0.875rem;
+}
+
+/* Links */
+.toc-link {
+	display: block;
+	padding: 0;
+	font-weight: 600;
+	line-height: 1.5;
+	color: var(--text-color, rgb(34,34,34));
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.toc-link:hover {
+	color: var(--secondary-color, #f26522);
+}
+
+.toc-link.is-active {
+	color: var(--secondary-color, #f26522);
+}

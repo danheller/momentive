@@ -1,0 +1,111 @@
+/**
+ * Icon Shuffle Grid – frontend styles
+ */
+
+.wp-block-momentive-icon-shuffle {
+	display: block;
+}
+
+.icon-shuffle-grid {
+	display: grid;
+}
+
+.icon-shuffle-cell {
+	position: relative;
+	overflow: hidden;
+}
+
+.icon-shuffle-cell img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: block;
+}
+
+.icon-shuffle-img--current {
+	opacity: 1;
+	z-index: 2;
+}
+
+.icon-shuffle-img--current.is-exiting {
+	animation: icon-shuffle-zoom-in 0.6s reverse both;
+}
+
+.icon-shuffle-img--incoming.is-entering {
+	animation: icon-shuffle-zoom-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.icon-shuffle-img--incoming {
+	opacity: 0;
+	z-index: 1;
+}
+
+/* Center image cell — static, never shuffled */
+.icon-shuffle-cell--center {
+	background: transparent;
+}
+
+.icon-shuffle-cell--center img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+/* ── Entry animation ────────────────────────────────────────────────────────
+ *
+ * Cells start hidden (scale 0, opacity 0). When the block scrolls into view,
+ * JS adds .is-visible to the block wrapper, which triggers the animation on
+ * each cell using its individual --delay custom property (set by JS).
+ *
+ * The shuffle ticker is held until all cells have finished animating.
+ */
+
+@keyframes icon-shuffle-zoom-in {
+	from {
+		opacity:   0;
+		transform: scale( 0 );
+	}
+	to {
+		opacity:   1;
+		transform: scale( 1 );
+	}
+}
+
+
+
+.icon-shuffle-cell {
+	opacity:   0;
+	transform: scale( 0 );
+}
+
+.icon-shuffle-animate-in {
+	animation-name: icon-shuffle-zoom-in;
+	animation-duration: 0.6s;
+	animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+	animation-fill-mode: both;
+}
+
+
+.wp-block-momentive-icon-shuffle.is-visible .icon-shuffle-cell {
+	animation-name: icon-shuffle-zoom-in;
+	animation-duration: 0.75s;
+	animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+	animation-delay: var(--icon-shuffle-delay, 0ms);
+	animation-fill-mode: both;
+}
+
+/* Respect reduced-motion preference */
+@media ( prefers-reduced-motion: reduce ) {
+	.icon-shuffle-cell {
+		opacity:   1;
+		transform: none;
+	}
+
+	.wp-block-momentive-icon-shuffle.is-visible .icon-shuffle-cell {
+		animation: none;
+	}
+}

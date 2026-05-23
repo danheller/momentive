@@ -1,0 +1,26 @@
+/**
+ * Icon Shuffle Grid – editor styles
+ */
+
+.wp-block-momentive-icon-shuffle .icon-shuffle-placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 32px;
+	border: 2px dashed #ccc;
+	border-radius: 4px;
+	gap: 12px;
+	text-align: center;
+}
+
+.wp-block-momentive-icon-shuffle .icon-shuffle-editor-preview {
+	position: relative;
+}
+
+.wp-block-momentive-icon-shuffle .icon-shuffle-warning {
+	grid-column: 1 / -1;
+	color: #cc1818;
+	font-size: 12px;
+	margin: 8px 0 0;
+}

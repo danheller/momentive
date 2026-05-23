@@ -1,0 +1,2350 @@
+/*
+	TABLE OF CONTENTS
+	─────────────────────────────────────────────────────────────
+	0.1  Breakpoint Variables
+	0.2  Media Query Strings
+	0.3  Mixins & Placeholders
+	0.4  CSS Custom Properties (:root)
+
+	1.0  Reset & Defaults
+	1.1  Base Typography
+	1.2  Forms
+
+	2.0  Utility Classes & Placeholders
+	2.1  Layout Utilities
+	2.2  Visibility Utilities
+	2.3  Spacing Utilities
+	2.4  Shape Utilities (.round, .rounder)
+
+	3.0  Global Block Overrides (core WordPress blocks)
+	3.1  Buttons (.wp-block-button, .is-style-button)
+	3.2  Columns (.wp-block-columns)
+	3.3  Navigation (.wp-block-navigation)
+
+	4.0  Text Styles
+	4.1  Eyebrow & Uppercase (.is-style-eyebrow, .is-style-uppercase)
+	4.2  Heading Size Classes (.h2, .h3)
+	4.3  Quote Style (.is-style-quote)
+	4.4  Read More Link (.read-more)
+	4.5  Animated Swoop Underline (.is-style-has-swoop)
+
+	5.0  Site Structure
+	5.1  Announcement Bar (.announcement-bar)
+	5.2  Header (.site-header, .wp-block-site-title)
+	5.3  Footer (.site-footer)
+
+	6.0  Homepage
+	6.1  Hero (.hero)
+	6.2  Trust / Logo Ticker (.trust)
+	6.3  Highlights (.highlights)
+	6.4  Solutions (.solutions-wrapper, .solutions-intro, .solutions-slider)
+	6.5  Constellation / Icon Grid (.constellation)
+	6.6  Product Suite (.product-suite)
+	6.7  Testimonials (.testimonials-wrapper, .testimonials-slider)
+	6.8  Featured Blog Post (.featured-blog-wrapper)
+	6.9  Pre-footer CTA (.prefooter)
+
+	7.0  News / Blog
+	7.1  Story Card (.story-card)
+	7.2  News Slider (.news-slider)
+	7.3  Featured Blogs Grid (.featured-blogs)
+	7.4  All Blogs Grid
+	7.5  Single Post
+
+	8.0  Animations
+	8.1  Parallax (.parallax-upward)
+	
+	9.0  Block Backgrounds
+
+
+	TO DO
+	─────────────────────────────────────────────────────────────
+	- Blog archive
+	- Blog single
+*/
+
+
+/*==============================================================
+  0.1 - Breakpoint Variables
+==============================================================*/
+
+// Named screen-width thresholds used to build media query strings below.
+// All values are in ems so they scale with the user's browser font size.
+$screen-xxsmall:  30em  !default;  /* 480px  */
+$screen-xsmall:   35em  !default;  /* 560px  */
+$screen-small:    40em  !default;  /* 640px  */
+$screen-medium:   48em  !default;  /* 768px  */
+$screen-mediumish: 56em !default;  /* 896px  */
+$screen-large:    67.5em !default; /* 1080px */
+$screen-largish:  77.5em !default; /* 1240px */
+$screen-xlarge:   90em  !default;  /* 1440px */
+$screen-xxlarge: 120em  !default;  /* 1920px */
+
+// NOTE: $increment is used to create range-based media queries
+// (e.g. "min-width: X and max-width: Y"). The intent is a 1px
+// step between the top of one range and the base of the next.
+// However, SASS cannot evaluate calc() at compile time, so these
+// $…-base variables may not compute as expected. Verify the
+// compiled output if range queries behave unexpectedly.
+$base-font: 16 !default;
+$increment: calc( 1 / $base-font );
+
+$xxsmall-base:   0em;
+$xxsmall-top:    $screen-xsmall;
+
+$xsmall-base:    $screen-xxsmall + $increment;
+$xsmall-top:     $screen-xsmall;
+
+$small-base:     $screen-xsmall + $increment;
+$small-top:      $screen-small;
+
+$medium-base:    $screen-small + $increment;
+$medium-top:     $screen-medium;
+
+$mediumish-base: $screen-medium + $increment;
+$mediumish-top:  $screen-mediumish;
+
+// NOTE: $large-base intentionally starts at $screen-medium (768px),
+// not $screen-mediumish. This means $large-range overlaps $mediumish-range.
+// Intentional? If not, change to $screen-mediumish + $increment.
+$large-base:     $screen-medium + $increment;
+$large-top:      $screen-large;
+
+$largish-base:   $screen-large + $increment;
+$largish-top:    $screen-largish;
+
+// NOTE: $xlarge-base starts at $screen-large (1080px), not $screen-largish.
+// Same potential overlap as above — verify intent.
+$xlarge-base:    $screen-large + $increment;
+$xlarge-top:     $screen-xlarge;
+
+$xxlarge-base:   $screen-xlarge + $increment;
+$xxlarge-top:    $screen-xxlarge;
+
+
+/*==============================================================
+  0.2 - Media Query Strings
+==============================================================*/
+
+// Usage: @media #{$medium-up} { … }
+// Three variants per size: -below (max-width), -range (min+max), -up (min-width).
+
+$screen: "only screen" !default;
+
+$landscape: "#{$screen} and (orientation: landscape)" !default;
+$portrait:  "#{$screen} and (orientation: portrait)"  !default;
+
+$xxsmall-below: "#{$screen} and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-range: "#{$screen} and (min-width: #{$xxsmall-base}) and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-up:    "#{$screen} and (min-width: #{$xxsmall-top})" !default;
+
+$xsmall-below:  "#{$screen} and (max-width: #{$xsmall-top})" !default;
+$xsmall-range:  "#{$screen} and (min-width: #{$xsmall-base}) and (max-width: #{$xsmall-top})" !default;
+$xsmall-up:     "#{$screen} and (min-width: #{$xsmall-top})" !default;
+
+$small-below:   "#{$screen} and (max-width: #{$small-top})" !default;
+$small-range:   "#{$screen} and (min-width: #{$small-base}) and (max-width: #{$small-top})" !default;
+$small-up:      "#{$screen} and (min-width: #{$small-top})" !default;
+
+$medium-below:  "#{$screen} and (max-width: #{$medium-top})" !default;
+$medium-range:  "#{$screen} and (min-width: #{$medium-base}) and (max-width: #{$medium-top})" !default;
+$medium-up:     "#{$screen} and (min-width: #{$medium-top})" !default;
+
+$mediumish-below: "#{$screen} and (max-width: #{$mediumish-top})" !default;
+$mediumish-range: "#{$screen} and (min-width: #{$mediumish-base}) and (max-width: #{$mediumish-top})" !default;
+$mediumish-up:    "#{$screen} and (min-width: #{$mediumish-top})" !default;
+
+$large-below:   "#{$screen} and (max-width: #{$large-top})" !default;
+$large-range:   "#{$screen} and (min-width: #{$large-base}) and (max-width: #{$large-top})" !default;
+$large-up:      "#{$screen} and (min-width: #{$large-top})" !default;
+
+$largish-below: "#{$screen} and (max-width: #{$largish-top})" !default;
+$largish-range: "#{$screen} and (min-width: #{$largish-base}) and (max-width: #{$largish-top})" !default;
+$largish-up:    "#{$screen} and (min-width: #{$largish-top})" !default;
+
+$xlarge-below:  "#{$screen} and (max-width: #{$xlarge-top})" !default;
+$xlarge-range:  "#{$screen} and (min-width: #{$xlarge-base}) and (max-width: #{$xlarge-top})" !default;
+$xlarge-up:     "#{$screen} and (min-width: #{$xlarge-top})" !default;
+
+$xxlarge-below: "#{$screen} and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-range: "#{$screen} and (min-width: #{$xxlarge-base}) and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
+
+
+/*==============================================================
+  0.3 - Mixins & Placeholders
+==============================================================*/
+
+// Adds `position: relative` and an empty `::before` pseudo-element,
+// both absolutely positioned. Used wherever a pseudo-element provides
+// a background layer, overlay, or decorative shape.
+%has-before {
+	position: relative;
+	&:before {
+		position: absolute;
+		content: '';
+	}
+}
+
+// Same pattern for ::after.
+%has-after {
+	position: relative;
+	&:after {
+		position: absolute;
+		content: '';
+	}
+}
+
+// Visually hides text while keeping it accessible to screen readers.
+// Use on elements that display an icon or background image instead of text.
+%hidetext {
+	text-indent: -1000rem;
+	overflow: hidden;
+}
+
+// Styled select wrapper: hides the native arrow and draws a custom chevron
+// using an ::after pseudo-element.
+%minimal-select {
+	@extend %has-after;
+	&:after {
+		width: .5rem;
+		height: .5rem;
+		right: 1rem;
+		top: 1.75rem;
+		border-right: .125rem solid rgb(0,0,0);
+		border-bottom: .125rem solid rgb(0,0,0);
+		transform: rotate(45deg);
+		pointer-events: none;
+	}
+	select {
+		line-height: 1.5;
+		width: 100%;
+		border: 0;
+		border-radius: .25rem;
+		padding: 1rem 4rem 1rem 1rem;
+		font-size: 1rem;
+		margin: .5rem 0;
+		appearance: none;
+	}
+}
+
+%nomargin { margin: 0; }
+%nopadding { padding: 0; }
+
+%clearfix {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+		margin-bottom: -2px;
+	}
+}
+
+// Pulls an element to the full viewport edge on smaller screens,
+// overriding the standard page padding.
+%to-edge {
+	margin-left: calc( -1 * var(--wp--style--root--padding-left) ) !important;
+	margin-right: calc( -1 * var(--wp--style--root--padding-right) ) !important;
+}
+
+
+/*==============================================================
+  0.4 - CSS Custom Properties
+==============================================================*/
+
+:root {
+	// Layout — mirrors theme.json content/wide size settings
+	--wp--style--global--narrow-size:  40rem;
+	--wp--style--global--content-size: 71.875rem;
+	--wp--style--global--wide-size:    108.125rem;
+
+	// Base palette
+	--light-color:           #fff;
+	--dark-color:            #000;
+	--text-color:            rgb(34 34 34);
+	--light-text-color:      rgb(88 88 88);
+	--contrast-text-color:   var(--dark-color);
+
+	// Accent — primary brand blue
+	// NOTE: consider deriving the lighter variants via color-mix()
+	// rather than hardcoding them, so a single token change cascades.
+	--brand-color:                rgb(110 193 228);
+	--dark-brand-color:           rgb(20 29 60);
+	--accent-color:               rgb(0 120 255);
+	--light-accent-color:         #C1E6F7;
+	--extralight-accent-color:    rgb(224 243 251);
+	--superlight-accent-color:    rgb(239 249 253);
+	--aqua-color:                 #daf7fb;
+	--secondary-color:            #f26522; // orange
+	--midtone-color:              rgb(100 107 133);
+
+	// Buttons — orange CTA
+	--button-background:          var(--secondary-color);
+	--button-inactive-background: #c8cddf;
+	--button-text-color:          var(--light-color);
+	--button-outline-border:      var(--secondary-color);
+	--button-outline-background:  var(--light-color);
+	--button-outline-text-color:  var(--secondary-color);
+
+	// Navigation / menus
+	--menu-border-color:           rgb(219 225 243);
+	--menu-title-text-color:       var(--dark-color);
+	--menu-title-text-color-hover: rgb(19 40 112);
+
+	// Alert / dark band (announcement bar, dark cards)
+	--alert-background:  var(--dark-brand-color);
+	--alert-text-color:  var(--light-color);
+
+	// Elevation
+	--shadow: rgba(0 0 0 0.35) 0 0 1.25rem 0;
+
+	// Icons
+	--icon-fill: var(--dark-color);
+}
+
+
+/*==============================================================
+  1.0 - Reset & Defaults
+==============================================================*/
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	color: var(--text-color);
+	font-weight: 400;
+}
+
+
+/*==============================================================
+  1.1 - Base Typography
+==============================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+	color: var(--contrast-text-color);
+	font-weight: 600;
+}
+
+// Smooth transitions on interactive elements.
+a,
+button,
+input:focus,
+input[type="button"],
+input[type="submit"],
+textarea:focus,
+.wp-element-button {
+	transition: color .2s ease-in-out, background .2s ease-in-out, border .2s ease-in-out;
+}
+
+a,
+a:focus,
+a:hover,
+a:not(.wp-element-button) {
+	text-decoration-thickness: 1px;
+	text-underline-offset: .125em;
+}
+
+b,
+strong,
+th {
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+// Highlight style: a partial underline drawn as a background gradient.
+// Applied to <mark> elements in the block editor.
+mark {
+	background: linear-gradient(90deg, var(--wp--preset--color--primary) 0%, var(--wp--preset--color--primary) 100%);
+	background-position: 0 85%;
+	background-repeat: repeat-x;
+	background-size: 100% 15%;
+}
+
+h2, h3, .h2, .h3 {
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+h2, .h2 { font-size: clamp( 2rem, 3vw, 3rem ); }
+h3, .h3 { font-size: clamp( 1.5rem, 2vw, 2rem ); }
+
+
+/*==============================================================
+  1.2 - Forms
+==============================================================*/
+
+input,
+select,
+textarea {
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--contrast);
+	border-radius: 0;
+	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--primary);
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: var(--wp--custom--font-weight--light);
+	line-height: var(--wp--custom--line-height--body);
+	padding: 10px 20px;
+	width: 100%;
+}
+
+input:focus,
+textarea:focus {
+	background-color: var(--wp--preset--color--neutral);
+	outline: none;
+}
+
+input[type="checkbox"],
+input[type="image"],
+input[type="radio"] {
+	width: auto;
+}
+
+input[type="button"],
+input[type="email"],
+input[type="search"],
+input[type="submit"],
+input[type="text"],
+textarea {
+	-webkit-appearance: none;
+}
+
+::placeholder {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--small);
+	opacity: 0.5;
+}
+
+
+/*==============================================================
+  2.0 - Utility Classes & Placeholders
+==============================================================*/
+
+.center { text-align: center; }
+
+// Hides an element by fading it out. Toggle via JS by removing this class.
+.hide {
+	opacity: 0;
+	transition: opacity .3s ease;
+}
+
+.no-margin  { @extend %nomargin; }
+.no-padding { @extend %nopadding; }
+
+
+/*==============================================================
+  2.1 - Layout Utilities
+==============================================================*/
+
+figure {
+	&.shadow {
+		box-shadow: var(--shadow);
+	}
+}
+
+.space-around {
+	padding: 4rem 0;
+	margin: 0;
+}
+
+.line-below {
+	border-bottom: 1px solid var(--menu-border-color);
+}
+
+
+/*==============================================================
+  2.2 - Visibility Utilities
+==============================================================*/
+
+@media #{$small-below} {
+	.is-style-hidden-mobile {
+		display: none !important;
+	}
+}
+
+@media #{$medium-below} {
+	// Stacks and reverses a Columns block on mobile.
+	.is-style-columns-reverse {
+		flex-direction: column-reverse;
+	}
+}
+
+
+/*==============================================================
+  2.4 - Shape Utilities
+==============================================================*/
+
+// Applied to cards, modals, and sliders to clip overflowing content.
+// NOTE: .round also sets overflow: hidden, which clips box-shadows on
+// child elements. If a child needs a visible shadow, use border-radius
+// directly on that element instead of extending .round.
+.round, .rounder {
+	overflow: hidden;
+}
+
+.round   { border-radius: 1rem; }
+.rounder { border-radius: 1.5rem; }
+
+// Icon in a circular accent-colored badge.
+// Used for feature highlights and step indicators.
+.shape-circle {
+	--icon-fill: var(--accent-color);
+	margin: 0 auto;
+	width: 3rem;
+	height: 3rem;
+	background: var(--extralight-accent-color);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	img, svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+}
+
+
+/*==============================================================
+  3.0 - Global Block Overrides
+==============================================================*/
+
+// Inline code outside of a code block.
+*:not(.wp-block-code) > code {
+	background-color: var(--wp--preset--color--neutral);
+	font-size: var(--wp--preset--font-size--small);
+	padding: 5px 8px;
+}
+
+
+/*==============================================================
+  3.1 - Buttons
+==============================================================*/
+
+// Base filled button style. Applied globally to .wp-block-button and
+// available as .is-style-button on navigation items.
+.is-style-button {
+	color: var(--button-text-color);
+	a {
+		background: var(--button-background);
+		border-radius: 3rem;
+		padding: .75rem 1.5rem;
+		transition: background .3s ease;
+		font-weight: 600;
+		font-size: 1rem;
+		&:hover {
+			background: color-mix(in srgb, var(--button-background), black 20%);
+		}
+	}
+	&.is-style-outline {
+		color: var(--button-outline-text-color);
+		a {
+			border: 1px solid var(--button-outline-border);
+			background: transparent;
+			transition: background .3s ease, box-shadow .3s ease;
+			&:hover {
+				box-shadow: 0 0 0 .1rem var(--button-background);
+				background: var(--button-outline-background);
+			}
+		}
+	}
+}
+
+.wp-block-button {
+	@extend .is-style-button;
+}
+
+.is-style-pill {
+	display: inline-block;
+	font-size: .75rem;
+	padding: .5rem .75rem;
+	border-radius: 3rem;
+	background: var(--light-accent-color);
+	margin-bottom: .375rem;
+	text-decoration: none;
+}
+
+
+
+/*==============================================================
+  3.2 - Columns
+==============================================================*/
+
+.wp-block-columns {
+	column-gap: 2.5rem;
+	.wp-block-column {
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		row-gap: 1rem;
+		line-height: 1.25;
+		p:not(.h2, .h3, .is-style-eyebrow) {
+			margin: 1rem 0;
+			font-size: var(--wp--preset--font-size--regular);
+		}
+		// Pushes the last element in a column to the bottom, useful
+		// for aligning CTAs across columns of varying height.
+		.column-bottom {
+			margin-top: auto;
+		}
+		&.no-gap      { gap: 0; }
+		&.no-padding  { padding: 0; }
+		&.justify-center { justify-content: center; }
+		&.space-around { justify-content: space-around; }
+		&.space-between { justify-content: space-between; }
+	}
+
+	// Bordered card columns with rounded corners.
+	&.is-style-outline {
+		.wp-block-column {
+			@extend .rounder;
+			border: 1px solid var(--menu-border-color);
+		}
+	}
+}
+
+
+/*==============================================================
+  3.3 - Navigation
+==============================================================*/
+
+.wp-block-navigation {
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.5;
+	align-items: start;
+
+	> li.wp-block-navigation-item {
+		padding: 1.25rem .5rem 1.625rem;
+		&.is-style-button {
+			padding: 0;
+			margin-top: .5rem;
+			a.wp-block-navigation-item__content {
+				&:hover { color: inherit; }
+			}
+		}
+	}
+
+	.wp-block-navigation__submenu-icon {
+		margin-left: .5em;
+		height: .75em;
+		width: .75em;
+	}
+
+	a.wp-block-navigation-item__content {
+		color: var(--menu-title-text-color);
+		&:hover { color: var(--menu-title-text-color-hover); }
+	}
+
+	// Dropdown submenu panel.
+	&:not(.has-background) {
+		.wp-block-navigation__submenu-container.wp-block-navigation-submenu {
+			@extend .round;
+			background: var(--light-color);
+			border: 1px solid var(--menu-border-color);
+			gap: .25rem;
+			a.wp-block-navigation-item__content {
+				color: var(--menu-title-text-color);
+				padding: .5em 1em;
+				border-radius: .5rem;
+				&:hover {
+					color: var(--menu-title-text-color);
+					background: var(--superlight-accent-color);
+				}
+			}
+		}
+	}
+
+	// Responsive overlay styles.
+	&__responsive-container.is-menu-open {
+		padding: var(--wp--custom--spacing--gap);
+	}
+	&__responsive-container.is-menu-open &__responsive-container-content {
+		padding-top: var(--wp--custom--spacing--gap);
+	}
+	&__responsive-container-close,
+	&__responsive-container-open {
+		border: 1px solid currentColor;
+		padding: 2px;
+	}
+
+	.has-background &__responsive-container-open:focus,
+	.has-background &__responsive-container-open:hover {
+		color: var(--wp--preset--color--base);
+	}
+
+	// Submenu background (non-navigation-block override — kept for specificity).
+	&:not(.has-background) .wp-block-navigation__submenu-container {
+		background-color: var(--wp--preset--color--contrast);
+		border: var(--wp--preset--color--contrast);
+		color: var(--wp--preset--color--base);
+		padding: 10px;
+	}
+	:where(&__submenu-container) a {
+		padding: 2px 10px;
+	}
+}
+
+
+/*==============================================================
+  4.0 - Text Styles
+==============================================================*/
+
+/*--------------------------------------------------------------
+  4.1 - Eyebrow & Uppercase
+--------------------------------------------------------------*/
+
+// Small-caps label used above headlines to categorize or introduce sections.
+.is-style-uppercase {
+	text-transform: uppercase;
+	font-size: .875rem;
+	font-weight: 600;
+	letter-spacing: .1rem;
+}
+
+.is-style-eyebrow {
+	@extend .is-style-uppercase;
+	color: var(--accent-color);
+	letter-spacing: .1875rem;
+	+ * {
+		margin-top: 0;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  4.3 - Quote Style
+--------------------------------------------------------------*/
+
+// Large pull-quote style — matches h3 size but with tighter line-height.
+.is-style-quote {
+	@extend .h3;
+	line-height: 1.1875;
+}
+
+.wp-block-quote {
+	border: none;
+    padding: 0 0 0 1.25rem;
+    margin: 2.25rem 0;
+    border-left: .1rem solid var(--midtone-color);
+    --wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
+    p {
+		font-style: italic;
+	}
+}
+
+/*--------------------------------------------------------------
+  4.4 - Read More Link
+--------------------------------------------------------------*/
+
+// Inline "Read more →" link with a CSS chevron arrow.
+// The arrow is drawn using border-right + border-bottom on ::after,
+// rotated 45°. Hover state nudges it right via translate.
+.read-more {
+	@extend %has-after;
+	font-weight: 600;
+	padding-right: 1rem;
+	&:after {
+		border-right:  .0625rem solid rgb(34,34,34);
+		border-bottom: .0625rem solid rgb(34,34,34);
+		width:  .5rem;
+		height: .5rem;
+		transition: transform .3s ease, border-color .3s;
+		transform: rotate(-45deg);
+		transform-origin: 50% 50%;
+		top: .625rem;
+		margin-left: .375rem;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  4.5 - Animated Swoop Underline (.is-style-has-swoop)
+--------------------------------------------------------------*/
+
+// Draws an SVG curved underline beneath a <strong> word or phrase
+// inside a heading. The SVG is injected by swoop.js, which also
+// measures the path length and sets --swoop-path-length on each path.
+//
+// Animation sequence:
+//   1. JS appends SVG, sets --swoop-path-length, adds .is-ready  → opacity: 1
+//   2. IntersectionObserver adds .is-visible                      → stroke-dashoffset: 0
+//   3. Transition draws the line left-to-right with a 0.3s delay
+//
+// Additional modifier classes (e.g. .swoop-double) are defined in swoop.js
+// and select different path definitions; no extra CSS is needed here.
+
+.is-style-has-swoop {
+	strong {
+		font-weight: inherit;
+		position: relative;
+		display: inline;
+		white-space: nowrap; // prevents the SVG wrapping to a new line mid-word
+	}
+
+	.swoop-svg {
+		position: absolute;
+		left:   -4%;       // slight overhang left
+		width:  108%;      // and right, so the line extends past the text edges
+		height: auto;
+		bottom: -0.2em;    // tune per swoop shape; increase for deeper descenders
+		overflow: visible;
+		pointer-events: none;
+		z-index: -1;
+		path {
+			fill: none;
+			stroke: var(--accent-color);
+			stroke-width: .5rem;
+			stroke-linecap: round;
+			// --swoop-path-length is set by JS after measurement.
+			// The fallback 600 is a rough estimate; visible only if JS fails.
+			stroke-dasharray:  var(--swoop-path-length, 600);
+			stroke-dashoffset: var(--swoop-path-length, 600);
+			opacity: 0;
+			transition:
+				stroke-dashoffset 0.7s 0.3s,  // draws in with a 0.3s delay
+				opacity 0s 0s;                 // instant reveal, no fade
+		}
+	}
+
+	// JS adds .is-visible when the heading enters the viewport.
+	&.is-visible .swoop-svg path {
+		stroke-dashoffset: 0;
+	}
+
+	// JS adds .is-ready after path length is measured and dasharray is set,
+	// preventing any flash of the undrawn path before measurement completes.
+	&.is-ready .swoop-svg path {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.swoop-svg path {
+		transition: none;
+		stroke-dashoffset: 0;
+		opacity: 1; // also override the opacity: 0 default so it's always visible
+	}
+}
+
+
+/*==============================================================
+  5.0 - Site Structure
+==============================================================*/
+
+/*--------------------------------------------------------------
+  5.1 - Announcement Bar
+--------------------------------------------------------------*/
+
+// Sticky bar that appears above the header. Dismissed via JS cookie.
+// Height is tracked in --announcement-bar-height (set by JS ResizeObserver)
+// so the sticky header can offset its `top` value accordingly.
+
+.announcement-bar {
+	background: var(--alert-background);
+	color: var(--alert-text-color);
+	font-size: 1rem;
+	font-weight: 500;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	min-height: 2.75rem;
+
+	.wrapper {
+		padding: .5rem 0;
+		line-height: 1;
+		text-align: center;
+	}
+
+	// "Learn More" link — uses CSS mask so the arrow icon inherits currentColor.
+	.link {
+		position: relative;
+		color: inherit;
+		text-decoration-color: color-mix(in srgb, currentColor 70%, transparent);
+		margin-left: .25rem;
+		&:after {
+			content: '';
+			background-color: currentColor;
+			mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cpath%20d%3D%22M51.766%2033.77%2037.268%2048.268a2.5%202.5%200%200%201-3.535-3.536L43.965%2034.5H14.001a2.5%202.5%200%201%201%200-5h29.964L33.733%2019.268a2.5%202.5%200%200%201%203.535-3.536L51.766%2030.23a2.511%202.511%200%200%201%20.314.384c.039.058.065.121.099.182a1.47%201.47%200%200%201%20.207.496c.022.073.05.143.065.219a2.511%202.511%200%200%201%200%20.979c-.015.075-.043.145-.065.218a1.469%201.469%200%200%201-.207.496c-.033.06-.06.124-.099.182a2.516%202.516%200%200%201-.314.384Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');
+			mask-size: contain;
+			mask-repeat: no-repeat;
+			position: absolute;
+			width: 1.25em;
+			height: 1.25em;
+			margin-left: .125rem;
+			top: 0;
+			transition: transform .3s ease;
+		}
+		&:hover {
+			color: var(--light-accent-color);
+			&:after {
+				transform: translateX( .25rem );
+			}
+		}
+	}
+
+	.icon {
+		display: inline-block;
+		margin: .25rem .5rem 0 0;
+		svg {
+			height: 1rem;
+			width: 1rem;
+		}
+	}
+
+	p {
+		display: inline;
+		margin: 0;
+	}
+
+	.close {
+		position: absolute;
+		right: .5rem;
+		top: calc( 50% - .625rem );
+		color: var(--light-color);
+		background: transparent;
+		appearance: none;
+		border: none;
+		cursor: pointer;
+		svg {
+			height: 1.25rem;
+			width: 1.25rem;
+		}
+		&:hover {
+			color: var(--light-accent-color);
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  5.2 - Header
+--------------------------------------------------------------*/
+
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+
+	// Bottom border line, inset slightly from the footer of the header bar.
+	&:before {
+		position: absolute;
+		content: '';
+		width: 100%;
+		height: 1px;
+		bottom: .375rem;
+		background: var(--menu-border-color);
+	}
+
+	// White background fill behind the header content.
+	// Uses z-index: -2 so it sits behind nav dropdowns (z-index: -1 or higher).
+	&:after {
+		content: '';
+		position: absolute;
+		background: var(--light-color);
+		width: 100%;
+		height: calc( 100% - .375rem );
+		top: 0;
+		left: 0;
+		z-index: -2;
+	}
+
+	> .wp-block-group {
+		max-width: var(--wp--style--global--content-size);
+		margin: 0 auto;
+		padding: 0;
+	}
+}
+
+// Pushes the sticky header below the announcement bar.
+// Using :has() here avoids JS-dependent class toggling on <body>.
+body:has(.announcement-bar) {
+	.site-header {
+		top: 2.75rem;
+	}
+}
+
+// WP admin bar adds 32px (2rem) at the top; adjust accordingly.
+body.admin-bar {
+	.site-header {
+		top: 2rem;
+	}
+	&:has(.announcement-bar) {
+		.site-header {
+			top: 4.75rem;
+		}
+		.announcement-bar {
+			top: 2rem;
+		}
+	}
+	#reading-progress {
+		top: calc( var(--announcement-bar-height, 0px) + /* header height + bar */ 6rem );
+	}
+
+	&.single-post {
+		.post-sidebar {
+			top: calc( var(--announcement-bar-height, 0px) + 8rem );
+		}
+	}
+}
+
+// Site logo: hides the text and replaces with an SVG background image.
+// NOTE: width/height here are fixed — if the logo SVG proportions change,
+// update these values to match.
+.wp-block-site-title {
+	a {
+		display: block;
+		width: 11.25rem;
+		height: 2.5rem;
+		text-indent: -1000rem;
+		background-image: url(../images/momentive-logo.svg);
+		background-size: contain;
+		background-repeat: no-repeat;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  5.3 - Footer
+--------------------------------------------------------------*/
+
+.site-footer {
+	color: var(--light-color);
+	padding: 3rem 0 1.5rem;
+	@extend %has-before;
+
+	// Full-bleed background gradient SVG, positioned behind the footer content.
+	// --gradient-overshoot is set by JS to extend the gradient up over the
+	// pre-footer CTA section, creating a seamless visual join.
+	&:before {
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: var(--gradient-overshoot, 100%);
+		background: url(../images/ms-footer-bg-double-gradient.svg);
+		background-size: cover;
+		z-index: -1;
+		transition: height .5s ease;
+	}
+
+	a {
+		color: var(--light-color);
+		text-decoration: none;
+	}
+
+	.wp-block-heading {
+		color: var(--light-color);
+		font-size: 1rem;
+		line-height: 1.5;
+		font-weight: 600;
+		padding: 0 0 .5rem;
+		border-bottom: 1px solid rgb(from var(--midtone-color) r g b / 50%);
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		line-height: 1.25;
+		li a {
+			padding: 1rem 0 0;
+			text-decoration: none;
+			display: block;
+			&:hover { color: rgb(193, 230, 247); }
+		}
+	}
+
+	.footer-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+	}
+
+	// Two-column layout for the Solutions links.
+	.footer-solutions ul {
+		@media #{$large-up} {
+			column-count: 2;
+			column-gap: 1.25rem;
+		}
+	}
+
+	.wp-block-columns {
+		width: 100%;
+		max-width: var(--wp--style--global--content-size);
+		margin: 0 auto;
+		font-size: .875rem;
+
+		&.fine-print {
+			justify-content: space-between;
+			border-top: 1px solid rgb(from var(--midtone-color) r g b / 50%);
+			padding-top: 2rem;
+		}
+
+		.wp-block-column {
+			padding: 0;
+		
+			p.wp-block-site-title,
+			p.wp-block-heading { margin: 0; }
+		
+			&.copyright {
+				flex-basis: 30%;
+				max-width: 25.5rem;
+				p {
+					margin: 0;
+					font-size: .875rem;
+					line-height: 1.5;
+				}
+			}
+		
+			&.compliance {
+				flex-basis: 30%;
+				align-items: center;
+				ul {
+					display: flex;
+					gap: 1.5rem;
+					a { padding: .25rem 0; }
+				}
+			}
+
+			&.social {
+			
+				max-width: 4.5rem;
+				align-items: end;
+				.wp-block-social-links {
+					gap: .75rem;
+					margin: 0;
+					padding: 0;
+				}
+				.wp-social-link {
+					margin: 0;
+					background: none;
+					&:hover {
+						transform: none;
+					}
+				}
+				.wp-block-social-link-anchor {
+					color: white;
+					background: transparent !important;
+					padding: 0;
+					transition:
+						color .3s ease,
+						opacity .3s ease;
+					&:hover {
+						color: var(--light-accent-color);
+					}
+					svg {
+						width: 1.5rem;
+						height: 1.5rem;
+						fill: currentColor;
+					}
+				}
+				.wp-social-link-youtube {
+					svg {
+						width: 1.75rem;
+						height: 1.75rem;
+					}
+				}
+			
+			}
+		
+
+		}
+	}
+
+	// Footer logo: white version, drawn as a ::before pseudo-element
+	// because the default .wp-block-site-title uses the dark logo SVG.
+	.wp-block-site-title {
+		border: none;
+		background: none;
+		a {
+			@extend %has-before;
+			display: block;
+			text-indent: -1000rem;
+			background: none;
+			&:before {
+				top: 0; left: 0;
+				width: 100%; height: 100%;
+				background-image: url(../images/momentive-logo-white.svg);
+				background-repeat: no-repeat;
+				text-indent: 0;
+			}
+		}
+	}
+}
+
+
+/*==============================================================
+  6.0 - Homepage
+==============================================================*/
+
+// Light gradient background covering the top portion of the homepage,
+// fading from the superlight accent to white as you scroll.
+body.home {
+	position: relative;
+	&:before {
+		z-index: -1;
+		content: '';
+		position: absolute;
+		top: 0; left: 0;
+		width: 100%;
+		height: 75vh;
+		background: linear-gradient(0deg, rgba(255,255,255,1) 0%, var(--superlight-accent-color));
+	}
+	.site-header {
+		&:after {
+			background: var(--superlight-accent-color);
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.1 - Hero
+--------------------------------------------------------------*/
+
+.hero {
+	padding-top: 4rem;
+	h2 {
+		font-size: var(--wp--preset--font-size--display);
+		font-weight: 600;
+		line-height: 1.2;
+		letter-spacing: -0.05rem;
+		margin: 0;
+	}
+	.wp-block-columns .wp-block-column {
+		padding: 0;
+		p:not(.is-style-eyebrow) {
+			--wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
+			line-height: 1.555;
+			margin: 0;
+		}
+	}
+	.wp-block-buttons {
+		margin: 1rem 0;
+	}
+}
+
+.hero-background {
+	max-width: none;
+	@extend %to-edge;
+	margin-top: -3rem !important;
+	padding-top: 3rem;
+	padding-bottom: 3rem;
+}
+
+
+/*--------------------------------------------------------------
+  6.2 - Trust / Logo Ticker
+--------------------------------------------------------------*/
+
+// Auto-scrolling logo strip. The mask fades logos in/out at the edges
+// so the loop doesn't have a hard cut.
+.trust {
+	.splide__track {
+		mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 5%,
+			black 95%,
+			transparent 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 5%,
+			black 95%,
+			transparent 100%
+		);
+	}
+	.splide__list {
+		gap: 1.5rem;
+	}
+	figure {
+		width: 10rem;
+		height: 3rem;
+		margin: 0;
+		padding: 1rem;
+		display: flex;
+		align-items: center;
+		filter: grayscale(1);
+		opacity: .8;
+		img { object-fit: contain; }
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.3 - Highlights
+--------------------------------------------------------------*/
+
+// Three-up stat or feature callout section with a dot-pattern background.
+.highlights {
+	padding: 6rem 0 3rem;
+	text-wrap: balance;
+
+	.wp-block-column {
+		background: var(--light-color);
+	}
+	.wp-block-heading {
+		margin: .5rem 0 0;
+	}
+	h3 {
+		font-size: clamp( 1.25rem, 1.5vw, 1.5rem );
+	}
+	p {
+		margin: .5rem 0;
+		font-size: .875rem;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.4 - Solutions
+--------------------------------------------------------------*/
+
+.solutions-wrapper {
+	padding: 0 0 3.5rem;
+	overflow: hidden;
+	background-image: linear-gradient(var(--light-color), #64C1EE22);
+}
+
+.solutions-intro {
+	padding: 7rem 25% 4rem 0;
+	background: url(../images/our-approach-graphic.svg);
+	background-position: right top;
+	background-size: 30%;
+	background-repeat: no-repeat;
+	h2 { text-wrap: balance; }
+	p  { font-size:	var(--wp--preset--font-size--medium); }
+}
+
+.solutions-slider {
+	margin: 0;
+	padding-bottom: 2rem;
+
+	&.alignfull {
+		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
+		margin-right: calc(var(--wp--style--root--padding-right) * -1);
+	}
+	&.has-global-padding {
+		padding-left: 0;
+		padding-right: 0;
+	}
+	li { margin-top: 0; }
+
+	.splide__track { margin: 0; }
+
+	// Prev/next arrow buttons, positioned below the slider at the right edge
+	// of the content column.
+	.splide__arrows {
+		position: absolute;
+		bottom: -3.5rem;
+		z-index: 1;
+		right: calc( 2rem + ( 100vw - var(--wp--style--global--content-size) ) / 2 );
+		width: 100%;
+
+		.splide__arrow {
+			transition: background .3s ease;
+			background: var(--button-background);
+			border-radius: 50%;
+			width: 3.125rem;
+			height: 3.125rem;
+			&:disabled {
+				opacity: 1;
+				background: var(--button-inactive-background);
+			}
+			svg {
+				fill: var(--button-text-color);
+				width: 1rem;
+				height: 1rem;
+			}
+		}
+		.splide__arrow--prev {
+			left: auto;
+			right: 4rem;
+		}
+		.splide__arrow--next {
+			right: 0;
+		}
+	}
+
+	// Individual solution card. Uses two pseudo-elements for the hover effect:
+	// ::before is a white-to-transparent gradient (default state),
+	// ::after is a background image that fades in on hover.
+	// --slide-bg-image is set inline per slide in the block markup.
+	.solution {
+		@extend %has-before;
+		@extend %has-after;
+		@extend .rounder;
+		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
+		padding: 40% 1.5rem 1.5rem;
+		margin-left: 1.5rem;
+		background: var(--accent-color);
+		color: var(--alert-text-color);
+		transition: background .3s;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		text-align: left;
+
+		&:before {
+			z-index: 0;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			background: linear-gradient( rgba(255,255,255,0.4), rgba(255,255,255,0) );
+			transition: opacity .3s;
+		}
+		&:after {
+			z-index: 0;
+			opacity: 0;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			background-image: var(--slide-bg-image);
+			background-size: 100%;
+			background-repeat: no-repeat;
+		}
+
+		.solution-title,
+		p.solution-excerpt {
+			position: relative;
+			z-index: 1;
+			transition: color .3s;
+		}
+		.solution-title {
+			width: 100%;
+			font-size: 1.75rem;
+			font-weight: 600;
+			color: var(--alert-text-color);
+			margin: 0 0 .5rem;
+		}
+		p.solution-excerpt {
+			margin-top: .5rem;
+			font-size: 1rem;
+			font-weight: 400;
+			line-height: 1.4;
+		}
+		.solution-icon {
+			position: absolute;
+			top: 2rem;
+			left: 2rem;
+			width: 2.5rem;
+			height: auto;
+			z-index: 1;
+		}
+		// Full-card click target layered over all content.
+		.solution-link {
+			position: absolute;
+			inset: 0;
+			z-index: 1;
+		}
+
+		&:hover {
+			&:before { opacity: 0; }
+			&:after  { opacity: 1; }
+			.solution-title,
+			.solution-excerpt { color: var(--dark-color); }
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.5 - Constellation / Icon Grid
+--------------------------------------------------------------*/
+
+// Decorative animated icon grid used in the product suite section.
+// Icons shuffle position via JS; the grid itself is not interactive.
+.constellation {
+	@extend .rounder;
+	margin: 0 auto;
+	background: #E7F1FE;
+	padding: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.icon-shuffle-grid {
+		gap: .75rem;
+		pointer-events: none;
+	}
+
+	.icon-shuffle-cell {
+		border-radius: .5rem;
+		background: var(--light-color);
+		padding: 1rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		img {
+			left: .75rem; top: .75rem;
+			width: 1.5rem; height: 1.5rem;
+		}
+		// Offset rows to create a staggered/honeycomb feel.
+		&:nth-child(6), &:nth-child(7)  { margin-left: -0.5rem; }
+		&:nth-child(9), &:nth-child(10) { margin-left:  0.5rem; }
+	}
+
+	// The center cell holds the product logo mark, slightly oversized
+	// so it overlaps the surrounding cells.
+	.icon-shuffle-cell--center {
+		border-radius: 0;
+		padding: 0;
+		background: transparent;
+		overflow: visible;
+		img {
+			width: calc(100% + 1rem);
+			height: auto;
+			left: -0.5rem;
+			top: -0.5rem;
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.6 - Product Suite
+--------------------------------------------------------------*/
+
+// Hoverable product row cards. The whole row lifts and scales on hover,
+// and a hidden read-more chevron becomes visible.
+.product-suite {
+	.wp-block-columns {
+		@extend .rounder;
+		margin: 4rem 0 2rem;
+		background: var(--light-color);
+		padding: 2rem 4rem;
+		transition: transform .5s ease, box-shadow .5s ease;
+		transform-origin: 50% 50%;
+
+		.wp-block-column p {
+			margin-top: 0;
+			&.read-more { margin-bottom: 0; }
+		}
+
+		&:hover {
+			transform: scale(1.01);
+			box-shadow: rgba(0, 0, 0, 0.125) 0 0 .75rem 0;
+			.read-more {
+				&:after {
+					transform: rotate(-45deg) translate( .25rem, .25rem );
+					border-color: var(--button-background);
+				}
+				a { color: var(--button-background); }
+			}
+		}
+	}
+
+	// Full-card link overlay.
+	.product > a {
+		&:after {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+
+	.read-more {
+		margin: 0;
+		&:after { top: .375rem; }
+		a { text-decoration: none; }
+	}
+
+	figure { margin: 0; }
+}
+
+
+/*--------------------------------------------------------------
+  6.7 - Testimonials
+--------------------------------------------------------------*/
+
+.testimonials-wrapper,
+.testimonials-slider {
+	max-width: none;
+}
+
+.testimonials-wrapper {
+	padding-top: 3rem;
+	.testimonials-slider {
+		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
+		margin-right: calc(var(--wp--style--root--padding-right) * -1);
+		padding-bottom: 5rem;
+	}
+	h2 {
+		font-size: var(--wp--preset--font-size--xx-large);
+		margin-bottom: 4rem;
+	}
+}
+
+.testimonials-slider {
+	position: relative;
+	overflow: hidden;
+	max-width: calc( 100vw + 1.75rem );
+
+	.splide__list {
+		align-items: stretch;
+		li { margin-left: 1.75rem; }
+	}
+
+	// Arrow buttons, positioned at the bottom-left aligned with the content column.
+	.splide__arrows {
+		position: absolute;
+		bottom: 2rem;
+		z-index: 1;
+		left: calc( ( 50vw - var(--wp--style--global--content-size) / 2 ) + 1.75rem );
+		width: 100%;
+
+		.splide__arrow {
+			transition: background .3s ease;
+			background: var(--button-background);
+			border-radius: 50%;
+			width: 3.125rem;
+			height: 3.125rem;
+			&:disabled {
+				opacity: 1;
+				background: var(--button-inactive-background);
+			}
+			svg {
+				fill: var(--button-text-color);
+				width: 1rem;
+				height: 1rem;
+			}
+		}
+		.splide__arrow--prev { left: 0; }
+		.splide__arrow--next { left: 4rem; }
+	}
+
+	.testimonial {
+		@extend .rounder;
+		background: var(--superlight-accent-color);
+		height: 100%;
+		width: 80vw;
+		padding: 3rem;
+		border: 1px solid var(--light-accent-color);
+		display: flex;
+		flex-direction: column;
+		justify-content: start;
+		align-items: start;
+		font-size: 1.375rem;
+
+		@media #{$large-up} {
+			width: calc( ( var(--wp--style--global--content-size) / 2 ) - 1rem );
+		}
+	}
+
+	// Attribution block: photo + name + organization in a small grid.
+	.attribution {
+		padding-top: 1rem;
+		margin: auto 1rem 0;
+		width: 100%;
+		display: grid;
+		grid-template-columns: 4.5rem 1fr;
+		gap: .25rem 1rem;
+		grid-template-areas:
+			"Image Name"
+			"Image Organization";
+		justify-content: start;
+		align-content: center;
+
+		figure {
+			border-radius: 50%;
+			overflow: hidden;
+			width: 4.5rem;
+			height: 4.5rem;
+			grid-area: Image;
+			margin: 0;
+		}
+		p {
+			margin: 0;
+			width: 100%;
+			line-height: 1.2;
+			text-align: left;
+			align-self: end;
+		}
+		.name {
+			font-size: 1.5rem;
+			font-weight: 600;
+			grid-area: Name;
+			align-self: end;
+		}
+		.organization {
+			font-size: 1rem;
+			grid-area: Organization;
+			align-self: start;
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.8 - Featured Blog Post
+--------------------------------------------------------------*/
+
+// Single large featured post card used at the bottom of the homepage.
+// Dark gradient background ties visually to the footer.
+.featured-blog-wrapper {
+	.wp-block-post-title a {
+		// Full-card click target.
+		&:after {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+
+	.wp-block-columns {
+		@extend .rounder;
+		transition: transform .5s ease, box-shadow .5s ease;
+		transform-origin: 50% 50%;
+		padding: 2.5rem;
+		background-image: linear-gradient(180deg, #141D3C 30%, #132870 100%);
+		color: var(--light-color);
+
+		&:hover {
+			transform: scale(1.01);
+			box-shadow: rgba(0, 0, 0, 0.5) 0 0 1.5rem 0;
+			.wp-block-post-excerpt__more-text a {
+				color: var(--button-background);
+				&:after {
+					transform: rotate(-45deg) translate( .25rem, .25rem );
+					border-color: var(--button-background);
+				}
+			}
+		}
+
+		.wp-block-column {
+			p.is-style-eyebrow {
+				margin: 0 0 .5rem;
+				font-size: .875rem;
+			}
+			.wp-block-post-excerpt {
+				margin: 0;
+				p {
+					line-height: 1.5;
+					margin: 0 0 2rem;
+				}
+			}
+		}
+	}
+
+	.wp-block-post-title {
+		color: var(--light-color);
+		margin: 0;
+		a { color: inherit; }
+	}
+
+	.wp-block-post-excerpt__more-text {
+		a {
+			@extend .read-more;
+			color: var(--light-color);
+			text-decoration: none;
+			&:after {
+				top: .5rem;
+				border-color: var(--light-color);
+			}
+		}
+	}
+
+	figure {
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  6.9 - Pre-footer CTA
+--------------------------------------------------------------*/
+
+// Full-width CTA band that sits above the footer, sharing its background gradient.
+// The rings-with-shapes SVG is drawn as ::after, layered behind the content
+// via z-index but in front of the page background.
+.prefooter {
+	@extend %to-edge;
+	@extend .is-style-bg-rings;
+	padding: 4.5rem 1rem;
+	max-width: none;
+	margin-top: 0;
+
+	h2, p, .wp-block-buttons {
+		max-width: var(--wp--style--global--narrow-size);
+		text-wrap: balance;
+		margin-left: auto;
+		margin-right: auto;
+		color: var(--light-color);
+	}
+	p { font-size: var(--wp--preset--font-size--medium); }
+
+	.wp-block-buttons {
+		justify-content: center;
+		.wp-block-button.is-style-outline a {
+			border-color: var(--light-color);
+			color: var(--light-color);
+			&:hover {
+				background-color: transparent;
+				box-shadow: 0 0 0 .1rem var(--light-color);
+			}
+		}
+	}
+}
+
+
+/*==============================================================
+  7.0 - Newsroom / Blog
+==============================================================*/
+
+/*--------------------------------------------------------------
+  7.1 - Story Card
+--------------------------------------------------------------*/
+
+// Reusable post card used in the news slider, blog grid,
+// and any Query Loop with post template.
+.story-card {
+	height: 100%;
+	padding: 0;
+	border: 1px solid var(--menu-border-color);
+	display: flex;
+	flex-direction: column;
+	border-radius: 1rem;
+	transition: box-shadow .3s ease;
+	position: relative;
+	overflow: hidden;
+	&:hover {
+		box-shadow: rgba(0, 0, 0, 0.125) 0 0 .75rem 0;
+		.wp-block-read-more {
+			color: var(--button-background);
+			&:after {
+				transform: rotate(-45deg) translate( .25rem, .25rem );
+				border-color: var(--button-background);
+			}
+		}
+		img {
+			transform: matrix(1.1, 0, 0, 1.1, 0, 0);
+			transition-duration: 1.5s;
+		}
+	}
+
+	figure {
+		z-index: -1;
+		margin: 0;
+		overflow: clip;
+		img {
+			transition-duration: .5s;
+			transition-property: transform;
+			transition-timing-function: ease;
+		}
+	}
+
+	// When the figure is the first child of a flow layout, it needs
+	// extra margin compensation for the card's top padding.
+	&.is-layout-flow figure:first-child {
+		margin-top: -1rem;
+	}
+	
+	.story-content {
+		@extend %nomargin;
+		position: static;
+		padding: 1rem 1.5rem 1.5rem;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		background: var(--light-color);
+	}
+
+	// label pill — absolute-positioned over the featured image.
+	.top-label {
+		position: absolute;
+		top: .75rem; left: .75rem;
+		background: #172A43;
+		font-size: .875rem;
+		line-height: 1;
+		font-weight: 400;
+		color: var(--light-color);
+		padding: .75rem 1rem;
+		border-radius: 3rem;
+		margin: 0;
+		a {
+			line-height: 1;
+			color: var(--light-color);
+			pointer-events: none;
+			cursor: default;
+			text-decoration: none;
+		}
+	}
+	
+	.wp-block-post-excerpt { margin-top: 1rem; }
+
+	.wp-block-post-title {
+		margin-top: 0;
+		font-size: var(--wp--preset--font-size--medium);
+		line-height: 1.5;
+		width: 100%;
+
+		// Full-card click target layered over the card.
+		a {
+			&:after {
+				content: '';
+				position: absolute;
+				inset: 0;
+			}
+		}
+	}
+
+	p {
+		font-size: 1rem;
+		line-height: 1.5;
+		margin-bottom: 1rem;
+	}
+
+	.wp-block-post-date {
+		font-size: .875rem;
+		font-weight: 400;
+	}
+
+	.meta {
+		width: 100%;
+		font-size: 1rem;
+		margin-top: auto;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.wp-block-read-more {
+		@extend .read-more;
+	}
+}
+
+/* shared by single post */
+
+.lower-label {
+	margin: .25rem 0 .75rem;
+	width: 100%;
+	a {
+		@extend .is-style-pill;
+	}
+}
+
+.related-posts {
+	padding: 2rem 0 4rem;
+
+
+	&__heading {
+		font-size: clamp( 1.5rem, 2vw, 2rem );
+		margin: 0 0 2rem;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat( 3, 1fr );
+		gap: 1.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		@media #{$medium-below} {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+
+		.story-card {
+			height: 100%;
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  7.2 - News Slider
+--------------------------------------------------------------*/
+
+// Splide-powered 3-up news card slider.
+// The padding+negative-margin trick on .splide__track creates overflow
+// room for card box-shadows without revealing off-screen slides.
+// See: https://splidejs.com / shadow clipping workaround.
+.news-slider {
+	padding: 0 0 3.25rem;
+
+	.splide__track {
+		padding: 1rem 1rem 1.5rem !important; // overrides Splide inline styles
+		margin: -1rem -1rem -1.5rem !important;
+		overflow: hidden;
+	}
+	.splide__list {
+		align-items: stretch;
+		overflow: visible;
+	}
+	.splide__slide {
+		width: calc( 33.3333% - .8333rem );
+		margin-right: 1.25rem;
+		overflow: visible;
+	}
+}
+
+
+/*--------------------------------------------------------------
+  7.3 - Featured Blogs Grid
+--------------------------------------------------------------*/
+
+// Blog landing page featured section. On large screens the first post
+// spans the full grid width; remaining posts fill in below it.
+.featured-blogs {
+	.columns-3 {
+		gap: 3rem 1.5rem;
+		@media #{$large-up} {
+			.wp-block-post:first-child {
+				grid-column: 1 / span 3;
+				.story-card {
+					display: grid;
+					grid-template-columns: repeat(2, 1fr);
+					figure {
+						object-fit: cover;
+					}
+					.wp-block-post-title {
+						font-size: var(--wp--preset--font-size--xx-large);
+						line-height: 1.1;
+					}
+				}
+			}
+		}
+	}
+}
+
+/*--------------------------------------------------------------
+  7.4 - All Blogs Grid
+--------------------------------------------------------------*/
+
+.all-blogs {
+	.columns-3 {
+		gap: 1.5rem;
+	}
+}
+
+/*--------------------------------------------------------------
+  7.5 - Single Post
+--------------------------------------------------------------*/
+
+body.single-article {
+	.entry-header {
+		@extend %to-edge;
+		max-width: none;
+		background: linear-gradient(var(--light-color) 0%, var(--superlight-accent-color) 100%); // was: rgba(100, 193, 238, 0.133)
+		border-bottom: 1px solid var(--menu-border-color);
+		padding: 6rem 0;
+		.header-content {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5rem;
+		}
+		.wp-block-post-title {
+			font-size: var(--wp--preset--font-size--xxx-large);
+			line-height: 1.25;
+			margin: 0;
+		}
+
+		.wp-block-buttons, .header-content {
+			@extend %nomargin;
+		}
+		@media #{$large-up} {
+			.header-inner {
+				display: grid;
+				grid-template-columns: 1fr calc(40% - 1.5rem);
+				align-items: center;
+				gap: 3rem;
+				figure.wp-block-post-featured-image {
+					order: 1;
+				}
+			}
+		}
+
+	}
+	figure {
+		&.wp-block-post-featured-image, &.wp-block-image {
+			@extend .rounder;
+		}
+		&.wp-block-image {
+			width: fit-content;
+			margin-right: auto;
+		}
+	}	
+	.post-layout {
+		@extend %nomargin;
+		gap: 4rem;
+		padding: 3.75rem 0;
+		> .wp-block-column {
+			padding: 0;
+			.entry-content {
+				@extend %nomargin;
+			}
+		}
+	}
+	.post-content.wp-block-column {
+		max-width: 48.5rem;
+		width: 66%;
+		flex-basis: auto;
+	}
+	.post-sidebar {
+		width: 18.75rem;
+		position: sticky;
+		top: calc( var(--announcement-bar-height, 0px) + 6rem );
+	}
+	.wp-block-post-content {
+		line-height: 1.5;
+		h2 {
+			font-size: var(--wp--preset--font-size--xx-large);
+		}
+	}
+}
+
+body.single-press-article {
+	.entry-header {
+		.wp-block-post-title {
+			font-size: var(--wp--preset--font-size--x-large);
+		}
+	}
+	.lower-label {
+		margin: 0;
+		a {
+			background: var(--dark-brand-color);
+			color: contrast-color( var(--dark-brand-color) );
+			font-size: var(--wp--preset--font-size--small);
+		}
+	}
+}
+
+
+.post-sidebar {
+	// Column itself doesn't scroll — the inner wrapper does the sticking
+	align-self: start; // important: without this, sticky won't work in a flex/grid context
+}
+
+.sidebar-sticky {
+	position: sticky;
+	top: calc( var(--announcement-bar-height, 0px) + 5rem ); // clears sticky header
+//	max-height: calc( 100vh - 8rem );
+//	overflow-y: auto;
+}
+
+#reading-progress {
+	position: fixed;
+	top: calc( var(--announcement-bar-height, 0px) + /* header height */ 4rem );
+	left: 0;
+	width: calc( var(--progress, 0) * 100% );
+	height: .25rem;
+	background: var(--brand-color);
+	z-index: 9997;
+	transition: width 0.1s linear;
+	pointer-events: none;
+}
+
+.breadcrumbs {
+	margin: 0;
+}
+
+.breadcrumb-list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--regular);
+	color: var(--text-color);
+}
+
+.breadcrumb-item {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	
+	a {
+		color: var(--text-color);
+		text-decoration: none;
+	}
+}
+
+.breadcrumb-sep {
+	@extend %has-before;
+	text-indent: -1000rem;
+	width: 1.5rem;
+	&:before {
+		text-indent: 0;
+		width: .425em;
+		height: .425em;
+		border-bottom: .1rem solid var(--dark-color);
+		border-right: .1rem solid var(--dark-color);
+		transform: rotate(-45deg);
+		left: .5em;
+		top: .6em;
+	}
+}
+
+.breadcrumb-item--current {
+	color: var(--text-color);
+	font-weight: 600;
+	// Truncate long titles gracefully
+	span {
+		max-width: 44ch;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: inline-block;
+		vertical-align: bottom;
+	}
+}
+
+.breadcrumb-sep {
+	color: var(--light-text-color);
+	user-select: none;
+}
+
+.byline {
+	display: flex;
+	align-items: center;
+	justify-content: start;
+	gap: 1rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid var(--menu-border-color);
+	font-size: 1rem;
+	&__photo {
+		flex-shrink: 0;
+	}
+
+	&__avatar {
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		display: block;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		gap: .125rem;
+		line-height: 1.3;
+		width: 100%;
+	}
+
+	&__name {
+		font-weight: 600;
+		color: var(--text-color);
+	}
+
+	&__meta {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		color: var(--light-text-color);
+		flex-wrap: wrap;
+	}
+
+	&__updated time,
+	&__reading-time {
+		white-space: nowrap;
+	}
+	.is-style-pill {
+		margin-left: auto;
+		background: rgb(239, 239, 239);
+		border: 1px solid #D9D9D9;
+	}
+}
+
+
+/*==============================================================
+  8.0 - Animations
+==============================================================*/
+
+/*--------------------------------------------------------------
+  8.1 - Parallax
+--------------------------------------------------------------*/
+
+// Slow upward drift keyed to the element's scroll position in the viewport.
+// --parallax-distance controls how far the element travels (negative = up).
+// Uses scroll-driven animation (animation-timeline: view) — check browser
+// support if this needs a fallback.
+.parallax-upward {
+	position: relative;
+	top: 0;
+	animation: parallax linear;
+	animation-timeline: view(-8rem);
+	--parallax-distance: -3rem;
+}
+
+@keyframes parallax {
+	from { top: 0vh; }
+	to   { top: var(--parallax-distance); }
+}
+
+
+/*==============================================================
+  9.0 - Block Backgrounds
+==============================================================*/
+
+
+.is-style-bg-dots {
+	@extend %has-after;
+	position: relative;
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/dot-background.svg) center center;
+		pointer-events: none;
+		filter: invert(43%) sepia(96%) saturate(5806%)
+				hue-rotate(201deg) brightness(93%) contrast(101%);
+	}
+	// Ensure block content sits above the SVG layer
+	> * { position: relative; z-index: 1; }
+}
+
+.is-style-bg-rings {
+	@extend %has-after;
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
+		pointer-events: none;
+		background-size: 135vw;
+	}
+	
+	> * { position: relative; z-index: 1; }
+}
+
+.is-style-bg-dark {
+	background: var(--alert-background);
+	color: var(--light-color);
+	// Cascade light text color down to headings and links
+	h1, h2, h3, h4, h5, h6 { color: var(--light-color); }
+	a { color: var(--light-color); }
+}
+
+.is-style-bg-light-blue {
+	background: var(--superlight-accent-color);
+}
+
+.is-style-bg-blue-ellipse {
+	@extend %has-after;
+	background: var(--superlight-accent-color);
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/bg-ellipse-1.svg) center bottom no-repeat;
+		pointer-events: none;
+		background-size: 140vw;
+	}
+	
+	> * { position: relative; z-index: 1; }
+
+}

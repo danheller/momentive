@@ -1,0 +1,77 @@
+/**
+ * Editor Styles
+ * Save as: /blocks/icon-block/editor.css
+ */
+ 
+:root {
+	--icon-fill: #fff;
+}
+ 
+.ams-icon-block-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: #f0f0f0;
+    border-radius: 0.5rem;
+}
+
+.ams-icon-block-preview .icon-label {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Preview the icon styles in editor */
+.editor-styles-wrapper .svg-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    position: relative;
+}
+
+.editor-styles-wrapper .svg-icon svg {
+    width: 3rem;
+    height: 3rem;
+    position: relative;
+    z-index: 2;
+}
+
+.svg-icon.bg-pink, .svg-icon.bg-pink.shape-tilted-square:before, .svg-icon.shape-circle.bg-pink {
+	background: var(--pink);
+}
+
+.svg-icon.bg-sky-blue, .svg-icon.bg-sky-blue.shape-tilted-square:before, .svg-icon.shape-circle.bg-sky-blue {
+	background: var(--sky-blue);
+}
+
+.svg-icon.bg-mint, .svg-icon.bg-mint.shape-tilted-square:before, .svg-icon.shape-circle.bg-mint {
+	background: var(--mint);
+}
+
+.svg-icon.bg-light-purple, .svg-icon.bg-light-purple.shape-tilted-square:before, .svg-icon.shape-circle.bg-light-purple {
+	background: var(--light-purple);
+}
+
+.svg-icon.shape-tilted-square {
+	background: none !important;
+}
+.svg-icon.shape-tilted-square:before {
+	z-index: 0;
+	position: absolute;
+	content: '';
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: .75rem;
+	transform: rotate( -22deg );
+}
+
+.svg-icon.shape-circle {
+	background: #fff;
+	border-radius: 50%;
+}
