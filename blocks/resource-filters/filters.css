@@ -13,6 +13,23 @@
 	flex-wrap: wrap;
 }
 
+@media screen and (max-width: 782px) {
+	.filter-bar-top {
+		flex-direction: column;
+		gap: .375rem;
+	}
+	.filter-bar-top {
+		> div, > button, input, select {
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+	.filter-panel {
+		width: 100%;
+		max-width: 100%;	
+	}
+}
+
 /* Toggle button */
 .filter-toggle {
 	display: inline-flex;
@@ -70,6 +87,11 @@
 	border-color: var(--accent-color, rgb(0, 120, 255));
 }
 
+.filter-search-wrapper svg {
+	width: 1.25rem;
+	height: auto;
+}
+
 .filter-search {
 	border: none;
 	outline: none;
@@ -109,8 +131,8 @@
 	border-color: var(--accent-color, rgb(0, 120, 255));
 }
 
-.is-style-button {
-	margin-right: auto;
+.filter-bar-top--search-first .filter-sort-wrapper, .filter-toggle + .filter-search-wrapper {
+	margin-left: auto;
 }
 
 /* Reset */

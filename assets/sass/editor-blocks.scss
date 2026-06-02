@@ -101,9 +101,6 @@ $xxlarge-up: "#{$screen} and (min-width: #{$xxlarge-top})" !default;
 
 
 :root {
-	// Layout — mirrors theme.json content/wide size settings
-	--wp--style--global--narrow-size:  40rem;
-
 	// Base palette
 	--light-color:           #fff;
 	--dark-color:            #000;
@@ -247,6 +244,12 @@ html{scroll-behavior:smooth}body{line-height:1}a{text-decoration-skip-ink:auto}a
 	}
 }
 
+.round, .rounder {
+	overflow: hidden;
+}
+
+.round   { border-radius: 1rem; }
+.rounder { border-radius: 1.5rem; }
 
 
 /*--------------------------------------------------------------
@@ -1162,7 +1165,7 @@ table.wp-block-table td:last-child {
 	.is-style-uppercase {
 		text-transform: uppercase;
 		font-size: .875rem;
-		font-weight: 550;
+		font-weight: 600;
 		letter-spacing: .1rem;
 	}
 	
@@ -1170,6 +1173,10 @@ table.wp-block-table td:last-child {
 		@extend .is-style-uppercase;
 		color: var(--accent-color);
 		letter-spacing: .2rem;
+		&.wp-block {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+		}
 	}
 
 	.is-root-container {
@@ -1259,7 +1266,7 @@ table.wp-block-table td:last-child {
 		ul {
 			padding-left: 0 !important;
 			display: grid;
-			grid-template-columns: repeat( 5, 1fr );
+			grid-template-columns: repeat( 4, 1fr );
 			gap: 1rem;
 			li {
 				margin: 0;
@@ -1275,12 +1282,13 @@ table.wp-block-table td:last-child {
 		.solution {
 			background: #777;
 			color: #fff;
+			margin-left: 0;
 		}
 	}
 
 	.testimonials-slider {
 		display: grid;
-		grid-template-columns: repeat( 3, 1fr );
+		grid-template-columns: repeat( 2, 1fr );
 		gap: 1rem;
 		.testimonial {
 			margin: 0;
@@ -1325,7 +1333,7 @@ table.wp-block-table td:last-child {
 			}
 		
 			.name {
-				font-weight: 550;
+				font-weight: 600;
 				grid-area: Name;
 				align-self: end;
 			}
@@ -1358,8 +1366,126 @@ table.wp-block-table td:last-child {
 	.block-editor-block-list__layout.is-root-container > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
 		max-width: 60rem;
 	}
+
+	.wp-block-query ul {
+		padding: 0 !important;
+	}
+
+}
+
+
+body.post-type-press-article, body.post-type-post {
+	.entry-header {
+		@extend %to-edge;
+		max-width: none;
+		background: linear-gradient(var(--light-color) 0%, var(--superlight-accent-color) 100%); // was: rgba(100, 193, 238, 0.133)
+		border-bottom: 1px solid var(--menu-border-color);
+		padding: 6rem var(--wp--style--root--padding-right);
+;
+		.header-content {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5rem;
+			.wp-block {
+				margin-left: 0 !important;
+			}
+		}
+		.header-media {
+			width: 100%;
+		}
+		.wp-block-post-title {
+			font-size: var(--wp--preset--font-size--xxx-large);
+			line-height: 1.25;
+			margin: 0;
+		}
+
+		.wp-block-buttons, .header-content {
+			@extend %nomargin;
+		}
+		@media #{$large-up} {
+			.header-inner {
+				display: grid;
+				grid-template-columns: 1fr calc(40% - 1.5rem);
+				align-items: center;
+				gap: 3rem;
+				.header-media {
+					order: 1;
+				}
+			}
+		}
+		.wp-block-momentive-breadcrumbs,
+		.wp-block-post-terms.taxonomy-category.lower-label {
+			display: none;
+		}
+	}
+	figure {
+		&.wp-block-post-featured-image {
+			width: 100%;
+		}
+		&.wp-block-image {
+			width: fit-content;
+			margin-right: auto;
+		}
+	}	
+	.post-layout {
+		@extend %nomargin;
+		gap: 3rem;
+		max-width: none !important;
+		padding: 3.75rem 0;
+		> .wp-block-column {
+			padding: 0;
+			.entry-content {
+				@extend %nomargin;
+			}
+		}
+		.wp-block {
+			margin-left: 0 !important;
+		}
+	}
+	.post-content.wp-block-column {
+		width: 65%;
+		flex-basis: auto;
+		margin: 0 0 1rem;
+		display: block;
+	}
+	.post-sidebar {
+		width: 18.75rem;
+		position: sticky;
+		top: calc( var(--announcement-bar-height, 0px) + 6rem );
+	}
+	.wp-block-post-content {
+		line-height: 1.5;
+		h2 {
+			font-size: var(--wp--preset--font-size--xx-large);
+		}
+	}
+	.sidebar-sticky {
+		top: 0;
+	}
+	.wp-block-momentive-post-byline {
+		width: 100%;
+	}
 	
-	.product-suite {
+	.wp-block-columns .wp-block-column p:not(.h2,.h3,.is-style-quote,.is-style-eyebrow) {
+		line-height: 1.6;
+		margin: 1.875rem 0 0;
+		font-size: var(--wp--preset--font-size--medium);
+	}
+}
+
+body.post-type-press-article {
+	.entry-header {
+		.wp-block-post-title {
+			font-size: var(--wp--preset--font-size--x-large);
+		}
+	}
+	.lower-label {
+		margin: 0;
+		a {
+			background: var(--dark-brand-color);
+			color: contrast-color( var(--dark-brand-color) );
+			font-size: var(--wp--preset--font-size--small);
+		}
 	}
 }
 
@@ -1493,65 +1619,6 @@ table.wp-block-table td:last-child {
 	.wp-block-read-more {
 		@extend .read-more;
 	}
-
-	.is-style-bg-dots {
-		@extend %has-after;
-		position: relative;
-		&:after {
-			z-index: 0;
-			top: 0; left: 0;
-			height: 100%; width: 100%;
-			background: url(../images/dot-background.svg) center center;
-			pointer-events: none;
-			filter: invert(43%) sepia(96%) saturate(5806%)
-					hue-rotate(201deg) brightness(93%) contrast(101%);
-		}
-		// Ensure block content sits above the SVG layer
-		> * { position: relative; z-index: 1; }
-	}
-	
-	.is-style-bg-rings {
-		@extend %has-after;
-		&:after {
-			z-index: 0;
-			top: 0; left: 0;
-			height: 100%; width: 100%;
-			background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
-			pointer-events: none;
-			background-size: 135vw;
-		}
-		
-		> * { position: relative; z-index: 1; }
-	}
-	
-	.is-style-bg-dark {
-		background: var(--alert-background);
-		color: var(--light-color);
-		// Cascade light text color down to headings and links
-		h1, h2, h3, h4, h5, h6 { color: var(--light-color); }
-		a { color: var(--light-color); }
-	}
-	
-	.is-style-bg-light-blue {
-		background: var(--superlight-accent-color);
-	}
-	
-	.is-style-bg-blue-ellipse {
-		@extend %has-after;
-		background: var(--superlight-accent-color);
-		&:after {
-			z-index: 0;
-			top: 0; left: 0;
-			height: 100%; width: 100%;
-			background: url(../images/bg-ellipse-1.svg) center bottom no-repeat;
-			pointer-events: none;
-			background-size: 140vw;
-		}
-		
-		> * { position: relative; z-index: 1; }
-	
-	}
-
 }
 
 
@@ -1577,3 +1644,67 @@ table.wp-block-table td:last-child {
 		}
 	}
 }
+
+.is-style-bg-dots {
+	@extend %has-after;
+	position: relative;
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/dot-background.svg) center center;
+		pointer-events: none;
+		filter: invert(43%) sepia(96%) saturate(5806%)
+				hue-rotate(201deg) brightness(93%) contrast(101%);
+	}
+	// Ensure block content sits above the SVG layer
+	> * { position: relative; z-index: 1; }
+}
+
+.is-style-bg-rings {
+	@extend %has-after;
+	background: rgb(20, 29, 60);
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
+		pointer-events: none;
+		background-size: 135vw;
+	}
+	
+	> * { position: relative; z-index: 1; }
+	.is-style-outline .wp-block-button__link {
+		border-color: var(--light-color);
+		color: var(--light-color);
+	}
+}
+
+.is-style-bg-dark {
+	background: var(--alert-background);
+	color: var(--light-color);
+	// Cascade light text color down to headings and links
+	h1, h2, h3, h4, h5, h6 { color: var(--light-color); }
+	a { color: var(--light-color); }
+}
+
+.is-style-bg-light-blue {
+	background: var(--superlight-accent-color);
+}
+
+.is-style-bg-blue-ellipse {
+	@extend %has-after;
+	background: var(--superlight-accent-color);
+	&:after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		background: url(../images/bg-ellipse-1.svg) center bottom no-repeat;
+		pointer-events: none;
+		background-size: 140vw;
+	}
+	
+	> * { position: relative; z-index: 1; }
+
+}
+

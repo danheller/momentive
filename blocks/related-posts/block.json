@@ -1,0 +1,7 @@
+{
+	"name": "momentive/related-posts",
+	"title": "Related Posts",
+	"category": "theme",
+	"editorScript": "file:./index.js",
+	"dependencies": ["wp-blocks", "wp-element"]
+}

@@ -116,38 +116,3 @@ add_action( 'init', function() {
 	]);
 });
 
-/*
- * ACF fields for card block
- */
- 
-add_action( 'acf/init', function() {
-	acf_add_local_field_group([
-		'key'      => 'group_solution_slider_card',
-		'title'    => 'Solution Slider Card',
-		'fields'   => [
-			[
-				'key'   => 'field_background_color',
-				'label' => 'Background Color',
-				'name'  => 'background_color',
-				'type'  => 'color_picker',
-			],
-			[
-				'key'          => 'field_icon',
-				'label'        => 'Icon',
-				'name'         => 'icon',
-				'type'         => 'image',
-				'return_format' => 'url',
-			],
-			[
-				'key'          => 'field_background_image',
-				'label'        => 'Background Image',
-				'name'         => 'background_image',
-				'type'         => 'image',
-				'return_format' => 'url',
-			],
-		],
-		'location' => [[
-			['param' => 'post_type', 'operator' => '==', 'value' => 'solutions'],
-		]],
-	]);
-});

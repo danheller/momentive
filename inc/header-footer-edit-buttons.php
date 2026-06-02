@@ -44,7 +44,8 @@ function momentive_fse_edit_buttons() {
     <style>
     .fse-edit-trigger {
         position: fixed;
-        right: 16px;
+        left: 50%;
+        right: auto;
         z-index: 99998; /* just below WP admin bar */
         display: flex;
         align-items: center;
@@ -61,11 +62,19 @@ function momentive_fse_edit_buttons() {
         opacity: 0;
         pointer-events: none;
         transition: opacity .2s ease, transform .2s ease;
-        transform: translateX( 6px );
+        transform: translateX( -50% );
     }
+    
+	@media screen and (min-width: 782px) {
+		.fse-edit-trigger {
+			left: auto;
+			right: 16px;
+		}
+	}
+
 
     .fse-edit-trigger[data-target="header"] {
-        top: calc( var( --announcement-bar-height, 0px ) + 32px + 8px );
+        top: calc( var( --announcement-bar-height, 0px ) + 32px + 12px );
         /* 32px = WP admin bar height */
     }
 
@@ -78,7 +87,6 @@ function momentive_fse_edit_buttons() {
     body.hovering-footer .fse-edit-trigger[data-target="footer"] {
         opacity: 1;
         pointer-events: auto;
-        transform: translateX( 0 );
     }
 
     /* Outline the region being hovered */

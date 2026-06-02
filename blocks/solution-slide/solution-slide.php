@@ -2,9 +2,17 @@
 // Get ACF fields
 global $post;
 $post_id        = get_the_ID();
-$bg_color       = get_field( 'background_color', $post_id );
-$icon_url       = get_field( 'icon', $post_id );
-$bg_image_url   = get_field( 'background_image', $post_id );
+$accent_color   = get_field( 'accent_color', $post_id );
+$icon_array     = get_field( 'icon', $post_id );
+$icon_url       = false;
+if( $icon_array && isset( $icon_array['url'] ) ) { 
+	$icon_url       = $icon_array['url'];
+}
+$bg_image_url   = false;
+$bg_image_array = get_field( 'background_image', $post_id );
+if( $bg_image_array && isset( $bg_image_array['url'] ) ) { 
+	$bg_image_url   = $bg_image_array['url'];
+}
 $link           = get_permalink( $post_id );
 $title          = get_the_title( $post_id );
 $excerpt        = get_the_excerpt( $post_id );
@@ -19,7 +27,7 @@ if ( $icon\ ) $momentive_icons_used[] = $icon;
 
 // Build inline styles
 $style = '';
-if ( $bg_color )     $style .= "background-color: {$bg_color};";
+if ( $accent_color )     $style .= "background-color: {$accent_color};";
 if ( $bg_image_url ) $style .= "--slide-bg-image: url('{$bg_image_url}');";
 ?>
 

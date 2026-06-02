@@ -15,7 +15,7 @@ add_action( 'init', function () {
 	wp_register_script(
 		'momentive-resource-filters',
 		get_template_directory_uri() . '/blocks/resource-filters/filters.js',
-		array(),
+		array( 'site-utils' ),
 		wp_get_theme()->get( 'Version' ),
 		true
 	);
@@ -65,7 +65,7 @@ function momentive_resource_filters_render( array $attributes, string $content )
 
 		// When a specific non-'post' post type is set, restrict categories
 		// to those that have at least one post of that type.
-		if ( $default_post_type && $default_post_type !== 'post' ) {
+		if ( $default_post_type ) {
 			$posts_of_type = get_posts( [
 				'post_type'      => $default_post_type,
 				'posts_per_page' => -1,
@@ -90,13 +90,17 @@ function momentive_resource_filters_render( array $attributes, string $content )
 		}
 	}
 
+	$first_filter = ! $show_categories && ! $show_post_types;
+	$bar_top_class = 'filter-bar-top' . ( $first_filter ? ' filter-bar-top--search-first' : '' );
+
 	ob_start();
 	?>
 	<div
 		class="resource-filter-bar"
 		data-default-post-type="<?php echo esc_attr( $default_post_type ); ?>"
 	>
-		<div class="filter-bar-top">
+			<div class="<?php echo esc_attr( $bar_top_class ); ?>">
+			<?php if ( $show_categories && ! empty( $categories ) ) : ?>
 			<button
 				class="filter-toggle"
 				aria-expanded="false"
@@ -109,17 +113,11 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				<span class="filter-toggle-label">Filters</span>
 				<span class="filter-count" hidden>0</span>
 			</button>
-			<div class="is-style-button is-style-outline">
-				<button class="filter-reset" type="button" hidden>
-					Remove filters
-				</button>
-			</div>
+			<?php endif; ?>
 
 			<?php if ( $show_search ) : ?>
 			<div class="filter-search-wrapper">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-				</svg>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="search"><path fill="currentColor" d="M3.624,15a8.03,8.03,0,0,0,10.619.659l5.318,5.318a1,1,0,0,0,1.414-1.414l-5.318-5.318A8.04,8.04,0,0,0,3.624,3.624,8.042,8.042,0,0,0,3.624,15Zm1.414-9.96a6.043,6.043,0,1,1-1.77,4.274A6,6,0,0,1,5.038,5.038Z"></path></svg>
 				<input
 					class="filter-search"
 					type="search"
@@ -130,6 +128,12 @@ function momentive_resource_filters_render( array $attributes, string $content )
 			</div>
 			<?php endif; ?>
 
+			<div class="is-style-button is-style-outline">
+				<button class="filter-reset" type="button" hidden>
+					Remove filters
+				</button>
+			</div>
+			
 			<?php if ( $show_sort ) : ?>
 			<div class="filter-sort-wrapper">
 				<svg viewBox="0 0 53.994804 62" id="up-and-down-arrows" version="1.1" width="53.994804" height="62" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs1" /><path d="m 0.65740253,46.27 c -0.82,0.74 -0.88,2 -0.14,2.82 l 11.06000047,12.25 0.03,0.03 c 0.06,0.06 0.12,0.12 0.19,0.17 0.04,0.03 0.08,0.07 0.12,0.1 0.07,0.05 0.15,0.09 0.23,0.14 0.04,0.02 0.07,0.04 0.11,0.06 0.1,0.04 0.2,0.07 0.31,0.1 0.03,0.01 0.05,0.02 0.08,0.02 0.13,0.03 0.27,0.04 0.41,0.04 0.14,0 0.28,-0.02 0.41,-0.04 0.03,-0.01 0.05,-0.02 0.08,-0.02 0.1,-0.03 0.21,-0.06 0.31,-0.1 0.04,-0.02 0.07,-0.04 0.11,-0.06 0.08,-0.04 0.16,-0.08 0.23,-0.14 0.04,-0.03 0.08,-0.06 0.12,-0.1 0.07,-0.05 0.13,-0.11 0.19,-0.17 l 0.03,-0.03 11.06,-12.25 c 0.74,-0.82 0.68,-2.08 -0.14,-2.82 -0.82,-0.74 -2.09,-0.68 -2.82,0.14 l -7.57,8.39 V 16 c 0,-1.1 -0.9,-2 -2,-2 -1.1,0 -2,0.9 -2,2 V 54.8 L 3.4974025,46.41 c -0.75,-0.82 -2.02,-0.88 -2.83999997,-0.14 z M 40.937403,48 c 1.1,0 2,-0.9 2,-2 V 7.2 l 7.57,8.39 c 0.39,0.44 0.94,0.66 1.49,0.66 0.48,0 0.96,-0.17 1.34,-0.52 0.82,-0.74 0.88,-2 0.14,-2.82 l -11.05,-12.25 -0.03,-0.03 c -0.08,-0.09 -0.17,-0.16 -0.27,-0.24 -0.01,0 -0.01,-0.01 -0.02,-0.01 -0.33,-0.24 -0.73,-0.38 -1.17,-0.38 -0.44,0 -0.84,0.14 -1.17,0.38 -0.01,0 -0.01,0.01 -0.02,0.01 -0.1,0.07 -0.19,0.15 -0.27,0.24 l -0.03,0.03 -11.05,12.25 c -0.74,0.82 -0.68,2.08 0.14,2.82 0.82,0.74 2.08,0.67 2.82,-0.14 l 7.57,-8.39 V 46 c 0.01,1.1 0.91,2 2.01,2 z" id="path1" /></svg>
@@ -142,7 +146,6 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				</select>
 			</div>
 			<?php endif; ?>
-
 		</div>
 
 		<div class="filter-panel" id="filter-panel" hidden>

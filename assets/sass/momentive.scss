@@ -17,7 +17,7 @@
 	2.4  Shape Utilities (.round, .rounder)
 
 	3.0  Global Block Overrides (core WordPress blocks)
-	3.1  Buttons (.wp-block-button, .is-style-button)
+	3.1  Buttons (.wp-block-button, .is-style-button, .button-arrows)
 	3.2  Columns (.wp-block-columns)
 	3.3  Navigation (.wp-block-navigation)
 
@@ -27,6 +27,8 @@
 	4.3  Quote Style (.is-style-quote)
 	4.4  Read More Link (.read-more)
 	4.5  Animated Swoop Underline (.is-style-has-swoop)
+	4.6  Check Mark List (.is-style-column-checks)
+	4.7  Media-Text Blocks
 
 	5.0  Site Structure
 	5.1  Announcement Bar (.announcement-bar)
@@ -73,11 +75,11 @@
 $screen-xxsmall:  30em  !default;  /* 480px  */
 $screen-xsmall:   35em  !default;  /* 560px  */
 $screen-small:    40em  !default;  /* 640px  */
-$screen-medium:   48em  !default;  /* 768px  */
+$screen-medium:   48.875em  !default;  /* 782px  */
 $screen-mediumish: 56em !default;  /* 896px  */
-$screen-large:    67.5em !default; /* 1080px */
-$screen-largish:  74em !default; /* 1240px */
-$screen-xlarge:   90em  !default;  /* 1440px */
+$screen-large:    70em !default; /* 1120px */
+$screen-largish:  73.875rem !default; /* 1182px */
+$screen-xlarge:   85.375em  !default;  /* 1366px */
 $screen-xxlarge: 120em  !default;  /* 1920px */
 
 // NOTE: $increment is used to create range-based media queries
@@ -253,17 +255,14 @@ $xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
 ==============================================================*/
 
 :root {
-	// Layout — mirrors theme.json content/wide size settings
-	--wp--style--global--narrow-size:  40rem;
-	--wp--style--global--content-size: 71.875rem;
-	--wp--style--global--wide-size:    108.125rem;
 
 	// Base palette
-	--light-color:           #fff;
-	--dark-color:            #000;
-	--text-color:            rgb(34 34 34);
-	--light-text-color:      rgb(88 88 88);
-	--contrast-text-color:   var(--dark-color);
+	--light-color:                #fff;
+	--dark-color:                 #000;
+	--text-color:                 rgb(34 34 34);
+	--light-text-color:           rgb(88 88 88);
+	--contrast-text-color:        var(--dark-color);
+	--tag-color:                  rgb(166 166 166);
 
 	// Accent — primary brand blue
 	// NOTE: consider deriving the lighter variants via color-mix()
@@ -271,7 +270,7 @@ $xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
 	--brand-color:                rgb(110 193 228);
 	--dark-brand-color:           rgb(20 29 60);
 	--accent-color:               rgb(0 120 255);
-	--light-accent-color:         #C1E6F7;
+	--light-accent-color:         rgb(193 230 247);
 	--extralight-accent-color:    rgb(224 243 251);
 	--superlight-accent-color:    rgb(239 249 253);
 	--aqua-color:                 #daf7fb;
@@ -286,6 +285,12 @@ $xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
 	--button-outline-background:  var(--light-color);
 	--button-outline-text-color:  var(--secondary-color);
 
+	// Solution colors
+	--solution: var(--accent-color); // default solution color
+	--solution-dark: color-mix(in oklab, var(--solution) 72%, black);
+	--solution-bg: color-mix(in oklab, var(--solution) 14%, white);
+	--solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
+
 	// Navigation / menus
 	--menu-border-color:           rgb(219 225 243);
 	--menu-title-text-color:       var(--dark-color);
@@ -296,7 +301,7 @@ $xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
 	--alert-text-color:  var(--light-color);
 
 	// Elevation
-	--shadow: rgba(0 0 0 0.35) 0 0 1.25rem 0;
+	--shadow: var(--wp--preset--shadow--soft);
 
 	// Icons
 	--icon-fill: var(--dark-color);
@@ -330,7 +335,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	color: var(--contrast-text-color);
-	font-weight: 600;
 }
 
 // Smooth transitions on interactive elements.
@@ -367,6 +371,10 @@ mark {
 	background-size: 100% 15%;
 }
 
+h1 {
+	font-size: var(--wp--preset--font-size--regular); // undo any default
+}
+
 h2, h3, .h2, .h3 {
 	font-weight: 600;
 	line-height: 1.25;
@@ -389,7 +397,7 @@ textarea {
 	color: var(--wp--preset--color--contrast);
 	font-family: var(--wp--preset--font-family--primary);
 	font-size: var(--wp--preset--font-size--medium);
-	font-weight: var(--wp--custom--font-weight--light);
+//	font-weight: var(--wp--custom--font-weight--light);
 	line-height: var(--wp--custom--line-height--body);
 	padding: 10px 20px;
 	width: 100%;
@@ -427,20 +435,7 @@ textarea {
 ==============================================================*/
 
 .center { text-align: center; }
-
-// Hides an element by fading it out. Toggle via JS by removing this class.
-.hide {
-	opacity: 0;
-	transition: opacity .3s ease;
-}
-
-.no-margin  { @extend %nomargin; }
-.no-padding { @extend %nopadding; }
-
-
-/*==============================================================
-  2.1 - Layout Utilities
-==============================================================*/
+.balance { text-wrap: balance; }
 
 figure {
 	&.shadow {
@@ -448,15 +443,39 @@ figure {
 	}
 }
 
-.space-around {
-	padding: 4rem 0;
-	margin: 0;
-}
-
 .line-below {
 	border-bottom: 1px solid var(--menu-border-color);
 }
 
+.is-desktop-only {
+	@media #{$large-below} {
+		display: none !important;
+	}
+}
+
+.is-mobile-only {
+	@media #{$large-up} {
+		display: none !important;
+	}
+}
+
+
+/*==============================================================
+  2.1 - Layout Utilities
+==============================================================*/
+
+.to-edge { 
+	@extend %to-edge;
+	width: 100vw;
+	max-width: 100vw;
+}
+
+.full-width {
+	width: 100%;
+	img {
+		width: 100%;
+	}
+}
 .content-width {
 	max-width: var(--wp--style--global--content-size);
 	margin-left: auto;
@@ -467,20 +486,40 @@ figure {
 	}
 }
 
-/*==============================================================
-  2.2 - Visibility Utilities
-==============================================================*/
+.slim { max-width: var(--wp--custom--slim-size); }
+.narrow { max-width: var(--wp--custom--narrow-size); }
+.fitted { max-width: var(--wp--custom--fitted-size); }
 
-@media #{$small-below} {
-	.is-style-hidden-mobile {
-		display: none !important;
-	}
-}
+.no-margin  { @extend %nomargin; }
+.no-padding { @extend %nopadding; }
 
 @media #{$medium-below} {
 	// Stacks and reverses a Columns block on mobile.
 	.is-style-columns-reverse {
 		flex-direction: column-reverse;
+	}
+}
+
+
+.space-around {
+	padding: 4rem 0;
+	margin: 0;
+}
+
+/*==============================================================
+  2.2 - Visibility Utilities
+==============================================================*/
+
+// Hides an element by fading it out. Toggle via JS by removing this class.
+.hide {
+	opacity: 0;
+	transition: opacity .3s ease;
+}
+
+
+@media #{$small-below} {
+	.is-style-hidden-mobile {
+		display: none !important;
 	}
 }
 
@@ -571,16 +610,57 @@ figure {
 	@extend .is-style-button;
 }
 
+// Prev/next arrow buttons, positioned below the slider at the right edge
+// of the content column.
+.button-arrows {
+	position: absolute;
+	z-index: 1;
+	width: 100%;
+	.splide__arrow {
+		transition: background .3s ease;
+		background: var(--button-background);
+		border-radius: 50%;
+		width: 2.5rem;
+		height: 2.5rem;
+		@media #{$medium-up} {
+			width: 3.125rem;
+			height: 3.125rem;			
+		}
+		&:disabled {
+			opacity: 1;
+			background: var(--button-inactive-background);
+		}
+		svg {
+			fill: var(--button-text-color);
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+	.splide__arrow--prev {
+		left: auto;
+		right: 3rem;
+		@media #{$medium-up} {
+			right: 4rem;
+		}
+	}
+	.splide__arrow--next {
+		right: 0;
+	}
+}
+
 .is-style-pill {
+	--solution: var(--tag-color);
+	--_s: var(--solution, var(--tag-color));
 	display: inline-block;
 	font-size: .75rem;
 	padding: .375rem .75rem;
 	border-radius: 3rem;
-	background: var(--light-accent-color);
 	margin-bottom: .375rem;
 	text-decoration: none;
+	background-color: color-mix(in oklab, var(--_s) 18%, white);
+	color:            color-mix(in oklab, var(--_s) 75%, black);
+	border: 1px solid color-mix(in oklab, var(--_s) 35%, white);
 }
-
 
 
 /*==============================================================
@@ -588,7 +668,6 @@ figure {
 ==============================================================*/
 
 .wp-block-columns {
-	column-gap: 2.5rem;
 	.wp-block-column {
 		padding: 1rem;
 		display: flex;
@@ -596,8 +675,9 @@ figure {
 		row-gap: 1rem;
 		line-height: 1.25;
 		p:not(.h2, .h3, .is-style-eyebrow) {
-			margin: 1rem 0;
+			margin: 0 0 1rem;
 			font-size: var(--wp--preset--font-size--regular);
+			line-height: 1.5;
 		}
 		// Pushes the last element in a column to the bottom, useful
 		// for aligning CTAs across columns of varying height.
@@ -630,78 +710,246 @@ figure {
 	font-weight: 600;
 	line-height: 1.5;
 	align-items: start;
+	gap: 1rem;
+	flex: 1;                    // grow to fill available space
+	justify-content: end; 
+	
+	// ── Top-level items ──────────────────────────────────────────────────────
 
 	> li.wp-block-navigation-item {
 		padding: 1.25rem .5rem 1.625rem;
 		&.is-style-button {
 			padding: 0;
 			margin-top: .5rem;
+
 			a.wp-block-navigation-item__content {
 				&:hover { color: inherit; }
 			}
 		}
+
+		&.has-megamenu {
+			> .wp-block-navigation-item__content {
+				display: flex;
+				align-items: center;
+				gap: .3em;
+			
+				&::after {
+					content: '';
+					display: inline-block;
+					width: .45rem;
+					height: .45rem;
+					border-right: .1rem solid currentColor;
+					border-bottom: .1rem solid currentColor;
+					transform-origin: 75% 35%;
+					transform: rotate(45deg) translateY(-.15rem);
+					transition: transform .3s ease;
+				}
+			}
+			
+			&[aria-expanded="true"] > .wp-block-navigation-item__content::after {
+				transform: rotate(225deg) translateY(-.15rem);
+			}
+		}
+
 	}
 
-	.wp-block-navigation__submenu-icon {
-		margin-left: .5em;
-		height: .75em;
-		width: .75em;
-	}
+	// ── Links ────────────────────────────────────────────────────────────────
 
 	a.wp-block-navigation-item__content {
 		color: var(--menu-title-text-color);
 		&:hover { color: var(--menu-title-text-color-hover); }
 	}
 
-	// Dropdown submenu panel.
-	&:not(.has-background) {
-		.wp-block-navigation__submenu-container.wp-block-navigation-submenu {
-			@extend .round;
-			background: var(--light-color);
-			border: 1px solid var(--menu-border-color);
-			gap: .25rem;
-			a.wp-block-navigation-item__content {
-				color: var(--menu-title-text-color);
-				padding: .5em 1em;
-				border-radius: .5rem;
-				&:hover {
-					color: var(--menu-title-text-color);
-					background: var(--superlight-accent-color);
-				}
+	// ── Responsive breakpoint overrides (replaces WP's hardcoded 600px) ──────
+
+	.wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: block;
+	}
+
+	.wp-block-navigation__responsive-container:not(.is-menu-open) {
+		display: none;
+	}
+
+	@media #{$large-up} {
+	
+		justify-content: center;
+	
+		.wp-block-navigation__responsive-container-open:not(.always-shown) {
+			display: none;
+		}
+
+		.wp-block-navigation__responsive-container:not(.is-menu-open) {
+			display: flex;
+		}
+	}
+
+	// ── Hamburger open button ─────────────────────────────────────────────────
+
+	&__responsive-container-open {
+		background: none;
+		border: none;
+		padding: 0;
+		@extend %has-before;
+		@extend %has-after;
+		width: 1.5rem;
+		height: 1.5rem;
+
+		svg { display: none; }
+
+		&::before {
+			width: 1.125rem;
+			height: .125rem;
+			background: var(--text-color);
+			top: .5rem;
+			right: .125rem;
+			pointer-events: none;
+		}
+
+		&::after {
+			width: 1.125rem;
+			height: .875rem;
+			border-top: .125rem solid var(--text-color);
+			border-bottom: .125rem solid var(--text-color);
+			top: .125rem;
+			right: .125rem;
+			pointer-events: none;
+		}
+	}
+
+	// Hide hamburger when menu is open
+	&:has(.is-menu-open) &__responsive-container-open {
+		display: none;
+	}
+
+	// ── Close button ──────────────────────────────────────────────────────────
+
+	&__responsive-container-close {
+		top: -3.25rem;
+		border: none;
+		right: -1.5rem;
+	}
+
+	// Focus/hover state for has-background context
+	.has-background &__responsive-container-open {
+		&:focus,
+		&:hover {
+			color: var(--wp--preset--color--base);
+		}
+	}
+
+	// ── Responsive overlay (open state) ───────────────────────────────────────
+
+	&__responsive-container {
+
+		&.is-menu-open {
+			padding: 1rem var(--wp--custom--spacing--gap) 2rem !important;
+			overflow: visible;
+			top: calc(var(--announcement-bar-height, 0px) + 6rem);
+			bottom: auto;
+			border-bottom-left-radius: 1.5rem;
+			border-bottom-right-radius: 1.5rem;
+			box-shadow:  var(--wp--preset--shadow--diffuse);
+			@media #{$medium-up} {
+				top: calc(var(--announcement-bar-height, 0px) + 5.125rem);
 			}
 		}
 	}
 
-	// Responsive overlay styles.
-	&__responsive-container.is-menu-open {
-		padding: var(--wp--custom--spacing--gap);
-	}
 	&__responsive-container.is-menu-open &__responsive-container-content {
-		padding-top: var(--wp--custom--spacing--gap);
-	}
-	&__responsive-container-close,
-	&__responsive-container-open {
-		border: 1px solid currentColor;
-		padding: 2px;
-	}
+		padding-top: 1.5rem !important;
 
-	.has-background &__responsive-container-open:focus,
-	.has-background &__responsive-container-open:hover {
-		color: var(--wp--preset--color--base);
-	}
+		ul.wp-block-navigation__container {
+			gap: .25rem;
+			width: 100%;
+		}
 
-	// Submenu background (non-navigation-block override — kept for specificity).
-	&:not(.has-background) .wp-block-navigation__submenu-container {
-		background-color: var(--wp--preset--color--contrast);
-		border: var(--wp--preset--color--contrast);
-		color: var(--wp--preset--color--base);
-		padding: 10px;
+		.wp-block-navigation-item {
+			padding: 0;
+			width: 100%;
+			// Ensure link fills row but arrow stays separate
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			
+			&:not(.is-style-button) .wp-block-navigation-item__content {
+				flex: 1;
+				margin-right: auto;
+				width: calc(100% - 2.5rem);
+				padding: .625rem;
+				border-radius: .5rem;
+				&:hover {
+					background: var(--superlight-accent-color);
+				}			
+			}
+			&.is-style-button .wp-block-navigation-item__content {
+				padding: .75rem 1.5rem;
+				color: var(--button-text-color);
+				width: 100%;
+				&:hover {
+					color: var(--button-text-color);				
+				}
+			}
+		}
 	}
-	:where(&__submenu-container) a {
-		padding: 2px 10px;
+	
+	+ .wp-block-buttons {
+		margin-bottom: .375rem;
 	}
 }
 
+// ── Admin bar offset (modal open) ─────────────────────────────────────────────
+
+.has-modal-open .admin-bar .is-menu-open:where(:not(.disable-default-overlay)) {
+	.wp-block-navigation__responsive-dialog {
+		margin-top: 0;
+	}
+}
+
+/*==============================================================
+  3.4 - Megamenus
+==============================================================*/
+
+
+.megamenu-panels {
+	@extend %has-after;
+	display: grid;
+	position: absolute;
+	height: 0;
+	top: calc(100% - 0.375rem);
+	left: 0;
+	width: 100vw;
+	max-width: 100vw !important;
+	z-index: 100;
+	box-shadow: var(--wp--preset--shadow--diffuse);
+	background:
+		linear-gradient(to right,
+			var(--light-color) calc(50% + (var(--wp--style--global--content-size) * 0.1666)),
+			#f8f8f8 calc(50% + (var(--wp--style--global--content-size) * 0.1666))
+		);
+	transition: height .25s ease;
+	overflow: hidden;
+}
+
+.megamenu-panel {
+	grid-area: 1 / 1;
+	align-self: start; // prevents shorter panels stretching to tallest height
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .3s ease;
+	padding: 1.5rem 0;
+	&.is-open {
+		opacity: 1;
+		pointer-events: auto;
+		
+		@starting-style {
+			opacity: 0;
+		}
+	}
+	.wp-block-columns {
+		width: var(--wp--style--global--content-size);
+		max-width: 100%;
+	}
+}
 
 /*==============================================================
   4.0 - Text Styles
@@ -802,9 +1050,9 @@ figure {
 
 	.swoop-svg {
 		position: absolute;
-		left:   -4%;       // slight overhang left
-		width:  108%;      // and right, so the line extends past the text edges
-		height: auto;
+		left:   -0.5rem;       // slight overhang left
+		width:  calc( 100% + 1.25rem );      // and right, so the line extends past the text edges
+		height: 6.25rem;
 		bottom: -0.2em;    // tune per swoop shape; increase for deeper descenders
 		overflow: visible;
 		pointer-events: none;
@@ -846,6 +1094,90 @@ figure {
 }
 
 
+/*--------------------------------------------------------------
+  4.6 - Column List With Check Marks (.is-style-column-checks)
+--------------------------------------------------------------*/
+
+ul.is-style-column-checks {
+	list-style: none;
+	display: flex;
+	gap: 4rem;
+	@media #{$largish-below} {
+		flex-wrap: wrap;
+		gap: 2rem;
+	}	
+	li {
+		@extend %has-before;
+		padding-left: 1.5rem;
+		font-size: var(--wp--preset--font-size--medium);
+		font-weight: 600;
+		@media #{$largish-below} {
+			width: calc(50% - 1rem);
+		}
+		@media #{$medium-below} {
+			width: 100%;
+		}
+		&:before {
+			top: .125rem;
+			left: 0;
+			width: .625rem;
+			height: 1.125rem;
+			border-bottom: .2rem solid var(--secondary-color);
+			border-right: .2rem solid var(--secondary-color);
+			transform: rotate( 45deg );
+		}
+	}
+}
+
+
+/*--------------------------------------------------------------
+  4.7 - Media-Text Blocks
+--------------------------------------------------------------*/
+
+.wp-block-media-text {
+	display: flex;
+	flex-direction: column;
+	.wp-block-media-text__content {
+		padding: 0;
+	}
+	figure {
+		@extend .rounder;
+		box-shadow: var(--wp--preset--shadow--diffuse);
+	}
+	>.wp-block-media-text__media {
+		margin: 0 auto;
+		max-width: 80vw;	
+	}
+	&.no-shadow {
+		figure {
+			box-shadow: none;
+		}
+	}
+	@media #{$medium-below} {
+		&.has-media-on-the-right {
+			flex-direction: column-reverse;			
+		}
+	}
+	@media #{$medium-up} {
+		display: grid;
+		grid-template-columns: clamp( 16rem, 40vw, 27.5rem ) 1fr;
+		gap: 5vw;
+		&.has-media-on-the-right {
+			grid-template-columns: 1fr clamp( 16rem, 40vw, 27.5rem );
+		}
+		figure {
+			max-width: 27.5rem;
+			width: clamp( 16rem, 40vw, 27.5rem );
+		}
+	}
+}
+
+.to-edge .wp-block-media-text {
+	padding-left: var(--wp--style--root--padding-left);
+	padding-right: var(--wp--style--root--padding-right);
+}
+
+
 /*==============================================================
   5.0 - Site Structure
 ==============================================================*/
@@ -869,9 +1201,11 @@ figure {
 	min-height: 2.75rem;
 
 	.wrapper {
-		padding: .5rem 0;
+		padding: .5rem 1rem;
+		max-width: calc(100vw - 3rem);
 		line-height: 1;
 		text-align: center;
+		text-wrap: balance;
 	}
 
 	// "Learn More" link — uses CSS mask so the arrow icon inherits currentColor.
@@ -943,7 +1277,7 @@ figure {
 	position: sticky;
 	top: 0;
 	z-index: 10;
-
+	
 	// Bottom border line, inset slightly from the footer of the header bar.
 	&:before {
 		position: absolute;
@@ -970,7 +1304,19 @@ figure {
 	> .wp-block-group {
 		max-width: var(--wp--style--global--content-size);
 		margin: 0 auto;
-		padding: 0;
+		padding: .5rem 1rem;
+		@media #{$large-up} {
+			padding: .75rem 1rem;
+		}
+		@media #{$largish-up} {
+			padding: .75rem 0;
+		}
+		@media #{$xlarge-up} {
+			padding: 0;
+		}
+		&.megamenu-panels {
+			padding: 0;
+		}
 	}
 }
 
@@ -1006,6 +1352,34 @@ body.admin-bar {
 	}
 }
 
+@media screen and (max-width:37.5rem) {
+	#wpadminbar {
+		top: -2.875rem !important;
+	}
+	body.admin-bar {
+		.site-header {
+			top: 0;
+		}
+		&:has(.announcement-bar) {
+			.site-header {
+				top: 3.5rem;
+			}
+			.announcement-bar {
+				top: 0;
+			}
+		}
+		#reading-progress {
+			top: auto;
+		}
+	
+		&.single-post {
+			.post-sidebar {
+				top: auto;
+			}
+		}
+	}
+}
+
 // Site logo: hides the text and replaces with an SVG background image.
 // NOTE: width/height here are fixed — if the logo SVG proportions change,
 // update these values to match.
@@ -1021,6 +1395,9 @@ body.admin-bar {
 	}
 }
 
+main.site-content {
+	margin-top: 0;
+}
 
 /*--------------------------------------------------------------
   5.3 - Footer
@@ -1078,6 +1455,28 @@ body.admin-bar {
 		gap: 2.5rem;
 	}
 
+	.footer-menu {
+		@media #{$large-range} {
+			display: grid;
+			grid-template-columns: repeat( 3, 1fr );
+			.company {
+				grid-column: 1 / -1;
+			}
+		}
+		.wp-block-column {
+			@media #{$medium-below} {
+				row-gap: 0;
+			}
+			ul {
+				@media #{$medium-range} {
+					column-count: 2;
+					column-gap: 1.25rem;		
+					margin-bottom: 1.5rem;
+				}
+			}
+		}
+	}
+
 	// Two-column layout for the Solutions links.
 	.footer-solutions ul {
 		@media #{$large-up} {
@@ -1091,13 +1490,6 @@ body.admin-bar {
 		max-width: var(--wp--style--global--content-size);
 		margin: 0 auto;
 		font-size: .875rem;
-
-		&.fine-print {
-			justify-content: space-between;
-			border-top: 1px solid rgb(from var(--midtone-color) r g b / 50%);
-			padding-top: 2rem;
-		}
-
 		.wp-block-column {
 			padding: 0;
 		
@@ -1118,14 +1510,15 @@ body.admin-bar {
 				flex-basis: 30%;
 				align-items: center;
 				ul {
-					display: flex;
-					gap: 1.5rem;
-					a { padding: .25rem 0; }
+					@media #{$small-up} {
+						display: flex;
+						gap: 1.5rem;
+						a { padding: .25rem 0; }
+					}
 				}
 			}
 
 			&.social {
-			
 				max-width: 4.5rem;
 				align-items: end;
 				.wp-block-social-links {
@@ -1162,10 +1555,41 @@ body.admin-bar {
 						height: 1.75rem;
 					}
 				}
-			
 			}
-		
-
+		}
+		&.fine-print {
+			justify-content: space-between;
+			border-top: 1px solid rgb(from var(--midtone-color) r g b / 50%);
+			padding-top: 2rem;
+			@media #{$large-below} {
+				display: grid;
+				grid-template-columns: 1fr 5rem;
+				grid-template-areas: "Compliance Social"
+				"Copyright Social";
+				.copyright {
+					grid-area: Copyright;
+					max-width: none;
+					flex-basis: auto;
+				}
+				.compliance {
+					grid-area: Compliance;
+					align-items: start;
+				}
+				.social {
+					grid-area: Social;
+				}
+			}
+			@media #{$small-below} {
+				grid-template-columns: 1fr;
+				grid-template-areas: "Compliance"
+				"Copyright"
+				"Social";
+				.social {
+					max-width: 100%;
+					align-items: center;
+					margin-bottom: 2rem;
+				}
+			}
 		}
 	}
 
@@ -1239,16 +1663,53 @@ body.home {
 	}
 	.wp-block-buttons {
 		margin: 1rem 0;
+		@media #{$medium-below} {
+			flex-direction: column;
+			.wp-block-button {
+				display: block;
+				width: 100%;
+			}
+		}
 	}
 }
 
 .hero-background {
-	max-width: none;
 	@extend %to-edge;
+	max-width: none;
 	margin-top: -3rem !important;
 	padding-top: 3rem;
 	padding-bottom: 3rem;
+	overflow: hidden;
+	@media #{$largish-below} {
+		padding-left: var(--wp--style--root--padding-left);
+		padding-right: var(--wp--style--root--padding-right);
+	}
 }
+
+.wp-block-column.is-style-hero-background-image-on-right {
+	position: relative;
+	pointer-events: none;
+	figure {
+		position: absolute;
+		top: calc(50% - 3rem);
+		left: 50%;
+		width: 220%;
+		height: auto;
+		transform: translate(-50%,-50%);
+		@media #{$largish-below} {
+			
+		}
+	}
+	@media #{$medium-below} {
+		height: 44vw;
+		figure {
+			top: 50%;
+			width: 150%;
+		}
+	}
+}
+
+
 
 
 /*--------------------------------------------------------------
@@ -1300,34 +1761,68 @@ body.home {
 	padding: 6rem 0 3rem;
 	text-wrap: balance;
 
+	.wp-block-columns {
+		// Override WP's flex defaults to allow wrapping
+		flex-wrap: wrap !important;
+		justify-content: center;
+
+		@media #{$large-up} {
+			flex-wrap: nowrap !important; // Three columns, single row
+		}
+	}
+
 	.wp-block-column {
 		background: var(--light-color);
+		flex-shrink: 0;
+		max-width: 22rem;
+
+		// Mid: two per row + orphan centered
+		width: 22rem;
+		flex-basis: 22rem !important;
+		flex-grow: 0;
+
+		@media #{$large-up} {
+			// Let columns share space equally
+			flex: 1 1 0;
+			width: auto !important;
+			flex-basis: auto !important;
+		}
+
+		@media #{$medium-below} {
+			// Single centered column
+			width: 100%;
+		}
 	}
+
 	.wp-block-heading {
 		margin: .5rem 0 0;
 	}
+
 	h3 {
-		font-size: clamp( 1.25rem, 1.5vw, 1.5rem );
+		font-size: clamp(1.25rem, 1.5vw, 1.5rem);
 	}
+
 	p {
 		margin: .5rem 0;
 		font-size: .875rem;
 	}
 }
 
-
 /*--------------------------------------------------------------
   6.4 - Solutions
 --------------------------------------------------------------*/
 
 .solutions-wrapper {
-	padding: 0 0 3.5rem;
+	padding: 0 2rem 3.5rem;
 	overflow: hidden;
 	background-image: linear-gradient(var(--light-color), #64C1EE22);
+	@media #{$largish-up} {
+		padding: 0 0 3.5rem;
+	}
 }
 
 .solutions-intro {
-	padding: 7rem 25% 4rem 0;
+	padding-right: 25%;
 	background: url(../images/our-approach-graphic.svg);
 	background-position: right top;
 	background-size: 30%;
@@ -1337,13 +1832,13 @@ body.home {
 }
 
 .solutions-slider {
-	margin: 0;
+	margin: 0 !important;
 	padding-bottom: 2rem;
-
-	&.alignfull {
+/*	&.alignfull {
 		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
 		margin-right: calc(var(--wp--style--root--padding-right) * -1);
 	}
+*/
 	&.has-global-padding {
 		padding-left: 0;
 		padding-right: 0;
@@ -1352,38 +1847,14 @@ body.home {
 
 	.splide__track { margin: 0; }
 
-	// Prev/next arrow buttons, positioned below the slider at the right edge
-	// of the content column.
 	.splide__arrows {
-		position: absolute;
+		@extend .button-arrows;
 		bottom: -3.5rem;
-		z-index: 1;
-		right: calc( 2rem + ( 100vw - var(--wp--style--global--content-size) ) / 2 );
-		width: 100%;
+		right: 2rem;
+		@media #{$largish-up} {
+			right: calc( 2rem + ( 100vw - var(--wp--style--global--content-size) ) / 2 );
+		}
 
-		.splide__arrow {
-			transition: background .3s ease;
-			background: var(--button-background);
-			border-radius: 50%;
-			width: 3.125rem;
-			height: 3.125rem;
-			&:disabled {
-				opacity: 1;
-				background: var(--button-inactive-background);
-			}
-			svg {
-				fill: var(--button-text-color);
-				width: 1rem;
-				height: 1rem;
-			}
-		}
-		.splide__arrow--prev {
-			left: auto;
-			right: 4rem;
-		}
-		.splide__arrow--next {
-			right: 0;
-		}
 	}
 
 	// Individual solution card. Uses two pseudo-elements for the hover effect:
@@ -1394,9 +1865,9 @@ body.home {
 		@extend %has-before;
 		@extend %has-after;
 		@extend .rounder;
-		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
+		width: 75vw;
 		padding: 40% 1.5rem 1.5rem;
-		margin-left: 1.5rem;
+		margin-right: 1.5rem;
 		background: var(--accent-color);
 		color: var(--alert-text-color);
 		transition: background .3s;
@@ -1405,6 +1876,12 @@ body.home {
 		flex-direction: column;
 		justify-content: flex-end;
 		text-align: left;
+		@media #{$medium-up} {
+			width: calc( ( 100vw - 5.5rem ) / 2 );
+		}
+		@media #{$largish-up} {
+			width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
+		}
 
 		&:before {
 			z-index: 0;
@@ -1476,7 +1953,7 @@ body.home {
 .constellation {
 	@extend .rounder;
 	margin: 0 auto;
-	background: #E7F1FE;
+	background: var(--extralight-accent-color);
 	padding: 2rem;
 	display: flex;
 	align-items: center;
@@ -1529,14 +2006,21 @@ body.home {
 	.wp-block-columns {
 		@extend .rounder;
 		margin: 4rem 0 2rem;
+		padding: 1rem;
 		background: var(--light-color);
-		padding: 2rem 4rem;
 		transition: transform .5s ease, box-shadow .5s ease;
 		transform-origin: 50% 50%;
-
-		.wp-block-column p {
-			margin-top: 0;
-			&.read-more { margin-bottom: 0; }
+		@media #{$medium-up} {
+			padding: 2rem 4rem;		
+		}
+		.wp-block-column {
+			&.constellation {
+				padding: 2rem;
+			}
+			p {
+				margin-top: 0;
+				&.read-more { margin-bottom: 0; }
+			}
 		}
 
 		&:hover {
@@ -1583,9 +2067,11 @@ body.home {
 .testimonials-wrapper {
 	padding-top: 3rem;
 	.testimonials-slider {
-		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
-		margin-right: calc(var(--wp--style--root--padding-right) * -1);
 		padding-bottom: 5rem;
+		@media #{$largish-up} {
+			margin-left:  calc(var(--wp--style--root--padding-right) * -1);
+			margin-right: calc(var(--wp--style--root--padding-right) * -1);		
+		}
 	}
 	h2 {
 		font-size: var(--wp--preset--font-size--xx-large);
@@ -1596,56 +2082,49 @@ body.home {
 .testimonials-slider {
 	position: relative;
 	overflow: hidden;
-	max-width: calc( 100vw + 1.75rem );
+	max-width: 100vw;
+	margin: 0 !important;
 
 	.splide__list {
 		align-items: stretch;
-		li { margin-left: 1.75rem; }
+		li { margin-right: 1.5rem; }
 	}
 
 	// Arrow buttons, positioned at the bottom-left aligned with the content column.
-	.splide__arrows {
-		position: absolute;
-		bottom: 2rem;
-		z-index: 1;
-		left: calc( ( 50vw - var(--wp--style--global--content-size) / 2 ) + 1.75rem );
-		width: 100%;
 
-		.splide__arrow {
-			transition: background .3s ease;
-			background: var(--button-background);
-			border-radius: 50%;
-			width: 3.125rem;
-			height: 3.125rem;
-			&:disabled {
-				opacity: 1;
-				background: var(--button-inactive-background);
-			}
-			svg {
-				fill: var(--button-text-color);
-				width: 1rem;
-				height: 1rem;
-			}
+
+	.splide__arrows {
+		@extend .button-arrows;
+		bottom: 2rem;
+		left: calc(50% - 3.25rem);
+		@media #{$medium-up} {
+			left: 2.5rem;
 		}
-		.splide__arrow--prev { left: 0; }
-		.splide__arrow--next { left: 4rem; }
+		@media #{$largish-up} {
+			left: calc( 50vw - var(--wp--style--global--content-size) / 2 );
+		}
+		.splide__arrow--prev { right: auto; left: 0; }
+		.splide__arrow--next { right: auto; left: 4rem; }
 	}
+
 
 	.testimonial {
 		@extend .rounder;
 		background: var(--superlight-accent-color);
 		height: 100%;
-		width: 80vw;
-		padding: 3rem;
+		width: calc(100vw - 5rem);
+		padding: clamp( 1.5rem, 4vw, 3rem );
+		font-size: clamp( 1.125rem, 1.5vw, 1.375rem );
 		border: 1px solid var(--light-accent-color);
 		display: flex;
 		flex-direction: column;
 		justify-content: start;
 		align-items: start;
-		font-size: 1.375rem;
-
-		@media #{$large-up} {
-			width: calc( ( var(--wp--style--global--content-size) / 2 ) - 1rem );
+		@media #{$medium-up} {
+			width: 80vw;
+		}
+		@media #{$largish-up} {
+			width: calc( ( var(--wp--style--global--content-size) / 2 ) - 0.75rem );
 		}
 	}
 
@@ -1716,7 +2195,10 @@ body.home {
 		padding: 2.5rem;
 		background-image: linear-gradient(180deg, #141D3C 30%, #132870 100%);
 		color: var(--light-color);
-
+		@media #{$medium-below} {
+			padding: .5rem;
+			gap: 0;
+		}
 		&:hover {
 			transform: scale(1.01);
 			box-shadow: rgba(0, 0, 0, 0.5) 0 0 1.5rem 0;
@@ -1784,7 +2266,7 @@ body.home {
 	margin-top: 0;
 
 	h2, p, .wp-block-buttons {
-		max-width: var(--wp--style--global--narrow-size);
+		max-width: var(--wp--custom--slim-size);
 		text-wrap: balance;
 		margin-left: auto;
 		margin-right: auto;
@@ -1800,6 +2282,13 @@ body.home {
 			&:hover {
 				background-color: transparent;
 				box-shadow: 0 0 0 .1rem var(--light-color);
+			}
+		}
+		@media #{$medium-below} {
+			flex-direction: column;
+			.wp-block-button {
+				display: block;
+				width: 100%;
 			}
 		}
 	}
@@ -1845,6 +2334,7 @@ body.home {
 		z-index: -1;
 		margin: 0;
 		overflow: clip;
+		width: 100%;
 		img {
 			transition-duration: .5s;
 			transition-property: transform;
@@ -1889,6 +2379,10 @@ body.home {
 		}
 	}
 	
+	.lower-label {
+		max-height: 3em; // shows roughly one line of tags
+	}
+	
 	.wp-block-post-excerpt { 
 		margin: 0;
 		p {
@@ -1904,6 +2398,8 @@ body.home {
 
 		// Full-card click target layered over the card.
 		a {
+			color: var(--text-color);
+			text-decoration: none;
 			&:after {
 				content: '';
 				position: absolute;
@@ -1941,9 +2437,8 @@ body.home {
 .lower-label {
 	position: relative;
 	overflow: hidden;
-	max-height: 3em; // shows roughly one line of tags
 	transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-            padding 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+			padding 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 	margin: .25rem 0 .75rem;
 	width: 100%;
 
@@ -2000,6 +2495,7 @@ body.home {
 
 	a {
 		@extend .is-style-pill;
+		color: var(--text-color);
 	}
 }
 
@@ -2032,6 +2528,10 @@ body.home {
 		display: flex;
 		flex-direction: column;
 	}
+	&__footer {
+		margin: 4rem auto 2rem;
+		width: fit-content;
+	}
 }
 
 
@@ -2057,9 +2557,16 @@ body.home {
 		overflow: visible;
 	}
 	.splide__slide {
-		width: calc( 33.3333% - .8333rem );
+		width: 100%;
 		margin-right: 1.25rem;
 		overflow: visible;
+		@media #{$medium-up} {
+			width: calc( 50% - .625rem );		
+		}
+		@media #{$large-up} {
+			width: calc( 33.3333% - .8333rem );		
+		}
+		
 	}
 }
 
@@ -2073,6 +2580,13 @@ body.home {
 .featured-blogs {
 	.columns-3 {
 		gap: 3rem 1.5rem;
+		@media #{$medium-below} {
+			grid-template-columns: 1fr;
+		}
+		@media #{$large-range} {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		
 		@media #{$large-up} {
 			.wp-block-post:first-child {
 				grid-column: 1 / span 3;
@@ -2099,6 +2613,12 @@ body.home {
 .all-blogs {
 	.columns-3 {
 		gap: 1.5rem;
+		@media #{$medium-below} {
+			grid-template-columns: 1fr;
+		}
+		@media #{$large-range} {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 }
 
@@ -2108,15 +2628,48 @@ body.home {
 
 body.single-article {
 	.entry-header {
-		@extend %to-edge;
 		max-width: none;
 		background: linear-gradient(var(--light-color) 0%, var(--superlight-accent-color) 100%); // was: rgba(100, 193, 238, 0.133)
 		border-bottom: 1px solid var(--menu-border-color);
 		padding: 6rem 0;
+		@extend %has-after;
+		&:after {
+			z-index: 0;
+			top: 0; right: 0;
+			height: 100%; width: 100%;
+			background: url(../images/bg-resources.svg) right bottom no-repeat;
+			pointer-events: none;
+			background-size: 100vw;
+		}
+
+		&.alignfull {
+			margin-left:  calc(50% - 50vw);
+			margin-right: calc(50% - 50vw);
+			width: 100vw;
+			max-width: 100vw;
+		}
 		.header-content {
 			display: flex;
 			flex-direction: column;
 			gap: 1.5rem;
+			p {
+				font-weight: 600;
+				font-size: var(--wp--preset--font-size--large);
+				margin: 0;
+			}
+		}
+		.header-inner {
+			position: relative;
+			z-index: 1;
+		}
+		.header-media {
+			width: 100%;
+			figure {				
+				img {
+					max-height: 21.875rem;
+					object-fit: contain !important; // override WP adding inline object-fit: cover
+				}
+			}
 		}
 		.wp-block-post-title {
 			font-size: var(--wp--preset--font-size--xxx-large);
@@ -2133,12 +2686,14 @@ body.single-article {
 				grid-template-columns: 1fr calc(40% - 1.5rem);
 				align-items: center;
 				gap: 3rem;
-				figure.wp-block-post-featured-image {
+				.header-media {
 					order: 1;
 				}
 			}
+			&:after {
+				background-size: 50vw;
+			}
 		}
-
 	}
 	figure {
 		&.wp-block-post-featured-image, &.wp-block-image {
@@ -2155,6 +2710,7 @@ body.single-article {
 		padding: 3.75rem 0;
 		> .wp-block-column {
 			padding: 0;
+			display: block;
 			.entry-content {
 				@extend %nomargin;
 			}
@@ -2174,6 +2730,10 @@ body.single-article {
 		line-height: 1.5;
 		h2 {
 			font-size: var(--wp--preset--font-size--xx-large);
+		}
+		.wp-block-heading {
+			margin-top: 1.5rem;
+			margin-bottom: .625rem;
 		}
 	}
 }
@@ -2223,6 +2783,27 @@ body.single-press-article {
 	margin: 0;
 }
 
+.breadcrumb-bar {
+	@extend %to-edge;
+	max-width: 100vw;
+	margin-bottom: 3rem;
+	padding-top: .375rem;
+	text-align: left;
+	border-bottom: 1px solid var(--menu-border-color);
+	@media #{$largish-below} {
+		padding: 0 2rem;
+	}
+	.breadcrumbs {
+		width: 100%;
+		max-width: var(--wp--style--global--content-size);
+		margin: 0 auto;
+		padding: 0 0 .75rem;
+	}
+	.breadcrumb-item a:hover, .breadcrumb-item--current {
+		color: var(--accent-color);
+	}
+}
+
 .breadcrumb-list {
 	display: flex;
 	flex-wrap: wrap;
@@ -2239,7 +2820,6 @@ body.single-press-article {
 	display: flex;
 	align-items: center;
 	gap: 0.25rem;
-	
 	a {
 		color: var(--text-color);
 		text-decoration: none;
@@ -2254,8 +2834,8 @@ body.single-press-article {
 		text-indent: 0;
 		width: .425em;
 		height: .425em;
-		border-bottom: .1rem solid var(--dark-color);
-		border-right: .1rem solid var(--dark-color);
+		border-bottom: .075rem solid var(--dark-color);
+		border-right: .075rem solid var(--dark-color);
 		transform: rotate(-45deg);
 		left: .5em;
 		top: .6em;
@@ -2287,6 +2867,7 @@ body.single-press-article {
 	justify-content: start;
 	gap: 1rem;
 	padding-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
 	border-bottom: 1px solid var(--menu-border-color);
 	font-size: 1rem;
 	&__photo {
@@ -2328,7 +2909,6 @@ body.single-press-article {
 	}
 	.is-style-pill {
 		margin-left: auto;
-		background: rgb(239, 239, 239);
 		border: 1px solid #D9D9D9;
 	}
 }
@@ -2451,4 +3031,17 @@ body.single-press-article {
 	
 	> * { position: relative; z-index: 1; }
 
+}
+
+.has-light-to-superlight-horizontal-gradient-background {
+	background: none !important;
+	@extend %has-before;
+	&:before {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: -2;
+		background: var(--wp--preset--gradient--light-to-superlight-horizontal) !important;
+	}
 }

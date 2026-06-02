@@ -45,17 +45,32 @@ function momentive_post_byline_render( $attributes, $content, $block ): string {
 	$author_avatar = '';
 
 	$author_post = get_post_meta( $post_id, 'post_author_ref', true );
+	
+	// Fallback to the "Momentive Software" author CPT entry if no author is assigned.
+
+	if ( ! $author_post ) {
+		$default_author = get_page_by_title(
+			'Momentive Software',
+			OBJECT,
+			'authors'
+		);
+		if ( $default_author ) {
+			$author_post = $default_author->ID;
+		}
+	}
+	
+	// Build author data from the authors CPT	
+
 	if ( $author_post ) {
 		$author_name = get_the_title( $author_post );
-
 		$thumb_id = get_post_thumbnail_id( $author_post );
-		if( ! $thumb_id ) {
+		if ( ! $thumb_id ) {
 			$thumb_id = 10559; // default image ID
 		}
 		if ( $thumb_id ) {
 			$author_avatar = wp_get_attachment_image(
 				$thumb_id,
-				[ 112, 112 ],        // 2× for retina — displayed at 56×56 via CSS
+				[ 112, 112 ], // retina size; displayed at 56×56
 				false,
 				[
 					'class' => 'byline__avatar',
@@ -63,17 +78,6 @@ function momentive_post_byline_render( $attributes, $content, $block ): string {
 				]
 			);
 		}
-	}
-
-	// Fallback: standard WordPress post author
-	if ( ! $author_name ) {
-		$wp_author_id  = (int) get_post_field( 'post_author', $post_id );
-		$author_name   = get_the_author_meta( 'display_name', $wp_author_id );
-		$author_avatar = get_avatar(
-			$wp_author_id, 56, '',
-			esc_attr( $author_name ),
-			[ 'class' => 'byline__avatar' ]
-		);
 	}
 
 	// ── Modified date ─────────────────────────────────────────────────────────

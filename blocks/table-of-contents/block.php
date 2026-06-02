@@ -55,7 +55,8 @@ add_action( 'init', function () {
 add_filter( 'the_content', 'momentive_toc_inject_heading_ids', 5 );
 
 function momentive_toc_inject_heading_ids( string $content ): string {
-	if ( ! is_singular() ) return $content;
+    $allowed_post_types = [ 'post', 'press-article', 'case-studies' ];
+    if ( ! is_singular( $allowed_post_types ) ) return $content;
 
 	static $h2_index = 0;
 	static $h3_index = 0;
@@ -84,16 +85,19 @@ function momentive_toc_inject_heading_ids( string $content ): string {
 // ── Anchor generation ─────────────────────────────────────────────────────────
 
 function momentive_toc_anchor( string $text, int $index = 0 ): string {
-	$anchor = strtolower( $text );
-	$anchor = preg_replace( '/[^\w\s-]/', '',  $anchor );
-	$anchor = preg_replace( '/[\s_]+/',   '-', $anchor );
-	$anchor = preg_replace( '/-{2,}/',   '-', $anchor );
+	// Decode HTML entities first so &nbsp; → space, &amp; → &, etc.
+	$anchor = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+	$anchor = strtolower( $anchor );
+	$anchor = preg_replace( '/[^\w\s-]/', '',  $anchor ); // strip non-word, non-space, non-dash
+	$anchor = preg_replace( '/[\s_]+/',   '-', $anchor ); // spaces/underscores → dash
+	$anchor = preg_replace( '/-{2,}/',   '-', $anchor ); // collapse multiple dashes
 	$anchor = trim( $anchor, '-' );
 	$anchor = substr( $anchor, 0, 64 );
 
-	if ( $anchor === '' )             $anchor = 'section';
-	if ( preg_match( '/^[0-9]/', $anchor ) ) $anchor = 'heading-' . $anchor;
-	if ( $index > 0 )                 $anchor .= '-' . $index;
+	if ( $anchor === '' )                        $anchor = 'section';
+	if ( preg_match( '/^\d/', $anchor ) )        $anchor = 'heading-' . $anchor;
+	if ( $index > 0 )                            $anchor .= '-' . $index;
 
 	return $anchor;
 }
@@ -130,13 +134,14 @@ function momentive_toc_extract_headings( string $content, int $max_level ): arra
 // ── Render callback ───────────────────────────────────────────────────────────
 
 function momentive_toc_render( array $attributes ): string {
-	if ( ! is_singular() ) return '';
+    $allowed_post_types = [ 'post', 'press-article', 'case-studies' ];
+    if ( ! is_singular( $allowed_post_types ) ) return $content;
 
 	$post        = get_queried_object();
 	$title       = esc_html( $attributes['title']           ?? 'Contents' );
 	$max_level   = (int) ( $attributes['maxLevel']          ?? 2 );
 	$expanded    = ! empty( $attributes['defaultExpanded'] );
-	$content     = apply_filters( 'the_content', $post->post_content );
+	$content     = $post->post_content;
 	$headings    = momentive_toc_extract_headings( $content, $max_level );
 
 	// ── Fallback: post title when no headings found ───────────────────────────

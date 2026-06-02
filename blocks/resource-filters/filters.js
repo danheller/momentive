@@ -1,13 +1,7 @@
 ( function () {
 	'use strict';
 
-	function debounce( fn, ms ) {
-		let timer;
-		return ( ...args ) => {
-			clearTimeout( timer );
-			timer = setTimeout( () => fn( ...args ), ms );
-		};
-	}
+	const { esc, initLowerLabels, renderCategoryLink, debounce } = window.SiteUtils;
 
 	function initLoadMore( grid ) {
 		const queryBlock = grid.closest( '.wp-block-query' );
@@ -78,6 +72,15 @@
 			const open = toggle.getAttribute( 'aria-expanded' ) === 'true';
 			toggle.setAttribute( 'aria-expanded', String( ! open ) );
 			panel?.toggleAttribute( 'hidden', open );
+		} );
+
+		// Close the panel when clicking outside the filter bar.
+		document.addEventListener( 'click', ( e ) => {
+			if ( toggle?.getAttribute( 'aria-expanded' ) !== 'true' ) return;
+			if ( bar.contains( e.target ) ) return;
+		
+			toggle.setAttribute( 'aria-expanded', 'false' );
+			panel?.toggleAttribute( 'hidden', true );
 		} );
 
 		bar.querySelectorAll( '.filter-group-toggle' ).forEach( legend => {
@@ -198,8 +201,8 @@
 					grid.insertAdjacentHTML( 'beforeend', html );
 				} else {
 					grid.innerHTML = html;
-					initLowerLabels( grid );
 				}
+				initLowerLabels( grid );
 
 			} catch ( err ) {
 				console.error( 'Resource filter fetch error:', err );
@@ -254,9 +257,7 @@
 				.replace( /&hellip;/g, '…' )
 				.slice( 0, 140 );
 
-			const catLinks = cats.map( cat =>
-				`<a href="${ esc( cat.link ) }" rel="tag">${ esc( cat.name ) }</a>`
-			).join( '<span class="wp-block-post-terms__separator"> </span>' );
+			const catLinks = cats.map( renderCategoryLink ).join( '<span class="wp-block-post-terms__separator"> </span>' );
 
 			const isPost = activePostType === 'post';
 
@@ -309,13 +310,6 @@
 			</li>`;
 		}
 
-		function esc( str ) {
-			return String( str ?? '' )
-				.replace( /&/g, '&amp;' )
-				.replace( /</g, '&lt;' )
-				.replace( />/g, '&gt;' )
-				.replace( /"/g, '&quot;' );
-		}
 
 		// ── UI sync ───────────────────────────────────────────────────────────
 
@@ -396,41 +390,6 @@
 				} );
 			} );
 		}
-	}
-
-	// ── Lower-label expand behaviour ──────────────────────────────────────────
-
-	function initLowerLabels( container ) {
-		( container ?? document ).querySelectorAll( '.lower-label' ).forEach( el => {
-			el.replaceWith( el.cloneNode( true ) );
-		} );
-
-		( container ?? document ).querySelectorAll( '.lower-label' ).forEach( el => {
-			if ( el.scrollHeight <= el.clientHeight + 2 ) return;
-
-			el.style.cursor = 'pointer';
-			el.setAttribute( 'title', 'Show all categories' );
-			el.setAttribute( 'role', 'button' );
-			el.setAttribute( 'tabindex', '0' );
-
-			function toggle( e ) {
-				if ( e.target.tagName === 'A' ) return;
-				el.classList.toggle( 'is-expanded' );
-				el.setAttribute( 'title',
-					el.classList.contains( 'is-expanded' )
-						? 'Show fewer categories'
-						: 'Show all categories'
-				);
-			}
-
-			el.addEventListener( 'click', toggle );
-			el.addEventListener( 'keydown', e => {
-				if ( e.key === 'Enter' || e.key === ' ' ) {
-					e.preventDefault();
-					toggle( e );
-				}
-			} );
-		} );
 	}
 
 	// ── Boot ──────────────────────────────────────────────────────────────────

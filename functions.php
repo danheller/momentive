@@ -1,346 +1,377 @@
 <?php
 /**
- * This file adds functions to the Momentive WordPress theme.
+ * Functions and definitions for the Momentive theme.
+ *
+ * Built on the Frost FSE theme base. Uses Full Site Editing with
+ * block templates, template parts, and custom blocks.
  *
  * @package momentive
- * @author  Momentive
  * @license GNU General Public License v3
  * @link    https://momentivesoftware.com/
+ *
+ * TABLE OF CONTENTS
+ * ─────────────────────────────────────────────────────────────────────────────
+ * 1.0  Theme Setup
+ * 2.0  Asset Enqueuing
+ * 3.0  Block System
+ *      3.1  Block Styles
+ *      3.2  Block Pattern Categories
+ *      3.3  Custom Blocks (required from /blocks/)
+ * 4.0  Post Types & Taxonomies (required from /inc/)
+ * 5.0  Query & Content Filters
+ * 6.0  Front-End Features
+ *      6.1  Announcement Bar
+ *      6.2  Reading Progress Bar
+ * 7.0  Developer Experience (required from /inc/)
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
-if ( ! function_exists( 'momentive_setup' ) ) {
 
-	/**
-	 * Sets up theme defaults and registers support for various WordPress features.
-	 *
-	 * Note that this function is hooked into the after_setup_theme hook, which
-	 * runs before the init hook. The init hook is too late for some features, such
-	 * as indicating support for post thumbnails.
-	 *
-	 * @since 0.8.0
-	 *
-	 * @return void
-	 */
+/*==============================================================================
+  1.0 - Theme Setup
+==============================================================================*/
+
+if ( ! function_exists( 'momentive_setup' ) ) {
 	function momentive_setup() {
 
 		// Make theme available for translation.
 		load_theme_textdomain( 'momentive', get_template_directory() . '/languages' );
 
-		// Load regular editor styles into the block-based editor.
+		// Load theme CSS into the block editor so the editor
+		// preview matches the front end as closely as possible.
 		add_theme_support( 'editor-styles' );
-	
-		// Load default block styles.
+		add_editor_style( 'assets/css/momentive.css' );
+
+		// Load default block styles (e.g. quote, separator, etc.).
 		add_theme_support( 'wp-block-styles' );
-	
-		// Add support for responsive embeds.
+
+		// Allow embedded content (YouTube, etc.) to resize responsively.
 		add_theme_support( 'responsive-embeds' );
 
 		// Enqueue editor stylesheet.
-		add_editor_style( get_template_directory_uri() . '/assets/css/editor-blocks.css' );
-
-		// Remove core block patterns.
-		// remove_theme_support( 'core-block-patterns' );
-
+		add_editor_style( 'assets/css/editor-blocks.css' );
 
 	}
 }
 add_action( 'after_setup_theme', 'momentive_setup' );
 
-// Enqueue stylesheet.
+
+/*==============================================================================
+  2.0 - Asset Enqueuing
+==============================================================================*/
+
 add_action( 'wp_enqueue_scripts', 'momentive_enqueue' );
+
 function momentive_enqueue() {
-	wp_enqueue_style( 'momentive', get_template_directory_uri() . '/assets/css/momentive.css', array(), wp_get_theme()->get( 'Version' ) );
-	wp_enqueue_style( 'slider', get_template_directory_uri() . '/assets/css/splide.css', array(), wp_get_theme()->get( 'Version' ) );
-	wp_enqueue_script( 'momentive', get_template_directory_uri() . '/assets/js/momentive.js', false, wp_get_theme()->get( 'Version' ), 1 );
+
+	$ver = wp_get_theme()->get( 'Version' );
+
+	// Main stylesheet — compiled from /assets/scss/momentive.scss.
+	wp_enqueue_style(
+		'momentive',
+		get_template_directory_uri() . '/assets/css/momentive.css',
+		[],
+		$ver
+	);
+
+	// Splide slider — loaded globally because sliders appear on multiple
+	// page types. Consider conditional loading if performance becomes a concern.
+	wp_enqueue_style(
+		'splide',
+		get_template_directory_uri() . '/assets/css/splide.css',
+		[],
+		$ver
+	);
+
+	wp_enqueue_script(
+		'site-utils',
+		get_stylesheet_directory_uri() . '/assets/js/site-utils.js',
+		[],
+		$ver,
+		true
+	);
+
+	// Main JS — initialises sliders, swoop animations, announcement bar, etc.
+	wp_enqueue_script(
+		'momentive',
+		get_template_directory_uri() . '/assets/js/momentive.js',
+		[ 'site-utils' ],
+		$ver,
+		true // load in footer
+	);
+
+	wp_register_script(
+		'sliders',
+		get_stylesheet_directory_uri() . '/assets/js/sliders.js',
+		[],
+		$ver,
+		true // footer
+	);
 
 }
 
+// conditionally enqueue slider javascript based on slider classes
 
+add_filter( 'render_block', function ( $content, $block ) {
+	static $enqueued = false;
+	if ( $enqueued ) return $content;
 
+	$classes = $block['attrs']['className'] ?? '';
+	if ( ! $classes ) return $content;
 
-/**
- * Register block styles.
- *
- * @since 0.9.2
- */
+	$markers = [ 'autoslider', 'solutions-slider', 'testimonials-slider', 'news-slider' ];
+	foreach ( $markers as $marker ) {
+		if ( false !== strpos( $classes, $marker ) ) {
+			wp_enqueue_script( 'sliders' );
+			$enqueued = true;
+			break;
+		}
+	}
+
+	return $content;
+}, 10, 2 );
+
+/*==============================================================================
+  3.0 - Block System
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+  3.1 - Block Styles
+  These are registered style variations that appear in the block editor's
+  "Styles" panel for each block. They add an `is-style-{name}` CSS class
+  to the block wrapper, which is targeted in momentive.scss.
+------------------------------------------------------------------------------*/
+
+add_action( 'init', 'momentive_register_block_styles' );
+
 function momentive_register_block_styles() {
 
-	$block_styles = array(
-		// Columns
-		'core/columns' => array(
-			'columns-reverse' => __( 'Reverse', 'momentive' ),
-			'outline'         => __( 'Outline', 'momentive' ), // bordered card columns
-		),
+	$block_styles = [
 
-		// Group
-		'core/group' => array(
-			'bg-dots'         => __( 'Dots Background', 'momentive' ),
-			'bg-rings'        => __( 'Rings Background', 'momentive' ),
-			'bg-dark'         => __( 'Dark Background', 'momentive' ),
-			'bg-light-blue'   => __( 'Light Blue Background', 'momentive' ),
-			'bg-blue-ellipse' => __( 'Blue Ellipse Background', 'momentive' ),
-			'bg-gradient-blue' => __( 'Blue Gradient', 'momentive' ),
-		),
+		'core/columns' => [
+			'columns-reverse' => __( 'Reverse',  'momentive' ),
+			'outline'         => __( 'Outline',  'momentive' ), // bordered card columns
+		],
 
-		// List
-		'core/list' => array(
+		'core/group' => [
+			'bg-dots'          => __( 'Dots Background',       'momentive' ),
+			'bg-rings'         => __( 'Rings Background',      'momentive' ),
+			'bg-dark'          => __( 'Dark Background',       'momentive' ),
+			'bg-light-blue'    => __( 'Light Blue Background', 'momentive' ),
+			'bg-blue-ellipse'  => __( 'Blue Ellipse',          'momentive' ),
+			'bg-gradient-blue' => __( 'Blue Gradient',         'momentive' ),
+		],
+
+		'core/list' => [
 			'no-disc' => __( 'No Disc', 'momentive' ),
-		),
+			'column-checks' => __( 'Check Marks', 'momentive' ),
+		],
 
-		// Quote
-		'core/quote' => array(
-			'shadow-light' => __( 'Shadow', 'momentive' ),
-			'shadow-solid' => __( 'Solid Shadow', 'momentive' ),
-			'quote'        => __( 'Large Pull Quote', 'momentive' ), // .is-style-quote
-		),
+		'core/quote' => [
+			'shadow-light' => __( 'Shadow',          'momentive' ),
+			'shadow-solid' => __( 'Solid Shadow',    'momentive' ),
+			'quote'        => __( 'Large Pull Quote', 'momentive' ),
+		],
 
-		// Paragraph
-		'core/paragraph' => array(
-			'eyebrow'    => __( 'Eyebrow', 'momentive' ),
-			'uppercase'  => __( 'Uppercase Label', 'momentive' ),
-		),
+		'core/paragraph' => [
+			'eyebrow'   => __( 'Eyebrow',         'momentive' ),
+			'uppercase' => __( 'Uppercase Label', 'momentive' ),
+		],
 
-		// Heading
-		'core/heading' => array(
-			'eyebrow'   => __( 'Eyebrow', 'momentive' ),
+		'core/heading' => [
+			'eyebrow'   => __( 'Eyebrow',         'momentive' ),
 			'has-swoop' => __( 'Swoop Underline', 'momentive' ),
-		),
+		],
 
-		// Image / Figure
-		'core/image' => array(
-			'shadow' => __( 'Shadow', 'momentive' ),
+		'core/image' => [
+			'shadow' => __( 'Shadow',  'momentive' ),
 			'round'  => __( 'Rounded', 'momentive' ),
-		),
-	
-		// Social Links
-		'core/social-links' => array(
-			'outline' => __( 'Outline', 'momentive' ),
-		),
+		],
 
-		// Navigation Link
-		'core/navigation-link' => array(
+		'core/social-links' => [
+			'outline' => __( 'Outline', 'momentive' ),
+		],
+
+		// Adds an `is-style-button` option to individual nav items,
+		// used for the "Get Your Demo" CTA in the header navigation.
+		'core/navigation-link' => [
 			'button' => __( 'Button', 'momentive' ),
-		),
-	);
+		],
+
+	];
 
 	foreach ( $block_styles as $block => $styles ) {
 		foreach ( $styles as $style_name => $style_label ) {
-			register_block_style(
-				$block,
-				array(
-					'name'  => $style_name,
-					'label' => $style_label,
-				)
-			);
+			register_block_style( $block, [
+				'name'  => $style_name,
+				'label' => $style_label,
+			] );
 		}
 	}
 }
-add_action( 'init', 'momentive_register_block_styles' );
 
-/**
- * Register block pattern categories.
- *
- * @since 1.0.4
- */
-function momentive_register_block_pattern_categories() {
 
-	register_block_pattern_category(
-		'momentive-page',
-		array(
-			'label'       => __( 'Page', 'momentive' ),
-			'description' => __( 'Create a full page with multiple patterns that are grouped together.', 'momentive' ),
-		)
-	);
-	register_block_pattern_category(
-		'momentive-pricing',
-		array(
-			'label'       => __( 'Pricing', 'momentive' ),
-			'description' => __( 'Compare features for your digital products or service plans.', 'momentive' ),
-		)
-	);
-
-}
+/*------------------------------------------------------------------------------
+  3.2 - Block Pattern Categories
+  These appear as filter tabs in the block inserter's Patterns panel.
+  Patterns themselves are registered via PHP files in /patterns/ or via
+  the Synced Patterns editor (stored as wp_block posts).
+------------------------------------------------------------------------------*/
 
 add_action( 'init', 'momentive_register_block_pattern_categories' );
 
+function momentive_register_block_pattern_categories() {
+
+	register_block_pattern_category( 'momentive-page', [
+		'label'       => __( 'Page',    'momentive' ),
+		'description' => __( 'Full-page layout patterns.', 'momentive' ),
+	] );
+
+	register_block_pattern_category( 'momentive-pricing', [
+		'label'       => __( 'Pricing', 'momentive' ),
+		'description' => __( 'Feature comparison and pricing table patterns.', 'momentive' ),
+	] );
+
+}
 
 
-/**
- * Set up solutions post type
- */
-
-require get_template_directory() . '/inc/solutions.php';
-
-
-/**
- * Set up newsroom/press article post type
- * - give these posts a common body class (.single-article) with standard (blog) posts to 
- *   simplify styling
- * - add related posts at the bottom of both newsroom posts and standard (blog) posts 
- *   using a simple category query, which can be replaced with custom curation later
- */
-
-require get_template_directory() . '/inc/newsroom.php';
-
-
-/**
- * Set up authors post type
- */
-
-require get_template_directory() . '/inc/authors.php';
-
-
-
-/**
- * Set up icons post type
- */
-
-require get_template_directory() . '/inc/icons.php';
-
-
-
-/**
- * Set up breadcrumbs custom block
- */
+/*------------------------------------------------------------------------------
+  3.3 - Custom Blocks
+  Each block lives in its own directory under /blocks/ with a block.json,
+  block.php (registration + render callback), and editor.js.
+  The front-end script and stylesheet are registered inside each block.php
+  and enqueued automatically by WordPress only on pages that use the block.
+------------------------------------------------------------------------------*/
 
 require get_template_directory() . '/blocks/breadcrumbs/block.php';
-
-
-
-/**
- * Set up icon shuffle custom block
- */
-
 require get_template_directory() . '/blocks/icon-shuffle/block.php';
-
-
-/**
- * Set up resource filters custom block
- */
-
 require get_template_directory() . '/blocks/resource-filters/block.php';
-
-
-/**
- * Set up table of contents custom block for single and newsroom posts
- */
-
 require get_template_directory() . '/blocks/table-of-contents/block.php';
-
-
-/**
- * Set up social sharing links custom block for single and newsroom posts
- */
-
 require get_template_directory() . '/blocks/social-share/block.php';
-
-
-/**
- * Set up byline custom block for single and newsroom posts
- */
-
 require get_template_directory() . '/blocks/post-byline/block.php';
-
-
-/**
- * Set up CTA button custom block to add a link from an ACF field to single post headers
- */
-
 require get_template_directory() . '/blocks/post-cta-button/block.php';
 
 
-/**
- * Developer experience improvements
- */
+/*==============================================================================
+  4.0 - Post Types & Taxonomies
+  Each post type is registered and configured in its own file under /inc/.
+==============================================================================*/
 
-/**
- * Header and footer edit buttons appear on hover
- */ 
- 
-require get_template_directory() . '/inc/header-footer-edit-buttons.php';
+require get_template_directory() . '/inc/solutions.php';
 
-/**
- * Use the name "Blog" for Posts in admin screens
- */ 
- 
-require get_template_directory() . '/inc/rename-posts-to-blog.php';
+// Press articles — includes shared body class with blog posts (.single-article)
+// and the render_block filter that injects related posts below the post layout columns.
+require get_template_directory() . '/inc/newsroom.php';
+
+require get_template_directory() . '/inc/authors.php';
+require get_template_directory() . '/inc/icons.php';
 
 
+/*==============================================================================
+  5.0 - Query & Content Filters
+==============================================================================*/
 
-/**
- * Add block patterns to the WP dashboard menu
- */ 
- 
-require get_template_directory() . '/inc/show-patterns-in-menu.php';
-
-
-
-
-/**
- * Disable all comment features
- */ 
- 
-require get_template_directory() . '/inc/disable-comments.php';
-
-/**
- * Hide blank excerpts rather than showing post content as a fallback
- */
- 
-add_filter( 'get_the_excerpt', function( $excerpt, $post ) {
-
-	if ( empty( $post->post_excerpt ) ) {
-		return '';
-	}
+// Hide blank post excerpts rather than falling back to the full post content.
+// This keeps archive cards and story cards clean when no excerpt is set.
+add_filter( 'get_the_excerpt', function ( $excerpt, $post ) {
+	if ( empty( $post->post_excerpt ) ) return '';
 	return $excerpt;
-
 }, 10, 2 );
 
 
-/**
- * Query loops with "has-featured-images-only" require a featured image
- */
-
-add_filter( 'query_loop_block_query_vars', function( $query, $block ) {
-
+// Query Loop blocks with the class `has-featured-images-only` will only
+// show posts that have a featured image set. Add this class in the block
+// editor's Advanced panel to use this behavior on any Query Loop.
+add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 	$class = $block->parsed_block['attrs']['className'] ?? '';
 	if ( strpos( $class, 'has-featured-images-only' ) !== false ) {
-		$meta_query = $query['meta_query'] ?? array();
-		$meta_query[] = array(
+		$meta_query   = $query['meta_query'] ?? [];
+		$meta_query[] = [
 			'key'     => '_thumbnail_id',
 			'compare' => 'EXISTS',
-		);
+		];
 		$query['meta_query'] = $meta_query;
 	}
 	return $query;
-
 }, 10, 2 );
 
-
 /**
- * Announcement bar
+ * Inject per-term --solution CSS variable onto each <a> in
+ * the core/post-terms block (category taxonomy only).
+ *
+ * Requires: ACF field "tag_color" registered on the category taxonomy.
  */
- 
-// add_action( 'wp_enqueue_scripts', 'momentive_enqueue_announcement_bar' );
+add_filter( 'render_block', function ( string $html, array $block, WP_Block $instance ): string {
 
-function momentive_enqueue_announcement_bar() {
-	// Don't load styles if the bar has already been dismissed for this visitor.
-	if ( ! empty( $_COOKIE['momentive_announcement_dismissed'] ) ) {
-		return;
+	// Only touch post-terms blocks showing the category taxonomy.
+	if ( 'core/post-terms' !== ( $block['blockName'] ?? '' ) ) {
+		return $html;
 	}
-/*
-	wp_enqueue_style(
-		'momentive-announcement-bar',
-		get_template_directory_uri() . '/assets/css/announcement-bar.css',
-		array(),          // no dependencies
-		wp_get_theme()->get( 'Version' )
-	);
-*/
-}
+	if ( 'category' !== ( $block['attrs']['term'] ?? '' ) ) {
+		return $html;
+	}
 
-// ── 2. Render the bar via wp_body_open ────────────────────────────────────
-//
-// wp_body_open fires immediately after <body> opens, which places the bar
-// before the FSE header template part – exactly what we want.
+	// Resolve the post ID from block context (works inside Query Loop).
+	$post_id = $instance->context['postId'] ?? get_the_ID();
+	if ( ! $post_id ) {
+		return $html;
+	}
+
+	$terms = get_the_terms( $post_id, 'category' );
+	if ( ! $terms || is_wp_error( $terms ) ) {
+		return $html;
+	}
+
+	foreach ( $terms as $term ) {
+		// ACF stores term meta with the "category_" prefix on term IDs.
+		$color = get_field( 'tag_color', 'category_' . $term->term_id );
+		if ( ! $color ) {
+			continue;
+		}
+
+		$color = esc_attr( sanitize_hex_color( $color ) );
+		$slug  = preg_quote( $term->slug, '/' );
+
+		// Match the <a> whose href contains this category's slug segment.
+		// The slug always appears as /slug/ in WP category permalinks.
+		$html = preg_replace(
+			'/(<a\b)([^>]*href=["\'][^"\']*\/' . $slug . '\/["\'][^>]*)(>)/',
+			'$1$2 style="--solution:' . $color . '"$3',
+			$html
+		);
+	}
+
+	return $html;
+}, 10, 3 );
+
+add_action( 'rest_api_init', function () {
+	register_rest_field( 'category', 'tag_color', [
+		'get_callback' => function ( $term ) {
+			$color = get_field( 'tag_color', 'category_' . $term['id'] );
+			return $color ? sanitize_hex_color( $color ) : null;
+		},
+		'schema' => [
+			'description' => 'Hex color for category tag.',
+			'type'        => [ 'string', 'null' ],
+			'context'     => [ 'view', 'embed' ],
+		],
+	] );
+} );
+
+/*==============================================================================
+  6.0 - Front-End Features
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+  6.1 - Announcement Bar
+  The bar is rendered via a pattern file (patterns/announcement-bar.php)
+  injected immediately after <body> opens. Cookie-based dismissal is handled
+  in the pattern's inline JS (sitewide path=/ cookie).
+
+  To disable the bar: comment out the add_action line below.
+  To customise content: use the momentive_announcement_bar_args filter
+  (see patterns/announcement-bar.php for available args).
+------------------------------------------------------------------------------*/
 
 add_action( 'wp_body_open', 'momentive_render_announcement_bar', 5 );
 
@@ -348,31 +379,35 @@ function momentive_render_announcement_bar() {
 	get_template_part( 'patterns/announcement-bar' );
 }
 
-/* ── 3. Optional: customise bar content without editing the template ────────
-
-// Uncomment and adjust to override any default values:
-
+/*
+// Example: override bar content without editing the pattern file.
 add_filter( 'momentive_announcement_bar_args', function ( $args ) {
-	$args['text']        = 'New announcement text goes here.';
+	$args['text']        = 'New announcement text here.';
 	$args['link_url']    = 'https://momentivesoftware.com/your-page/';
 	$args['link_label']  = 'Learn More';
-	$args['cookie_days'] = 7;   // Re-show after 7 days instead of 30
+	$args['cookie_days'] = 7;
 	return $args;
 } );
 */
 
 
-/**
- * Reading progress bar
- */
+/*------------------------------------------------------------------------------
+  6.2 - Reading Progress Bar
+  A thin accent-colored bar fixed below the sticky header that fills as the
+  reader scrolls through the post content. Only loaded on singular posts.
+  Styles are in momentive.scss (#reading-progress). JS is in reading-progress.js.
+
+  Currently loads on all singular post types (is_singular('post') targets
+  standard blog posts only; change to is_single() to include all CPTs).
+------------------------------------------------------------------------------*/
 
 add_action( 'wp_footer', function () {
-	if ( ! is_single() ) return;
+	if ( ! is_singular( 'post' ) ) return;
 	echo '<div id="reading-progress" aria-hidden="true"></div>';
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
-	if ( ! is_single() ) return;
+	if ( ! is_singular( 'post' ) ) return;
 	wp_enqueue_script(
 		'momentive-reading-progress',
 		get_template_directory_uri() . '/assets/js/reading-progress.js',
@@ -382,3 +417,20 @@ add_action( 'wp_enqueue_scripts', function () {
 	);
 } );
 
+
+/*==============================================================================
+  7.0 - Developer Experience
+==============================================================================*/
+
+// "Edit Header" and "Edit Footer" hover buttons visible to logged-in editors.
+require get_template_directory() . '/inc/header-footer-edit-buttons.php';
+
+// Renames "Posts" to "Blog" throughout the WordPress admin.
+require get_template_directory() . '/inc/rename-posts-to-blog.php';
+
+// Adds a "Patterns" item to the dashboard left menu with submenu links
+// to synced patterns, theme patterns, and "Add New".
+require get_template_directory() . '/inc/show-patterns-in-menu.php';
+
+// Removes all comment-related UI, menus, and dashboard widgets.
+require get_template_directory() . '/inc/disable-comments.php';

@@ -9,7 +9,7 @@
  *   Not possible directly — include via hook instead.
  */
 
-if ( ! is_singular( 'post' ) ) return;
+if ( ! is_singular( [ 'post', 'press-article' ] ) ) return;
 
 $post_id    = get_the_ID();
 $categories = get_the_category( $post_id );
@@ -73,7 +73,7 @@ if ( ! $related->have_posts() ) return;
 	?>
 	<div class="related-posts__footer">
 		<div class="wp-block-buttons is-content-justification-center">
-			<div class="wp-block-button is-style-outline">
+			<div class="wp-block-button">
 				<a class="wp-block-button__link wp-element-button"
 				   href="<?php echo esc_url( $link['url'] ); ?>">
 					<?php echo esc_html( $link['label'] ); ?>
