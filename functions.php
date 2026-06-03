@@ -257,6 +257,7 @@ require get_template_directory() . '/blocks/post-cta-button/block.php';
   Each post type is registered and configured in its own file under /inc/.
 ==============================================================================*/
 
+require get_template_directory() . '/inc/icons.php';
 require get_template_directory() . '/inc/solutions.php';
 
 // Press articles — includes shared body class with blog posts (.single-article)
@@ -264,7 +265,6 @@ require get_template_directory() . '/inc/solutions.php';
 require get_template_directory() . '/inc/newsroom.php';
 
 require get_template_directory() . '/inc/authors.php';
-require get_template_directory() . '/inc/icons.php';
 
 
 /*==============================================================================
@@ -295,6 +295,31 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 	return $query;
 }, 10, 2 );
 
+
+/**
+ * Resolve the accent color for a category term by hopping through
+ * its related Solution post (ACF relationship field).
+ *
+ * Falls back to the term's own tag_color field if no solution is linked,
+ * so existing data continues to work during any transition period.
+ */
+function get_solution_color_for_term( int $term_id ): string {
+	static $cache = [];
+	if ( isset( $cache[ $term_id ] ) ) return $cache[ $term_id ];
+
+	$solution = get_field( 'solution_relationship', 'category_' . $term_id );
+	$post     = is_array( $solution ) ? ( $solution[0] ?? null ) : $solution;
+	$color    = $post ? (string) get_field( 'accent_color', $post->ID ) : '';
+
+	// Fallback: read tag_color directly off the term (remove once all terms have a linked solution).
+	if ( ! $color ) {
+		$color = (string) get_field( 'tag_color', 'category_' . $term_id );
+	}
+
+	$cache[ $term_id ] = $color;
+	return $cache[ $term_id ];
+}
+
 /**
  * Inject per-term --solution CSS variable onto each <a> in
  * the core/post-terms block (category taxonomy only).
@@ -324,7 +349,7 @@ add_filter( 'render_block', function ( string $html, array $block, WP_Block $ins
 
 	foreach ( $terms as $term ) {
 		// ACF stores term meta with the "category_" prefix on term IDs.
-		$color = get_field( 'tag_color', 'category_' . $term->term_id );
+		$color = get_solution_color_for_term( $term->term_id );
 		if ( ! $color ) {
 			continue;
 		}
@@ -347,7 +372,7 @@ add_filter( 'render_block', function ( string $html, array $block, WP_Block $ins
 add_action( 'rest_api_init', function () {
 	register_rest_field( 'category', 'tag_color', [
 		'get_callback' => function ( $term ) {
-			$color = get_field( 'tag_color', 'category_' . $term['id'] );
+			$color = get_solution_color_for_term( (int) $term['id'] );
 			return $color ? sanitize_hex_color( $color ) : null;
 		},
 		'schema' => [

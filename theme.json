@@ -148,6 +148,11 @@
 					"slug": "diffuse"
 				},
 				{
+					"name": "Layered",
+					"shadow": "-20px 80px 44px rgba(0, 0, 0, 0.01), -11px 61px 37px rgba(0, 0, 0, 0.02), -5px 27px 27px rgba(0, 0, 0, 0.04), -1px 7px 15px rgba(0, 0, 0, 0.05)",
+					"slug": "layered"
+				},
+				{
 					"name": "Card",
 					"shadow": "rgba(0, 0, 0, 0.125) 0 0 0.75rem 0",
 					"slug": "card"

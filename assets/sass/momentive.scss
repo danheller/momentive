@@ -552,8 +552,8 @@ figure {
 	align-items: center;
 	justify-content: center;
 	img, svg {
-		width: 1.5rem;
-		height: 1.5rem;
+		width: 1.75rem;
+		height: 1.75rem;
 	}
 }
 
@@ -741,13 +741,16 @@ figure {
 					border-right: .1rem solid currentColor;
 					border-bottom: .1rem solid currentColor;
 					transform-origin: 75% 35%;
-					transform: rotate(45deg) translateY(-.15rem);
+					transform: rotate(-45deg) translateY(-.1rem);
 					transition: transform .3s ease;
+					@media #{$large-up} {
+						transform: rotate(45deg) translateY(-.1rem);
+					}
 				}
 			}
 			
 			&[aria-expanded="true"] > .wp-block-navigation-item__content::after {
-				transform: rotate(225deg) translateY(-.15rem);
+				transform: rotate(225deg) translateY(-.1rem);
 			}
 		}
 
@@ -845,12 +848,15 @@ figure {
 			padding: 1rem var(--wp--custom--spacing--gap) 2rem !important;
 			overflow: visible;
 			top: calc(var(--announcement-bar-height, 0px) + 6rem);
+			height: calc( 100vh - var(--announcement-bar-height, 0px) - 6rem );
 			bottom: auto;
-			border-bottom-left-radius: 1.5rem;
-			border-bottom-right-radius: 1.5rem;
 			box-shadow:  var(--wp--preset--shadow--diffuse);
 			@media #{$medium-up} {
-				top: calc(var(--announcement-bar-height, 0px) + 5.125rem);
+				top: calc(var(--announcement-bar-height, 0px) + 3.125rem);
+				height: calc( 100vh - var(--announcement-bar-height, 0px) - 3.125rem );
+			}
+			.wp-block-navigation__responsive-close, .wp-block-navigation__responsive-dialog, .wp-block-navigation__responsive-container-content {
+				height: 100%;
 			}
 		}
 	}
@@ -870,23 +876,31 @@ figure {
 			display: flex;
 			flex-wrap: wrap;
 			align-items: center;
+			.wp-block-navigation-item__content {
+				width: 100%;			
+			}
 			
 			&:not(.is-style-button) .wp-block-navigation-item__content {
 				flex: 1;
 				margin-right: auto;
-				width: calc(100% - 2.5rem);
 				padding: .625rem;
 				border-radius: .5rem;
+				&:after {
+					position: absolute;
+					right: 1rem;
+				}
 				&:hover {
 					background: var(--superlight-accent-color);
 				}			
 			}
-			&.is-style-button .wp-block-navigation-item__content {
-				padding: .75rem 1.5rem;
-				color: var(--button-text-color);
-				width: 100%;
-				&:hover {
-					color: var(--button-text-color);				
+			&.is-style-button {
+				margin-top: auto;
+				.wp-block-navigation-item__content {
+					padding: .75rem 1.5rem;
+					color: var(--button-text-color);
+					&:hover {
+						color: var(--button-text-color);				
+					}
 				}
 			}
 		}
@@ -899,11 +913,25 @@ figure {
 
 // ── Admin bar offset (modal open) ─────────────────────────────────────────────
 
-.has-modal-open .admin-bar .is-menu-open:where(:not(.disable-default-overlay)) {
-	.wp-block-navigation__responsive-dialog {
-		margin-top: 0;
+.has-modal-open .admin-bar {
+	.is-menu-open:where(:not(.disable-default-overlay)) {
+		.wp-block-navigation__responsive-dialog {
+			margin-top: 0;
+		}
+	}
+	.wp-block-navigation__responsive-container {
+
+		&.is-menu-open {
+			top: calc(var(--announcement-bar-height, 0px) + 8rem);
+			height: calc( 100vh - var(--announcement-bar-height, 0px) - 8rem );
+			@media #{$medium-up} {
+				top: calc(var(--announcement-bar-height, 0px) + 5.125rem);
+				height: calc( 100vh - var(--announcement-bar-height, 0px) - 5.125rem );
+			}
+		}
 	}
 }
+
 
 /*==============================================================
   3.4 - Megamenus
@@ -1052,7 +1080,7 @@ figure {
 		position: absolute;
 		left:   -0.5rem;       // slight overhang left
 		width:  calc( 100% + 1.25rem );      // and right, so the line extends past the text edges
-		height: 6.25rem;
+		height: clamp( 4rem, 7.5vw, 6.25rem  );
 		bottom: -0.2em;    // tune per swoop shape; increase for deeper descenders
 		overflow: visible;
 		pointer-events: none;
@@ -1833,7 +1861,6 @@ body.home {
 
 .solutions-slider {
 	margin: 0 !important;
-	padding-bottom: 2rem;
 /*	&.alignfull {
 		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
 		margin-right: calc(var(--wp--style--root--padding-right) * -1);
@@ -1846,103 +1873,129 @@ body.home {
 	li { margin-top: 0; }
 
 	.splide__track { margin: 0; }
-
+	.splide__list { padding-top: 1rem !important; padding-bottom: 5rem !important; }
 	.splide__arrows {
 		@extend .button-arrows;
-		bottom: -3.5rem;
+		bottom: 0;
 		right: 2rem;
 		@media #{$largish-up} {
-			right: calc( 2rem + ( 100vw - var(--wp--style--global--content-size) ) / 2 );
+			right: calc(( 100vw - var(--wp--style--global--content-size) ) / 2 );
 		}
-
 	}
-
-	// Individual solution card. Uses two pseudo-elements for the hover effect:
-	// ::before is a white-to-transparent gradient (default state),
-	// ::after is a background image that fades in on hover.
-	// --slide-bg-image is set inline per slide in the block markup.
-	.solution {
-		@extend %has-before;
-		@extend %has-after;
-		@extend .rounder;
-		width: 75vw;
-		padding: 40% 1.5rem 1.5rem;
-		margin-right: 1.5rem;
-		background: var(--accent-color);
-		color: var(--alert-text-color);
-		transition: background .3s;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-		text-align: left;
-		@media #{$medium-up} {
-			width: calc( ( 100vw - 5.5rem ) / 2 );
-		}
-		@media #{$largish-up} {
-			width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
-		}
-
-		&:before {
-			z-index: 0;
-			top: 0; left: 0;
-			width: 100%; height: 100%;
-			background: linear-gradient( rgba(255,255,255,0.4), rgba(255,255,255,0) );
-			transition: opacity .3s;
-		}
-		&:after {
-			z-index: 0;
-			opacity: 0;
-			top: 0; left: 0;
-			width: 100%; height: 100%;
-			background-image: var(--slide-bg-image);
-			background-size: 100%;
-			background-repeat: no-repeat;
-		}
-
-		.solution-title,
-		p.solution-excerpt {
-			position: relative;
-			z-index: 1;
-			transition: color .3s;
-		}
-		.solution-title {
-			width: 100%;
-			font-size: 1.75rem;
-			font-weight: 600;
-			color: var(--alert-text-color);
-			margin: 0 0 .5rem;
-		}
-		p.solution-excerpt {
-			margin-top: .5rem;
-			font-size: 1rem;
-			font-weight: 400;
-			line-height: 1.4;
-		}
-		.solution-icon {
-			position: absolute;
-			top: 2rem;
-			left: 2rem;
-			width: 2.5rem;
-			height: auto;
-			z-index: 1;
-		}
-		// Full-card click target layered over all content.
-		.solution-link {
-			position: absolute;
-			inset: 0;
-			z-index: 1;
-		}
-
-		&:hover {
-			&:before { opacity: 0; }
-			&:after  { opacity: 1; }
-			.solution-title,
-			.solution-excerpt { color: var(--dark-color); }
-		}
+	+ .wp-block-buttons {
+		margin-top: -1rem;
 	}
 }
 
+// Individual solution card. Uses two pseudo-elements for the hover effect:
+// ::before is a white-to-transparent gradient (default state),
+// ::after is a background image that fades in on hover.
+// --slide-bg-image is set inline per slide in the block markup.
+.solution {
+	@extend %has-before;
+	@extend %has-after;
+	@extend .rounder;
+	width: 75vw;
+	padding: 40% 1.5rem 1.5rem;
+	margin-right: 1.5rem;
+	background: linear-gradient(
+		color-mix(in oklab, var(--solution) 70%, white),
+		var(--solution)
+	);
+	color: var(--light-color);
+	transition: background-color .3s, box-shadow .3s;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	text-align: left;
+
+	@media #{$medium-up} {
+		width: calc( ( 100vw - 5.5rem ) / 2 );
+	}
+	@media #{$largish-up} {
+		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
+	}
+
+	// Gradient layer — sits above bg image, softens the bottom edge
+	// so text stays legible. Stays visible on hover.
+	&::before {
+		z-index: 1;
+		top: 0; left: 0;
+		width: 100%; height: 100%;
+		background: linear-gradient(
+			to bottom,
+			rgba(255,255,255,0) 20%,
+			var(--solution-bg) 65%
+		);
+		transition: opacity .3s;
+		opacity: 0; // hidden until bg image fades in
+	}
+
+
+
+	// Background image layer — fades in on hover
+	&::after {
+		z-index: 0;
+		opacity: 0;
+		top: 0; left: 0;
+		width: 100%; height: 65%;
+		background-image: var(--slide-bg-image);
+		background-size: cover;
+		background-position: center top;
+		background-repeat: no-repeat;
+		transition: opacity .3s;
+	}
+
+	.solution-title,
+	p.solution-excerpt {
+		position: relative;
+		z-index: 2;
+		transition: color .3s;
+		color: var(--light-color);
+	}
+	.solution-title {
+		width: 100%;
+		font-size: 1.75rem;
+		font-weight: 600;
+		margin: 0 0 .5rem;
+	}
+	p.solution-excerpt {
+		margin-top: .5rem;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.4;
+	}
+	.solution-icon {
+		position: absolute;
+		top: 2rem;
+		left: 2rem;
+		z-index: 2;
+		svg {
+			width: 2rem;
+			height: 2rem;
+		}
+	}
+	.solution-link {
+		position: absolute;
+		inset: 0;
+		z-index: 3; // above everything
+	}
+
+	&:hover {
+		background-color: var(--solution-bg);
+		box-shadow: var(--wp--preset--shadow--layered);	
+		.solution-icon svg {
+			color: var(--light-color);
+		}
+		.solution-title,
+		p.solution-excerpt {
+			color: var(--dark-color);
+		}
+		&::before { opacity: 1; }
+		&::after  { opacity: .7; transition: opacity .5s .1s; }
+	}
+}
 
 /*--------------------------------------------------------------
   6.5 - Constellation / Icon Grid
@@ -2380,7 +2433,7 @@ body.home {
 	}
 	
 	.lower-label {
-		max-height: 3em; // shows roughly one line of tags
+		max-height: 3.3em; // shows roughly one line of tags
 	}
 	
 	.wp-block-post-excerpt { 

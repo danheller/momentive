@@ -97,7 +97,7 @@ add_action( 'init', 'momentive_solutions_setup' );
  
 add_action( 'init', function() {
 	if ( ! function_exists( 'acf_register_block_type' ) ) return;
-    	
+		
 	acf_register_block_type([
 		'name'              => 'solution-slide',
 		'title'             => 'Solution Slide',
@@ -106,7 +106,6 @@ add_action( 'init', function() {
 		'category'          => 'theme',
 		'icon'              => 'cover-image',
 		'keywords'          => ['solution', 'slide', 'card'],
-		'post_types'        => ['post','page'],
 		'mode'              => 'preview',
 		'supports'          => [
 			'align'  => false,
@@ -115,4 +114,28 @@ add_action( 'init', function() {
 		],
 	]);
 });
+
+/*
+ * Populate "icons" select list with options from the icon system
+ */
+ 
+
+
+add_action( 'acf/render_field/name=solution_icon', function( $field ) {
+	$slug = $field['value'];
+	// Only render preview for slug-like values, not legacy attachment IDs
+	if ( ! $slug || is_numeric( $slug ) ) return;
+	echo '<div style="margin-top:8px; width:48px; height:48px;">';
+	momentive_output_svg_symbols( [ $slug ] );
+	echo '<svg style="width:100%;height:100%;"><use href="#icon-' . esc_attr( $slug ) . '"></use></svg>';
+	echo '</div>';
+} );
+
+add_filter( 'acf/load_field/name=solution_icon', function( $field ) {
+	$field['choices'] = array_merge(
+		[ '' => '— None —' ],
+		momentive_get_available_icons()
+	);
+	return $field;
+} );
 

@@ -174,7 +174,7 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 			perPage:      3,
 			perMove:      1,
 			gap:          0,
-			autoplay:     'pause', // 'pause' means initialized but not playing
+			autoplay:     false,
 			interval:     8000,
 			pauseOnHover: true,
 			easing:       'cubic-bezier(0.25, 1, 0.5, 1)',
@@ -213,11 +213,34 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 		const sp = splide[ splid ] = new Splide( '#spl-' + splid, options );
 
 		if ( which.classList.contains( 'left-offset' ) ) {
-
+		
+			let direction = 1;
+			let autoTimer = null;
+		
+			const startAuto = () => {
+				if ( autoTimer ) return;
+				autoTimer = setInterval( () => {
+					sp.go( direction > 0 ? '>' : '<' );
+				}, sp.options.interval );
+			};
+		
+			const stopAuto = () => {
+				clearInterval( autoTimer );
+				autoTimer = null;
+			};
+		
+			sp.on( 'intersection:in',  startAuto );
+			sp.on( 'intersection:out', stopAuto );
+		
+			sp.root.addEventListener( 'mouseenter', stopAuto );
+			sp.root.addEventListener( 'mouseleave', () => {
+				if ( document.contains( sp.root ) ) startAuto();
+			} );
+		
 			sp.on( 'move', newIndex => {
 				const lastAllowed = getLastAllowedIndex( sp );
 				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
-
+		
 				if ( newIndex >= lastAllowed && nextBtn ) {
 					setTimeout( () => { nextBtn.disabled = true; }, 0 );
 				}
@@ -225,12 +248,16 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 					setTimeout( () => sp.go( lastAllowed ), 0 );
 				}
 			} );
-
+		
 			sp.on( 'moved', newIndex => {
 				const lastAllowed = getLastAllowedIndex( sp );
 				const prevBtn     = sp.root.querySelector( '.splide__arrow--prev' );
 				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
-
+		
+				// Flip direction at boundaries
+				if ( newIndex >= lastAllowed ) direction = -1;
+				if ( newIndex <= 0 )           direction = 1;
+		
 				if ( newIndex >= lastAllowed ) {
 					if ( nextBtn ) nextBtn.disabled = true;
 					if ( prevBtn ) prevBtn.disabled = false;
@@ -244,13 +271,13 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 					if ( nextBtn ) nextBtn.disabled = false;
 				}
 			} );
-
+		
 			sp.on( 'mounted', () => {
 				const prevBtn = sp.root.querySelector( '.splide__arrow--prev' );
 				const nextBtn = sp.root.querySelector( '.splide__arrow--next' );
-
+		
 				if ( prevBtn ) prevBtn.disabled = true;
-
+		
 				if ( nextBtn ) {
 					nextBtn.addEventListener( 'mousedown', () => {
 						const lastAllowed = getLastAllowedIndex( sp );
@@ -260,12 +287,12 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 					} );
 				}
 			} );
-
+		
 			window.addEventListener( 'resize', () => {
 				sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
 				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
 				const lastAllowed = getLastAllowedIndex( sp );
-
+		
 				if ( nextBtn && sp.index >= lastAllowed ) {
 					nextBtn.disabled = true;
 				}
@@ -274,6 +301,7 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 
 		sp.mount( { Intersection: window.splide.Extensions.Intersection } );
 	}
+
 
 	// ── Boot ──────────────────────────────────────────────────────────────────
 

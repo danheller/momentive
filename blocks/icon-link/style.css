@@ -1,0 +1,109 @@
+/**
+ * Icon Link block — frontend styles
+ * blocks/icon-link/style.css
+ */
+
+.wp-block-momentive-icon-link {
+	--wp--custom--spacing--gap: .375rem;
+	width: 100%;
+/*	display: inline-block; /* Shrink-wrap by default; a grid/flex parent controls layout. */
+}
+
+/* -----------------------------------------------------------------------
+   Link element
+   ----------------------------------------------------------------------- */
+
+.icon-link {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: var(--icon-link-gap, 0.75rem);
+	text-decoration: none;
+	color: inherit;
+
+	/*
+	 * Accent color custom property.
+	 * Set inline by the render callback when accentColor is stored,
+	 * or by a parent context (e.g. a solutions taxonomy term).
+	 * Falls back to the theme's primary action color if unset.
+	 */
+	--icon-link-accent: var(--wp--preset--color--dark-purple, currentColor);
+}
+
+/* Size variants — controls the icon wrapper dimensions */
+.icon-link--small .icon-link__icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	flex: 0 0 1.5rem;
+}
+
+.icon-link--large {
+	align-items: center;
+}
+
+.icon-link--large .icon-link__icon {
+	width: 3rem;
+	height: 3rem;
+	flex: 0 0 3rem;
+}
+
+/* -----------------------------------------------------------------------
+   Icon
+   ----------------------------------------------------------------------- */
+
+.icon-link__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s ease;
+}
+
+.icon-link__icon svg {
+	width: 100%;
+	height: 100%;
+	/* Fill inherits from currentColor so we only need to change color. */
+	fill: currentColor;
+	transition: fill 0.2s ease;
+	border-radius: 1rem;
+}
+
+/* -----------------------------------------------------------------------
+   Text stack
+   ----------------------------------------------------------------------- */
+
+.icon-link__text {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.icon-link__title {
+	font-weight: var(--wp--custom--font-weight--semibold, 600);
+	transition: color 0.2s ease;
+}
+
+.icon-link__tagline {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--gray, #666);
+	font-weight: normal;
+	transition: color 0.2s ease;
+}
+
+.icon-link icon-link--large .icon-link__title {
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+}
+
+/* -----------------------------------------------------------------------
+   Hover / focus state
+   ----------------------------------------------------------------------- */
+
+.icon-link:hover .icon-link__icon svg,
+.icon-link:focus-visible .icon-link__icon svg {
+	fill: var(--icon-link-accent);
+}
+
+.icon-link:hover .icon-link__title,
+.icon-link:focus-visible .icon-link__title {
+	color: var(--icon-link-accent);
+}
+
+/* Tagline stays muted on hover — only title and icon pick up the accent. */
