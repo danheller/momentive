@@ -133,18 +133,13 @@ function momentive_output_svg_symbols( ?array $slugs = null ): void {
 // the upgrade path once the icon-link block and other consumers are stable.
 // ---------------------------------------------------------------------------
 
-add_action( 'wp_footer', function () {
-	momentive_output_svg_symbols(); // all icons
-}, 20 );
 
-/*
-// Selective output — enable once all icon consumers call momentive_use_icon().
+// Selective output — requires all icon consumers to call momentive_use_icon().
 
 add_action( 'wp_footer', function () {
 	$slugs = momentive_get_used_icons();
 	momentive_output_svg_symbols( $slugs ?: null );
 }, 20 );
-*/
 
 /**
  * Register an icon slug as needed on this page.

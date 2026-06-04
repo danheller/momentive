@@ -29,6 +29,8 @@
 	4.5  Animated Swoop Underline (.is-style-has-swoop)
 	4.6  Check Mark List (.is-style-column-checks)
 	4.7  Media-Text Blocks
+	4.8  Content Collage (text followed by three overlapping images)
+	4.9  Stats
 
 	5.0  Site Structure
 	5.1  Announcement Bar (.announcement-bar)
@@ -489,7 +491,6 @@ figure {
 .slim { max-width: var(--wp--custom--slim-size); }
 .narrow { max-width: var(--wp--custom--narrow-size); }
 .fitted { max-width: var(--wp--custom--fitted-size); }
-
 .no-margin  { @extend %nomargin; }
 .no-padding { @extend %nopadding; }
 
@@ -500,6 +501,22 @@ figure {
 	}
 }
 
+@media #{$xlarge-up} {
+	.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) .wide {
+		width: 100vw;
+		max-width: 100vw;
+		margin-left: calc(50% - 50vw) !important;
+		margin-right: calc(50% - 50vw) !important;
+		padding-inline: 6rem;
+		box-sizing: border-box;
+	}
+	.entry-content > .wide {
+		margin-left: calc( 6rem - var(--wp--style--root--padding-left) ) !important;
+		margin-right: calc( 6rem - var(--wp--style--root--padding-right) ) !important;
+		width: calc(100vw - 12rem );
+		max-width: calc(100vw - 12rem );
+	}
+}
 
 .space-around {
 	padding: 4rem 0;
@@ -1205,6 +1222,128 @@ ul.is-style-column-checks {
 	padding-right: var(--wp--style--root--padding-right);
 }
 
+/*--------------------------------------------------------------
+  4.8 - Content Collage
+--------------------------------------------------------------*/
+
+.content-collage {
+	@extend .rounder;
+	background: var(--superlight-accent-color);
+	position: relative;
+	overflow: visible;
+	display: grid;
+	grid-template-columns:
+		1fr
+		min(var(--wp--style--global--content-size), 100%)
+		1fr;
+	padding: 4rem 2rem;
+	&:after {
+		@extend .rounder;
+	}
+	.content-collage-inner {
+		grid-column: 2;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 3rem;
+		align-items: center;
+		@media #{$large-up} {
+			grid-template-columns: repeat( 2, 1fr );
+			grid-template-areas: "Title Content"
+			"Images Images";
+			.wp-block-heading {
+				grid-area: Title;
+			}
+			p {
+				grid-area: Content;
+			}
+			.content-collage-images {
+				grid-area: Images;
+			}
+		}
+	}
+	
+	.wp-block-heading {
+		text-wrap: balance;
+	}
+	p {
+		margin-top: 0;
+	}
+	.content-collage-images {
+		margin: 0 !important;
+	}
+	figure {
+		&:nth-of-type(1) {
+			@extend .rounder;
+			width: 100%;
+			img {
+				object-fit: cover;
+				aspect-ratio: 2 / 1;
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+		}
+		&:nth-of-type(2), &:nth-of-type(3) {
+			position: absolute;
+			border-radius: 50%;
+			overflow: hidden;
+			border: .25rem solid var(--superlight-accent-color);
+			img {
+				object-fit: cover;
+			}		
+		}
+		&:nth-of-type(2) {
+		
+			width: clamp(12rem, 18vw, 18rem);
+			aspect-ratio: 1;
+			left: 0;
+			top: 50%;
+			transform: translate(-40%, -50%);
+			@media #{$large-below} {
+				left: 1rem;
+				top: -3rem;
+				transform: none;
+			}
+		
+		}
+		&:nth-of-type(3) {
+		
+			width: clamp(8rem, 12vw, 12rem);
+			aspect-ratio: 1;
+			right: 0;
+			bottom: 0;
+			transform: translate(40%, 10%);
+			@media #{$large-below} {
+				right: 1rem;
+				bottom: -1rem;
+				transform: none;
+			}		
+		}
+
+	}
+}
+
+/*--------------------------------------------------------------
+  4.9 - Stats
+--------------------------------------------------------------*/
+
+.impact-stat-wrapper {
+	@extend .rounder;
+	--contrast-text-color: var(--light-color);
+	color: var(--light-color);
+	background: var(--wp--preset--gradient--navy-purple);
+	position: relative;
+	overflow: visible;
+	display: grid;
+	grid-template-columns:
+		1fr
+		min(var(--wp--style--global--content-size), 100%)
+		1fr;
+	padding: 4rem 2rem;
+	.impact-stats-inner {
+		grid-column: 2;
+	}
+}
 
 /*==============================================================
   5.0 - Site Structure
@@ -1861,15 +2000,27 @@ body.home {
 
 .solutions-slider {
 	margin: 0 !important;
-/*	&.alignfull {
-		margin-left:  calc(var(--wp--style--root--padding-right) * -1);
-		margin-right: calc(var(--wp--style--root--padding-right) * -1);
+	@media #{$largish-below} {
+		&.alignfull {
+			margin-left:  calc(var(--wp--style--root--padding-right) * -1) !important;
+			margin-right: calc(var(--wp--style--root--padding-right) * -1) !important;
+		}
 	}
-*/
 	&.has-global-padding {
 		padding-left: 0;
 		padding-right: 0;
 	}
+	&:not(.is-style-light) { // exception to the normal color scheme for MomentiveIQ
+		li.splide__slide:first-child .solution {
+			--solution: #1c2943 !important;
+			.solution-icon {
+				svg {
+					width: 3rem;
+				}
+			}
+		}
+	}
+
 	li { margin-top: 0; }
 
 	.splide__track { margin: 0; }
@@ -1883,7 +2034,7 @@ body.home {
 		}
 	}
 	+ .wp-block-buttons {
-		margin-top: -1rem;
+		margin-top: -1.5rem;
 	}
 }
 
@@ -1892,6 +2043,9 @@ body.home {
 // ::after is a background image that fades in on hover.
 // --slide-bg-image is set inline per slide in the block markup.
 .solution {
+    --solution-dark:    color-mix(in oklab, var(--solution) 72%, black);
+    --solution-bg:      color-mix(in oklab, var(--solution) 14%, white);
+    --solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
 	@extend %has-before;
 	@extend %has-after;
 	@extend .rounder;
@@ -1910,9 +2064,13 @@ body.home {
 	justify-content: flex-end;
 	text-align: left;
 
-	@media #{$medium-up} {
+	@media #{$small-up} {
 		width: calc( ( 100vw - 5.5rem ) / 2 );
 	}
+	@media #{$medium-up} {
+		width: calc( ( var(--wp--style--global--content-size) - 6rem ) / 3 );
+	}
+
 	@media #{$largish-up} {
 		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
 	}
@@ -1969,7 +2127,7 @@ body.home {
 	.solution-icon {
 		position: absolute;
 		top: 2rem;
-		left: 2rem;
+		left: 1.5rem;
 		z-index: 2;
 		svg {
 			width: 2rem;
@@ -1980,6 +2138,9 @@ body.home {
 		position: absolute;
 		inset: 0;
 		z-index: 3; // above everything
+	}
+	.solution-readmore, .solution-label {
+		display: none;
 	}
 
 	&:hover {
@@ -1994,6 +2155,98 @@ body.home {
 		}
 		&::before { opacity: 1; }
 		&::after  { opacity: .7; transition: opacity .5s .1s; }
+	}
+}
+
+// alernate card style
+.is-style-light {
+	.solution {
+		background: var(--light-color);
+		border: 1px solid var(--menu-border-color);
+		color: var(--dark-color);
+		padding: 3.75rem .25rem .25rem;
+		justify-content: start;
+		gap: 1rem;
+		@media #{$largish-up} {
+			width: calc( ( var(--wp--style--global--content-size) - 3rem ) / 3 );
+		}
+
+
+		// No pseudo-element effects in light style
+		&::before, &::after { display: none; }
+
+		.solution-label {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
+			font-size: .875rem;
+			font-weight: 600;
+			letter-spacing: .08em;
+			text-transform: uppercase;
+			color: var(--solution);
+			border: 1px solid var(--solution);
+			border-radius: 999px;
+			padding: .2em .6em;
+			display: inline-flex;
+			width: fit-content;
+			z-index: 2;
+		}
+
+		.solution-icon {
+			// Push icon down if label is present — 
+			// or handle this with :has() if you want it conditional
+			top: 1rem;
+			left: 1rem;
+			svg { color: var(--solution); width: 1.75rem; height: 1.75rem; }
+		}
+
+		.solution-body {
+			background: var(--solution-bg-soft);
+			border-radius: .75rem;
+			padding: 1.25rem;
+			margin: 0 .75rem .75rem;
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			gap: .5rem;
+		}
+
+		.solution-title,
+		p.solution-excerpt {
+			color: var(--dark-color);
+			z-index: auto;
+		}
+		
+		.solution-title {
+			font-size: var(--wp--preset--font-size--xx-large);
+		}
+
+		.solution-readmore {
+			display: flex;
+			align-items: center;
+			gap: .25rem;
+			font-weight: 600;
+			color: var(--dark-color);
+			margin-top: auto;
+			&:after {
+				content: '\2192';
+			}
+		}
+
+		&:hover {
+			background: white;
+			box-shadow: var(--wp--preset--shadow--card);
+			// No color changes on hover for light style
+			.solution-title,
+			p.solution-excerpt { color: var(--dark-color); }
+		}
+	}
+	li.splide__slide:first-child .solution {
+		.solution-icon {
+			svg {
+				width: 2rem;
+			}
+		}
 	}
 }
 

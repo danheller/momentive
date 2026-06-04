@@ -1,0 +1,51 @@
+/**
+ * Impact Stat — shared styles
+ * Loaded on both frontend and in the editor via the `style` key in block.json.
+ */
+
+.impact-stat {
+	display: flex;
+	align-items: stretch;
+	gap: 0;
+	position: relative;
+
+	// Thick colored left border
+	&__border {
+		flex-shrink: 0;
+		width: 4px;
+		background-color: var( --accent-color, #e8611a );
+		border-radius: 2px;
+		margin-right: 1.125rem; // ~18px — breathing room between border and text
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+	}
+
+	// The full stat value line: prefix + animated number + suffix
+	&__value {
+		margin: 0;
+		font-size: clamp( 2rem, 4vw, 2.75rem );
+		font-weight: 700;
+		line-height: 1.1;
+		color: #ffffff;
+		letter-spacing: -0.02em;
+	}
+
+	&__prefix,
+	&__number,
+	&__suffix {
+		// Inline so they sit flush on one line
+		display: inline;
+	}
+
+	&__label {
+		margin: 0;
+		font-size: 0.9375rem; // 15px
+		font-weight: 400;
+		line-height: 1.4;
+		color: rgba( 255, 255, 255, 0.75 );
+	}
+}

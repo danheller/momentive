@@ -118,8 +118,6 @@ add_action( 'init', function() {
 /*
  * Populate "icons" select list with options from the icon system
  */
- 
-
 
 add_action( 'acf/render_field/name=solution_icon', function( $field ) {
 	$slug = $field['value'];

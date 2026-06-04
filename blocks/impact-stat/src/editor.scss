@@ -1,0 +1,24 @@
+/**
+ * Impact Stat — editor-only styles
+ * Loaded only in the block editor via the `editorStyle` key in block.json.
+ */
+
+// In the editor the block preview shows the final value immediately
+// (no animation), so we just make sure it looks presentable on the
+// dark canvas. The theme's editor body background handles the rest.
+
+.wp-block-momentive-impact-stat {
+	// Ensure the block has some breathing room when selected in the editor
+	padding: 0.25rem 0;
+
+	// Keep the number legible on a light editor background if the theme
+	// hasn't set a dark canvas — editors typically place this block inside
+	// a Group/Cover with a dark background, but just in case:
+	.impact-stat__value {
+		color: var( --wp-admin-theme-color-darker-20, #1e1e1e );
+	}
+
+	.impact-stat__label {
+		color: var( --wp-admin-theme-color-darker-10, #444 );
+	}
+}

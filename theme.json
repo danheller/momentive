@@ -86,7 +86,7 @@
 
 			"gradients": [
 				{
-					"gradient": "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgb(239,249,253) 100%)",
+					"gradient": "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(239, 249, 253) 100%)",
 					"name": "White to Super Light Blue",
 					"slug": "white-to-superlight"
 				},
@@ -96,9 +96,14 @@
 					"slug": "light-to-superlight-horizontal"
 				},
 				{
-					"gradient": "linear-gradient(180deg, rgb(20,29,60) 30%, rgb(19,40,112) 100%)",
+					"gradient": "linear-gradient(180deg, rgb(20, 29, 60) 30%, rgb(19, 40, 112) 100%)",
 					"name": "Dark Navy",
 					"slug": "dark-navy"
+				},
+				{
+					"gradient": "linear-gradient(180deg, rgb(23, 42, 67) 0%, rgb(49, 53, 112) 100%)",
+					"name": "Navy Purple",
+					"slug": "navy-purple"
 				}
 			]
 		},

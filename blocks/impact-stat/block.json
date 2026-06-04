@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "momentive/impact-stat",
+  "version": "1.0.0",
+  "title": "Impact Stat",
+  "category": "momentive",
+  "description": "A single animated statistic with a colored left border, prefix, number, suffix, and label.",
+  "keywords": ["stat", "statistic", "impact", "number", "counter"],
+  "textdomain": "momentive",
+  "attributes": {
+    "statPrefix": {
+      "type": "string",
+      "default": ""
+    },
+    "statNumber": {
+      "type": "number",
+      "default": 0
+    },
+    "statSuffix": {
+      "type": "string",
+      "default": ""
+    },
+    "statLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "accentColor": {
+      "type": "string",
+      "default": "#E8611A"
+    },
+    "animationDuration": {
+      "type": "number",
+      "default": 1800
+    }
+  },
+  "supports": {
+    "html": false,
+    "align": false,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:../build/impact-stat/index.js",
+  "editorStyle":  "file:../build/impact-stat/index.css",
+  "style":        "file:../build/impact-stat/style-index.css",
+  "viewScript":   "file:../build/impact-stat/view.js"
+}
