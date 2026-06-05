@@ -3,7 +3,26 @@
  * Loaded on both frontend and in the editor via the `style` key in block.json.
  */
 
-.impact-stat {
+
+.impact-stat-wrapper {
+	border-radius: 1.5rem;
+	--contrast-text-color: var(--light-color);
+	color: var(--light-color);
+	background: var(--wp--preset--gradient--navy-purple);
+	position: relative;
+	overflow: visible;
+	display: grid;
+	grid-template-columns:
+		1fr
+		min(var(--wp--style--global--content-size), 100%)
+		1fr;
+	padding: clamp( 2rem, 10vw, 8rem) 2rem;
+	.impact-stats-inner {
+		grid-column: 2;
+	}
+}
+
+.impact-stat, .wp-block-columns .wp-block-column .impact-stat {
 	display: flex;
 	align-items: stretch;
 	gap: 0;
@@ -12,9 +31,8 @@
 	// Thick colored left border
 	&__border {
 		flex-shrink: 0;
-		width: 4px;
+		width: .5rem;
 		background-color: var( --accent-color, #e8611a );
-		border-radius: 2px;
 		margin-right: 1.125rem; // ~18px — breathing room between border and text
 	}
 
@@ -25,12 +43,12 @@
 	}
 
 	// The full stat value line: prefix + animated number + suffix
-	&__value {
+	&__value, p.impact-stat__value {
 		margin: 0;
-		font-size: clamp( 2rem, 4vw, 2.75rem );
-		font-weight: 700;
+		font-size: var(--wp--preset--font-size--display-large);
+		font-weight: 600;
 		line-height: 1.1;
-		color: #ffffff;
+		color: var(--light-color);
 		letter-spacing: -0.02em;
 	}
 
@@ -41,11 +59,11 @@
 		display: inline;
 	}
 
-	&__label {
+	&__label, p.impact-stat__label {
 		margin: 0;
-		font-size: 0.9375rem; // 15px
-		font-weight: 400;
+		font-size: var(--wp--preset--font-size--medium);
+		font-weight: 600;
 		line-height: 1.4;
-		color: rgba( 255, 255, 255, 0.75 );
+		max-width: 20rem;
 	}
 }

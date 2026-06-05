@@ -44,7 +44,7 @@ function momentive_solutions_setup() {
 		),
 
 		// Admin + visibility
-		'has_archive'        => false,
+		'has_archive'        => 'solutions',
 		'show_in_nav_menus'  => true,
 		'publicly_queryable' => true,
 

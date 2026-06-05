@@ -250,6 +250,7 @@ require get_template_directory() . '/blocks/table-of-contents/block.php';
 require get_template_directory() . '/blocks/social-share/block.php';
 require get_template_directory() . '/blocks/post-byline/block.php';
 require get_template_directory() . '/blocks/post-cta-button/block.php';
+require get_template_directory() . '/blocks/impact-stat/block.php';
 
 
 /*==============================================================================

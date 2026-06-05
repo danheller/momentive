@@ -1,124 +1,133 @@
 /**
- * Icon Block Frontend Styles
- * Save as: /blocks/icon-block/style.css
+ * Icon Block — Frontend Styles
+ * blocks/icon-block/style.css
+ *
+ * Icon color is driven by CSS `color` (currentColor), not fill/stroke variables.
+ * Use .is-color-{name} to set the icon color.
+ * Use .shape-{name} and .bg-{name} for shape and background.
+ *
+ * Color values reference the site's CSS custom properties defined in
+ * assets/sass/momentive.scss :root.
  */
 
-:root {
+/* ── Icon color modifiers ──────────────────────────────────────────────────
+   The SVG uses currentColor, so setting `color` here is all that's needed.
+   ───────────────────────────────────────────────────────────────────────── */
 
-	--dark-purple: #411a50;
-	--sky-blue: #a3dcff;
-	--mint: #b9f4ea;
-	--pink: #e8B5e4;
-	--light-sky-blue: #d3ebfd;
-	--light-purple: #d1cded;
-	--white: #fff;
+.svg-icon.is-color-accent    { color: var(--accent-color);    }
+.svg-icon.is-color-secondary { color: var(--secondary-color); }
+.svg-icon.is-color-dark      { color: var(--dark-brand-color);}
+.svg-icon.is-color-white     { color: #ffffff;                }
+.svg-icon.is-color-midtone   { color: var(--midtone-color);   }
 
-    --lavender: #C8B4E6;
 
-    
-    /* Default icon colors */
-    --icon-stroke: var(--dark-purple);
-    --icon-fill: transparent;
-}
+/* ── Base wrapper ──────────────────────────────────────────────────────────── */
 
 .svg-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 5rem;
-    height: 5rem;
-    position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 5rem;
+	height: 5rem;
+	position: relative;
 }
 
 .svg-icon svg {
-    width: 3rem;
-    height: 3rem;
-    position: relative;
-    z-index: 1;
+	width: 3rem;
+	height: 3rem;
+	position: relative;
+	z-index: 1;
 }
 
-/* Shape backgrounds */
-.svg-icon.circle-bg::before,
-.svg-icon.square-bg::before,
-.svg-icon.tilted-square-bg::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+
+/* ── Shape backgrounds ─────────────────────────────────────────────────────
+   Shapes are rendered as ::before pseudo-elements so the SVG can sit above.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.svg-icon.shape-circle,
+.svg-icon.shape-square,
+.svg-icon.shape-tilted-square {
+	background: none; /* background goes on ::before, not the wrapper */
 }
 
-.svg-icon.circle-bg::before {
-    border-radius: 50%;
+.svg-icon.shape-circle::before,
+.svg-icon.shape-square::before,
+.svg-icon.shape-tilted-square::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
 }
 
-.svg-icon.square-bg::before {
-    border-radius: 0.5rem;
+.svg-icon.shape-circle::before {
+	border-radius: 50%;
 }
 
-.svg-icon.tilted-square-bg::before {
-    border-radius: 0.5rem;
-    transform: translate(-50%, -50%) rotate(15deg);
+.svg-icon.shape-square::before {
+	border-radius: 0.5rem;
 }
 
-/* Background colors */
-.svg-icon.fill-pink::before {
-    background-color: var(--pink);
+.svg-icon.shape-tilted-square::before {
+	border-radius: 0.75rem;
+	transform: rotate(-22deg);
 }
 
-.svg-icon.fill-purple::before {
-    background-color: var(--purple);
-}
 
-.svg-icon.fill-blue::before {
-    background-color: var(--blue);
-}
+/* ── Background color modifiers ────────────────────────────────────────────
+   Applied to the ::before pseudo-element via the parent's background color
+   inheritance, or directly when shape is none.
+   ───────────────────────────────────────────────────────────────────────── */
 
-.svg-icon.fill-mint::before {
-    background-color: var(--mint);
-}
+/* Shape backgrounds (applied to ::before) */
+.svg-icon.shape-circle.bg-light::before,
+.svg-icon.shape-square.bg-light::before,
+.svg-icon.shape-tilted-square.bg-light::before      { background-color: var(--light-accent-color);      }
 
-.svg-icon.fill-lavender::before {
-    background-color: var(--lavender);
-}
+.svg-icon.shape-circle.bg-extralight::before,
+.svg-icon.shape-square.bg-extralight::before,
+.svg-icon.shape-tilted-square.bg-extralight::before { background-color: var(--extralight-accent-color); }
 
-/* Overlay positioning for Media & Text blocks */
+.svg-icon.shape-circle.bg-white::before,
+.svg-icon.shape-square.bg-white::before,
+.svg-icon.shape-tilted-square.bg-white::before      { background-color: #ffffff;                        }
+
+.svg-icon.shape-circle.bg-accent::before,
+.svg-icon.shape-square.bg-accent::before,
+.svg-icon.shape-tilted-square.bg-accent::before     { background-color: var(--accent-color);            }
+
+.svg-icon.shape-circle.bg-dark::before,
+.svg-icon.shape-square.bg-dark::before,
+.svg-icon.shape-tilted-square.bg-dark::before       { background-color: var(--dark-brand-color);        }
+
+/* No-shape backgrounds (applied directly to the wrapper) */
+.svg-icon.shape-none.bg-light      { background-color: var(--light-accent-color);      }
+.svg-icon.shape-none.bg-extralight { background-color: var(--extralight-accent-color); }
+.svg-icon.shape-none.bg-white      { background-color: #ffffff;                        }
+.svg-icon.shape-none.bg-accent     { background-color: var(--accent-color);            }
+.svg-icon.shape-none.bg-dark       { background-color: var(--dark-brand-color);        }
+
+
+/* ── Overlay positioning (Media & Text blocks) ─────────────────────────────
+   Unchanged from previous version — not related to the color system.
+   ───────────────────────────────────────────────────────────────────────── */
+
 .svg-icon.overlay-icon {
-    position: absolute;
-    width: 4rem;
-    height: 4rem;
-    z-index: 10;
+	position: absolute;
+	width: 4rem;
+	height: 4rem;
+	z-index: 10;
 }
 
 .svg-icon.overlay-icon svg {
-    width: 2.5rem;
-    height: 2.5rem;
+	width: 2.5rem;
+	height: 2.5rem;
 }
 
-.svg-icon.overlay-icon.top-left {
-    top: -1rem;
-    left: -1rem;
-}
+.svg-icon.overlay-icon.top-left     { top: -1rem;   left: -1rem;                    }
+.svg-icon.overlay-icon.top-right    { top: -1rem;   right: -1rem;                   }
+.svg-icon.overlay-icon.bottom-left  { bottom: 3rem; left: 0;                        }
+.svg-icon.overlay-icon.bottom-right { bottom: 3rem; left: calc( 100% - 5rem );      }
 
-.svg-icon.overlay-icon.top-right {
-    top: -1rem;
-    right: -1rem;
-}
-
-.svg-icon.overlay-icon.bottom-left {
-	bottom: 3rem;
-	left: 0;
-}
-
-.svg-icon.overlay-icon.bottom-right {
-    bottom: 3rem;
-    left: calc(100% - 5rem);
-}
-
-/* Ensure parent figure has position: relative */
 .wp-block-media-text figure {
-    position: relative;
+	position: relative;
 }

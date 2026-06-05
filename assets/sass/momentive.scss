@@ -30,7 +30,8 @@
 	4.6  Check Mark List (.is-style-column-checks)
 	4.7  Media-Text Blocks
 	4.8  Content Collage (text followed by three overlapping images)
-	4.9  Stats
+	4.9  Icon Columns
+
 
 	5.0  Site Structure
 	5.1  Announcement Bar (.announcement-bar)
@@ -1052,6 +1053,7 @@ figure {
 // rotated 45°. Hover state nudges it right via translate.
 .read-more {
 	@extend %has-after;
+	font-size: var(--wp--preset--font-size--regular);;
 	font-weight: 600;
 	padding-right: 1rem;
 	text-decoration: none;
@@ -1324,24 +1326,57 @@ ul.is-style-column-checks {
 }
 
 /*--------------------------------------------------------------
-  4.9 - Stats
+  4.9 - Icon Columns
 --------------------------------------------------------------*/
 
-.impact-stat-wrapper {
-	@extend .rounder;
-	--contrast-text-color: var(--light-color);
-	color: var(--light-color);
-	background: var(--wp--preset--gradient--navy-purple);
-	position: relative;
-	overflow: visible;
-	display: grid;
-	grid-template-columns:
-		1fr
-		min(var(--wp--style--global--content-size), 100%)
-		1fr;
-	padding: 4rem 2rem;
-	.impact-stats-inner {
-		grid-column: 2;
+.is-style-icon-columns {
+	gap: 2rem;
+	.svg-icon {
+		width: 3rem;
+		height: 3rem;
+	}
+	.wp-block-column {
+		@extend .rounder;
+		position: relative;
+		border: 1px solid var(--menu-border-color);
+		background: var(--light-color);
+		display: flex;
+		flex-direction: column;
+		padding: 1.5rem 1.25rem;
+		transition: box-shadow .3s ease;
+		&:hover {
+			box-shadow: var(--wp--preset--shadow--card);
+		}
+	}
+	
+	.wp-block-heading {
+		margin: 0;
+		font-size: var(--wp--preset--font-size--x-large);
+		letter-spacing: -0.02em;
+		a {
+			color: var(--text-color);
+			text-decoration: none;
+		}
+	}
+	figure {
+		margin-bottom: 1rem;
+	}
+	.wp-block-heading a, figure.a {
+		&:after {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+	.read-more {
+		margin: auto 0 0 !important;
+		&:after {
+			content: '\2192';
+			border: none;
+			transform: none;
+			top: 0;
+		}
+
 	}
 }
 

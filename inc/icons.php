@@ -201,23 +201,21 @@ function momentive_register_icon_block(): void {
 		'style'           => 'momentive-icon-block-style',
 		'render_callback' => 'momentive_render_icon_block',
 		'attributes'      => [
-			'iconId'          => [ 'type' => 'string', 'default' => '' ],
+			'iconId'          => [ 'type' => 'string', 'default' => ''       ],
 			'shape'           => [ 'type' => 'string', 'default' => 'circle' ],
-			'backgroundColor' => [ 'type' => 'string', 'default' => 'pink' ],
-			'strokeColor'     => [ 'type' => 'string', 'default' => 'default' ],
-			'fillColor'       => [ 'type' => 'string', 'default' => 'none' ],
-			'className'       => [ 'type' => 'string', 'default' => '' ],
+			'backgroundColor' => [ 'type' => 'string', 'default' => 'light'  ],
+			'iconColor'       => [ 'type' => 'string', 'default' => 'accent' ],
+			'className'       => [ 'type' => 'string', 'default' => ''       ],
 		],
 	] );
 }
 
 
 function momentive_render_icon_block( array $attributes ): string {
-	$icon_id      = sanitize_key( $attributes['iconId'] ?? '' );
-	$shape        = sanitize_key( $attributes['shape'] ?? 'circle' );
-	$bg_color     = sanitize_key( $attributes['backgroundColor'] ?? 'pink' );
-	$stroke_color = sanitize_key( $attributes['strokeColor'] ?? 'default' );
-	$fill_color   = sanitize_key( $attributes['fillColor'] ?? 'none' );
+	$icon_id      = sanitize_key( $attributes['iconId']          ?? '' );
+	$shape        = sanitize_key( $attributes['shape']           ?? 'circle' );
+	$bg_color     = sanitize_key( $attributes['backgroundColor'] ?? 'light' );
+	$icon_color   = sanitize_key( $attributes['iconColor']       ?? 'accent' );
 	$custom_class = sanitize_html_class( $attributes['className'] ?? '' );
 
 	if ( empty( $icon_id ) ) {
@@ -226,25 +224,21 @@ function momentive_render_icon_block( array $attributes ): string {
 
 	momentive_use_icon( $icon_id );
 
-	$classes = [ 'svg-icon', 'shape-' . $shape, 'bg-' . $bg_color, $icon_id . '-icon' ];
+	$classes = [
+		'svg-icon',
+		'shape-' . $shape,
+		'bg-' . $bg_color,
+		'is-color-' . $icon_color,
+		$icon_id . '-icon',
+	];
+
 	if ( $custom_class ) {
 		$classes[] = $custom_class;
 	}
 
-	$style_vars = '';
-	if ( $stroke_color !== 'default' ) {
-		$style_vars .= '--icon-stroke: var(--' . $stroke_color . ');';
-	}
-	if ( $fill_color !== 'none' ) {
-		$style_vars .= '--icon-fill: var(--' . $fill_color . ');';
-	}
-
-	$style_attr = $style_vars ? ' style="' . esc_attr( $style_vars ) . '"' : '';
-
 	return sprintf(
-		'<span class="%s"%s><svg aria-hidden="true" focusable="false"><use href="#icon-%s"></use></svg></span>',
+		'<span class="%s"><svg aria-hidden="true" focusable="false"><use href="#icon-%s"></use></svg></span>',
 		esc_attr( implode( ' ', $classes ) ),
-		$style_attr,
 		esc_attr( $icon_id )
 	);
 }

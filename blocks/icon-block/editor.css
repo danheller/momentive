@@ -1,77 +1,99 @@
 /**
- * Editor Styles
- * Save as: /blocks/icon-block/editor.css
+ * Icon Block — Editor Styles
+ * blocks/icon-block/editor.css
+ *
+ * Mirrors the frontend shape/color system for accurate editor previews.
+ * Scoped to .editor-styles-wrapper to avoid bleeding into the sidebar UI.
  */
- 
-:root {
-	--icon-fill: #fff;
-}
- 
-.ams-icon-block-preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    padding: 2rem;
-    background: #f0f0f0;
-    border-radius: 0.5rem;
+
+/* ── Editor preview wrapper ───────────────────────────────────────────────── */
+
+.momentive-icon-block-preview {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 2rem;
+	background: #f0f0f0;
+	border-radius: 0.5rem;
 }
 
-.ams-icon-block-preview .icon-label {
-    font-size: 0.875rem;
-    color: #666;
-    font-weight: 500;
+.momentive-icon-block-preview .icon-label {
+	font-size: 0.875rem;
+	color: #666;
+	font-weight: 500;
 }
 
-/* Preview the icon styles in editor */
+
+/* ── Base wrapper (editor canvas) ─────────────────────────────────────────── */
+
 .editor-styles-wrapper .svg-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 5rem;
-    height: 5rem;
-    position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 5rem;
+	height: 5rem;
+	position: relative;
+	background: none;
 }
 
 .editor-styles-wrapper .svg-icon svg {
-    width: 3rem;
-    height: 3rem;
-    position: relative;
-    z-index: 2;
+	width: 3rem;
+	height: 3rem;
+	position: relative;
+	z-index: 2;
 }
 
-.svg-icon.bg-pink, .svg-icon.bg-pink.shape-tilted-square:before, .svg-icon.shape-circle.bg-pink {
-	background: var(--pink);
-}
 
-.svg-icon.bg-sky-blue, .svg-icon.bg-sky-blue.shape-tilted-square:before, .svg-icon.shape-circle.bg-sky-blue {
-	background: var(--sky-blue);
-}
+/* ── Icon color modifiers ─────────────────────────────────────────────────── */
 
-.svg-icon.bg-mint, .svg-icon.bg-mint.shape-tilted-square:before, .svg-icon.shape-circle.bg-mint {
-	background: var(--mint);
-}
+.editor-styles-wrapper .svg-icon.is-color-accent    { color: var(--accent-color);    }
+.editor-styles-wrapper .svg-icon.is-color-secondary { color: var(--secondary-color); }
+.editor-styles-wrapper .svg-icon.is-color-dark      { color: var(--dark-brand-color);}
+.editor-styles-wrapper .svg-icon.is-color-white     { color: #ffffff;                }
+.editor-styles-wrapper .svg-icon.is-color-midtone   { color: var(--midtone-color);   }
 
-.svg-icon.bg-light-purple, .svg-icon.bg-light-purple.shape-tilted-square:before, .svg-icon.shape-circle.bg-light-purple {
-	background: var(--light-purple);
-}
 
-.svg-icon.shape-tilted-square {
-	background: none !important;
-}
-.svg-icon.shape-tilted-square:before {
-	z-index: 0;
-	position: absolute;
+/* ── Shape pseudo-elements ────────────────────────────────────────────────── */
+
+.editor-styles-wrapper .svg-icon.shape-circle::before,
+.editor-styles-wrapper .svg-icon.shape-square::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square::before {
 	content: '';
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: .75rem;
-	transform: rotate( -22deg );
+	position: absolute;
+	inset: 0;
+	z-index: 0;
 }
 
-.svg-icon.shape-circle {
-	background: #fff;
-	border-radius: 50%;
-}
+.editor-styles-wrapper .svg-icon.shape-circle::before        { border-radius: 50%;                            }
+.editor-styles-wrapper .svg-icon.shape-square::before        { border-radius: 0.5rem;                         }
+.editor-styles-wrapper .svg-icon.shape-tilted-square::before { border-radius: 0.75rem; transform: rotate(-22deg); }
+
+
+/* ── Background color modifiers ───────────────────────────────────────────── */
+
+.editor-styles-wrapper .svg-icon.shape-circle.bg-light::before,
+.editor-styles-wrapper .svg-icon.shape-square.bg-light::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square.bg-light::before      { background-color: var(--light-accent-color);      }
+
+.editor-styles-wrapper .svg-icon.shape-circle.bg-extralight::before,
+.editor-styles-wrapper .svg-icon.shape-square.bg-extralight::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square.bg-extralight::before { background-color: var(--extralight-accent-color); }
+
+.editor-styles-wrapper .svg-icon.shape-circle.bg-white::before,
+.editor-styles-wrapper .svg-icon.shape-square.bg-white::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square.bg-white::before      { background-color: #ffffff;                        }
+
+.editor-styles-wrapper .svg-icon.shape-circle.bg-accent::before,
+.editor-styles-wrapper .svg-icon.shape-square.bg-accent::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square.bg-accent::before     { background-color: var(--accent-color);            }
+
+.editor-styles-wrapper .svg-icon.shape-circle.bg-dark::before,
+.editor-styles-wrapper .svg-icon.shape-square.bg-dark::before,
+.editor-styles-wrapper .svg-icon.shape-tilted-square.bg-dark::before       { background-color: var(--dark-brand-color);        }
+
+.editor-styles-wrapper .svg-icon.shape-none.bg-light      { background-color: var(--light-accent-color);      }
+.editor-styles-wrapper .svg-icon.shape-none.bg-extralight { background-color: var(--extralight-accent-color); }
+.editor-styles-wrapper .svg-icon.shape-none.bg-white      { background-color: #ffffff;                        }
+.editor-styles-wrapper .svg-icon.shape-none.bg-accent     { background-color: var(--accent-color);            }
+.editor-styles-wrapper .svg-icon.shape-none.bg-dark       { background-color: var(--dark-brand-color);        }

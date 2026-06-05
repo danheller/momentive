@@ -3,6 +3,9 @@
  * blocks/icon-block/block.js
  *
  * Depends on: momentive-icon-picker (loaded first), plus wp-* handles.
+ *
+ * Icon color is driven by CSS `color` (currentColor), not a fill variable.
+ * Background and color options map to site CSS custom properties.
  */
 
 ( function ( blocks, element, blockEditor, components, i18n ) {
@@ -16,6 +19,35 @@
 	const availableIcons = window.momentiveIcons?.available || {};
 
 	// -------------------------------------------------------------------------
+	// Color options — map to CSS custom properties via is-color-* classes.
+	// Each value becomes a BEM modifier: .svg-icon.is-color-accent, etc.
+	// The stylesheet is responsible for setting `color` on each modifier.
+	// -------------------------------------------------------------------------
+
+	const COLOR_OPTIONS = [
+		{ label: __( 'Accent (blue)',    'momentive' ), value: 'accent'    },
+		{ label: __( 'Secondary (orange)', 'momentive' ), value: 'secondary' },
+		{ label: __( 'Dark navy',        'momentive' ), value: 'dark'      },
+		{ label: __( 'White',            'momentive' ), value: 'white'     },
+		{ label: __( 'Midtone (grey)',   'momentive' ), value: 'midtone'   },
+	];
+
+	const BACKGROUND_OPTIONS = [
+		{ label: __( 'None',             'momentive' ), value: 'none'      },
+		{ label: __( 'Light blue',       'momentive' ), value: 'light'     },
+		{ label: __( 'Extra light blue', 'momentive' ), value: 'extralight'},
+		{ label: __( 'White',            'momentive' ), value: 'white'     },
+		{ label: __( 'Accent (blue)',    'momentive' ), value: 'accent'    },
+		{ label: __( 'Dark navy',        'momentive' ), value: 'dark'      },
+	];
+
+	const SHAPE_OPTIONS = [
+		{ label: __( 'None',          'momentive' ), value: 'none'          },
+		{ label: __( 'Circle',        'momentive' ), value: 'circle'        },
+		{ label: __( 'Square',        'momentive' ), value: 'square'        },
+	];
+
+	// -------------------------------------------------------------------------
 	// Block registration
 	// -------------------------------------------------------------------------
 
@@ -25,19 +57,25 @@
 		category: 'common',
 
 		attributes: {
-			iconId:          { type: 'string', default: '' },
-			shape:           { type: 'string', default: 'circle' },
-			backgroundColor: { type: 'string', default: 'pink' },
-			strokeColor:     { type: 'string', default: 'default' },
-			fillColor:       { type: 'string', default: 'dark-purple' },
+			iconId:          { type: 'string', default: ''         },
+			shape:           { type: 'string', default: 'circle'   },
+			backgroundColor: { type: 'string', default: 'light'    },
+			iconColor:       { type: 'string', default: 'accent'   },
 		},
 
 		edit( { attributes, setAttributes } ) {
 			const IconPicker = window.momentive?.IconPicker;
-			
-			const { iconId, shape, backgroundColor, strokeColor, fillColor } = attributes;
+			const { iconId, shape, backgroundColor, iconColor } = attributes;
 			const iconLabel = availableIcons[ iconId ] || __( '(none selected)', 'momentive' );
-		
+
+			// Build class string for the preview span
+			const iconClasses = [
+				'svg-icon',
+				shape     !== 'none' ? `shape-${ shape }`            : '',
+				backgroundColor !== 'none' ? `bg-${ backgroundColor }` : '',
+				`is-color-${ iconColor }`,
+			].filter( Boolean ).join( ' ' );
+
 			return [
 				el( InspectorControls, {},
 					el( PanelBody, { title: __( 'Icon Settings', 'momentive' ), initialOpen: true },
@@ -48,67 +86,32 @@
 								icons: availableIcons,
 							} )
 							: el( 'p', {}, __( 'Icon picker unavailable.', 'momentive' ) ),
+
 						el( SelectControl, {
-							label: __( 'Shape', 'momentive' ),
-							value: shape,
-							options: [
-								{ label: 'Circle',        value: 'circle' },
-								{ label: 'Square',        value: 'square' },
-								{ label: 'Tilted Square', value: 'tilted-square' },
-								{ label: 'None',          value: 'none' },
-							],
+							label:    __( 'Shape', 'momentive' ),
+							value:    shape,
+							options:  SHAPE_OPTIONS,
 							onChange: ( value ) => setAttributes( { shape: value } ),
 						} ),
+
 						el( SelectControl, {
-							label: __( 'Background Color', 'momentive' ),
-							value: backgroundColor,
-							options: [
-								{ label: 'Pink',         value: 'pink' },
-								{ label: 'Light Purple', value: 'light-purple' },
-								{ label: 'Sky Blue',     value: 'sky-blue' },
-								{ label: 'Mint',         value: 'mint' },
-								{ label: 'White',        value: 'white' },
-								{ label: 'None',         value: 'none' },
-							],
+							label:    __( 'Background', 'momentive' ),
+							value:    backgroundColor,
+							options:  BACKGROUND_OPTIONS,
 							onChange: ( value ) => setAttributes( { backgroundColor: value } ),
 						} ),
+
 						el( SelectControl, {
-							label: __( 'Stroke Color', 'momentive' ),
-							value: strokeColor,
-							options: [
-								{ label: 'Default',     value: 'default' },
-								{ label: 'Dark Purple', value: 'dark-purple' },
-								{ label: 'Pink',        value: 'pink' },
-								{ label: 'Sky Blue',    value: 'sky-blue' },
-								{ label: 'White',       value: 'white' },
-							],
-							onChange: ( value ) => setAttributes( { strokeColor: value } ),
-						} ),
-						el( SelectControl, {
-							label: __( 'Fill Color', 'momentive' ),
-							value: fillColor,
-							options: [
-								{ label: 'None',         value: 'none' },
-								{ label: 'Dark Purple',  value: 'dark-purple' },
-								{ label: 'Pink',         value: 'pink' },
-								{ label: 'Light Purple', value: 'light-purple' },
-								{ label: 'Sky Blue',     value: 'sky-blue' },
-								{ label: 'Mint',         value: 'mint' },
-								{ label: 'White',        value: 'white' },
-							],
-							onChange: ( value ) => setAttributes( { fillColor: value } ),
+							label:    __( 'Icon color', 'momentive' ),
+							value:    iconColor,
+							options:  COLOR_OPTIONS,
+							onChange: ( value ) => setAttributes( { iconColor: value } ),
 						} )
 					)
 				),
 
 				el( 'div', { className: 'momentive-icon-block-preview' },
-					el( 'span', {
-						className: `svg-icon shape-${ shape } bg-${ backgroundColor }`,
-						style: {
-							'--icon-stroke': strokeColor !== 'default' ? `var(--${ strokeColor })` : undefined,
-							'--icon-fill':   fillColor   !== 'none'    ? `var(--${ fillColor })`   : undefined,
-						},
-					},
+					el( 'span', { className: iconClasses },
 						el( 'svg', { 'aria-hidden': 'true', focusable: 'false' },
 							el( 'use', { href: `#icon-${ iconId }` } )
 						)
