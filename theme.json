@@ -38,7 +38,7 @@
 					"slug": "text"
 				},
 				{
-					"color": "#eeeeee",
+					"color": "rgb(245, 245, 247)",
 					"name": "Neutral",
 					"slug": "neutral"
 				},

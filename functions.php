@@ -22,7 +22,8 @@
  * 6.0  Front-End Features
  *      6.1  Announcement Bar
  *      6.2  Reading Progress Bar
- * 7.0  Developer Experience (required from /inc/)
+ * 7.0  Custom Fields
+ * 8.0  Developer Experience (required from /inc/)
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -251,6 +252,8 @@ require get_template_directory() . '/blocks/social-share/block.php';
 require get_template_directory() . '/blocks/post-byline/block.php';
 require get_template_directory() . '/blocks/post-cta-button/block.php';
 require get_template_directory() . '/blocks/impact-stat/block.php';
+require get_template_directory() . '/blocks/testimonial/block.php';
+require get_template_directory() . '/blocks/accordion/block.php';
 
 
 /*==============================================================================
@@ -266,6 +269,8 @@ require get_template_directory() . '/inc/solutions.php';
 require get_template_directory() . '/inc/newsroom.php';
 
 require get_template_directory() . '/inc/authors.php';
+require get_template_directory() . '/inc/testimonials.php';
+require get_template_directory() . '/inc/faq.php';
 
 
 /*==============================================================================
@@ -443,9 +448,14 @@ add_action( 'wp_enqueue_scripts', function () {
 	);
 } );
 
+/*==============================================================================
+  7.0 - Custom Fields
+==============================================================================*/
+
+require get_template_directory() . '/inc/acf-groups.php';
 
 /*==============================================================================
-  7.0 - Developer Experience
+  8.0 - Developer Experience
 ==============================================================================*/
 
 // "Edit Header" and "Edit Footer" hover buttons visible to logged-in editors.

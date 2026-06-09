@@ -1,0 +1,17 @@
+{
+	"name": "momentive/icon-block",
+	"apiVersion": 3,
+	"title": "Icon",
+	"category": "momentive",
+	"icon": "star-filled",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+		"iconId":          { "type": "string", "default": "" },
+		"shape":           { "type": "string", "default": "circle" },
+		"backgroundColor": { "type": "string", "default": "light" },
+		"iconColor":       { "type": "string", "default": "accent" },
+		"className":       { "type": "string", "default": "" }
+	}
+}

@@ -134,8 +134,8 @@ function momentive_toc_extract_headings( string $content, int $max_level ): arra
 // ── Render callback ───────────────────────────────────────────────────────────
 
 function momentive_toc_render( array $attributes ): string {
-    $allowed_post_types = [ 'post', 'press-article', 'case-studies' ];
-    if ( ! is_singular( $allowed_post_types ) ) return $content;
+	$allowed_post_types = [ 'post', 'press-article', 'case-studies' ];
+	if ( ! is_singular( $allowed_post_types ) ) return '';
 
 	$post        = get_queried_object();
 	$title       = esc_html( $attributes['title']           ?? 'Contents' );

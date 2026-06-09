@@ -209,6 +209,19 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 			options.focus     = 0;
 		}
 
+		if ( which.classList.contains( 'single-slide' ) ) {
+			options.type       = 'fade';
+			options.perPage    = 1;
+			options.perMove    = 1;
+			options.autoWidth  = false;
+			options.trimSpace  = false;
+			options.rewind     = false;
+			options.padding    = 0;
+			options.speed      = 1200;
+			options.drag       = false;
+			options.breakpoints = {};   // ← clear breakpoints so slide-mode overrides don't interfere
+		}
+
 		which.id = 'spl-' + splid;
 		const sp = splide[ splid ] = new Splide( '#spl-' + splid, options );
 
@@ -286,7 +299,14 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 						}
 					} );
 				}
+
+    sp.Components.Slides.get().forEach( slide => {
+        console.log( slide.index, slide.slide.style.transform, slide.slide.style.opacity );
+    } );
+
+
 			} );
+
 		
 			window.addEventListener( 'resize', () => {
 				sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
@@ -313,9 +333,52 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 		buildSliderFromChildren( el, '.solution', splidenumber++ );
 	} );
 
+//	document.querySelectorAll( '.testimonials-slider' ).forEach( el => {
+//		buildSliderFromChildren( el, '.testimonial', splidenumber++ );
+//	} );
+
 	document.querySelectorAll( '.testimonials-slider' ).forEach( el => {
-		buildSliderFromChildren( el, '.testimonial', splidenumber++ );
+		// Query-loop testimonials have WP's structure already; wire it up directly.
+		// Static/legacy testimonials use buildSliderFromChildren to wrap .testimonial divs.
+		const existingTrack = el.querySelector( '.wp-block-query' );
+	
+		if ( existingTrack ) {
+			// Query loop structure — same approach as news-slider
+			el.classList.add( 'splide', 'slider' );
+			existingTrack.classList.add( 'splide__track', 'alignfull' );
+	
+			const list = el.querySelector( '.wp-block-post-template' );
+			if ( list ) {
+				list.classList.add( 'splide__list' );
+				list.querySelectorAll( 'li' ).forEach( li => li.classList.add( 'splide__slide' ) );
+			}
+	
+			setupslider( el, splidenumber++ );
+		} else {
+			// Legacy static structure — wrap .testimonial children
+			buildSliderFromChildren( el, '.testimonial', splidenumber++ );
+		}
 	} );
+
+document.querySelectorAll( '.testimonials-slider' ).forEach( el => {
+    const existingTrack = el.querySelector( '.wp-block-query' );
+
+    if ( existingTrack ) {
+        el.classList.add( 'splide', 'slider' );
+        existingTrack.classList.add( 'splide__track', 'alignfull' );
+
+        const list = el.querySelector( '.wp-block-post-template' );
+        if ( list ) {
+            list.classList.add( 'splide__list' );
+            list.querySelectorAll( 'li' ).forEach( li => li.classList.add( 'splide__slide' ) );
+        }
+
+        // Defer mount one frame to ensure all slides are in the DOM
+        requestAnimationFrame( () => setupslider( el, splidenumber++ ) );
+    } else {
+        buildSliderFromChildren( el, '.testimonial', splidenumber++ );
+    }
+} );
 
 	document.querySelectorAll( '.news-slider' ).forEach( el => {
 		el.classList.add( 'splide', 'slider' );

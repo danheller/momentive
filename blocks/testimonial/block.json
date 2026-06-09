@@ -1,0 +1,23 @@
+{
+	"name": "momentive/testimonial",
+	"apiVersion": 3,
+	"title": "Testimonial",
+	"description": "A single testimonial card pulled from the Testimonials CPT.",
+	"category": "momentive",
+	"icon": "format-quote",
+	"supports": {
+		"html": false,
+		"inserter": true
+	},
+	"usesContext": ["postId"],
+	"attributes": {
+		"testimonialId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showCaseStudyButton": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+}

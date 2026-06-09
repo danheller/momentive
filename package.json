@@ -13,7 +13,10 @@
 	"type": "commonjs",
 	"devDependencies": {
 		"@wordpress/scripts": "^32.4.0",
-		"concurrently": "^10.0.3"
+		"concurrently": "^10.0.3",
+		"mini-css-extract-plugin": "^2.10.2",
+		"sass": "^1.100.0",
+		"sass-loader": "^17.0.0"
 	},
 	"dependencies": {
 		"abab": "^2.0.6",
@@ -535,7 +538,6 @@
 		"mime-types": "^2.1.35",
 		"mimic-fn": "^2.1.0",
 		"min-indent": "^1.0.1",
-		"mini-css-extract-plugin": "^2.10.2",
 		"minimalistic-assert": "^1.0.1",
 		"minimatch": "^3.1.5",
 		"minimist": "^1.2.8",
@@ -734,8 +736,6 @@
 		"safe-push-apply": "^1.0.0",
 		"safe-regex-test": "^1.1.0",
 		"safer-buffer": "^2.1.2",
-		"sass": "^1.100.0",
-		"sass-loader": "^16.0.8",
 		"sax": "^1.6.0",
 		"saxes": "^6.0.0",
 		"scheduler": "^0.23.2",
@@ -790,6 +790,7 @@
 		"statuses": "^2.0.2",
 		"stop-iteration-iterator": "^1.1.0",
 		"streamx": "^2.26.0",
+		"string_decoder": "^1.3.0",
 		"string-length": "^4.0.2",
 		"string-width": "^4.2.3",
 		"string.prototype.includes": "^2.0.1",
@@ -798,7 +799,6 @@
 		"string.prototype.trim": "^1.2.10",
 		"string.prototype.trimend": "^1.0.9",
 		"string.prototype.trimstart": "^1.0.8",
-		"string_decoder": "^1.3.0",
 		"strip-ansi": "^6.0.1",
 		"strip-bom": "^4.0.0",
 		"strip-final-newline": "^2.0.0",

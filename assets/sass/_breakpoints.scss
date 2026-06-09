@@ -1,0 +1,106 @@
+/*==============================================================
+  0.1 - Breakpoint Variables
+==============================================================*/
+
+// Named screen-width thresholds used to build media query strings below.
+// All values are in ems so they scale with the user's browser font size.
+$screen-xxsmall:  30em  !default;  /* 480px  */
+$screen-xsmall:   35em  !default;  /* 560px  */
+$screen-small:    40em  !default;  /* 640px  */
+$screen-medium:   48.875em  !default;  /* 782px  */
+$screen-mediumish: 56em !default;  /* 896px  */
+$screen-large:    70em !default; /* 1120px */
+$screen-largish:  73.875rem !default; /* 1182px */
+$screen-xlarge:   85.375em  !default;  /* 1366px */
+$screen-xxlarge: 120em  !default;  /* 1920px */
+
+// NOTE: $increment is used to create range-based media queries
+// (e.g. "min-width: X and max-width: Y"). The intent is a 1px
+// step between the top of one range and the base of the next.
+// However, SASS cannot evaluate calc() at compile time, so these
+// $…-base variables may not compute as expected. Verify the
+// compiled output if range queries behave unexpectedly.
+$base-font: 16 !default;
+$increment: calc( 1 / $base-font );
+
+$xxsmall-base:   0em;
+$xxsmall-top:    $screen-xsmall;
+
+$xsmall-base:    $screen-xxsmall + $increment;
+$xsmall-top:     $screen-xsmall;
+
+$small-base:     $screen-xsmall + $increment;
+$small-top:      $screen-small;
+
+$medium-base:    $screen-small + $increment;
+$medium-top:     $screen-medium;
+
+$mediumish-base: $screen-medium + $increment;
+$mediumish-top:  $screen-mediumish;
+
+// NOTE: $large-base intentionally starts at $screen-medium (768px),
+// not $screen-mediumish. This means $large-range overlaps $mediumish-range.
+// Intentional? If not, change to $screen-mediumish + $increment.
+$large-base:     $screen-medium + $increment;
+$large-top:      $screen-large;
+
+$largish-base:   $screen-large + $increment;
+$largish-top:    $screen-largish;
+
+// NOTE: $xlarge-base starts at $screen-large (1080px), not $screen-largish.
+// Same potential overlap as above — verify intent.
+$xlarge-base:    $screen-large + $increment;
+$xlarge-top:     $screen-xlarge;
+
+$xxlarge-base:   $screen-xlarge + $increment;
+$xxlarge-top:    $screen-xxlarge;
+
+
+/*==============================================================
+  0.2 - Media Query Strings
+==============================================================*/
+
+// Usage: @media #{$medium-up} { … }
+// Three variants per size: -below (max-width), -range (min+max), -up (min-width).
+
+$screen: "only screen" !default;
+
+$landscape: "#{$screen} and (orientation: landscape)" !default;
+$portrait:  "#{$screen} and (orientation: portrait)"  !default;
+
+$xxsmall-below: "#{$screen} and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-range: "#{$screen} and (min-width: #{$xxsmall-base}) and (max-width: #{$xxsmall-top})" !default;
+$xxsmall-up:    "#{$screen} and (min-width: #{$xxsmall-top})" !default;
+
+$xsmall-below:  "#{$screen} and (max-width: #{$xsmall-top})" !default;
+$xsmall-range:  "#{$screen} and (min-width: #{$xsmall-base}) and (max-width: #{$xsmall-top})" !default;
+$xsmall-up:     "#{$screen} and (min-width: #{$xsmall-top})" !default;
+
+$small-below:   "#{$screen} and (max-width: #{$small-top})" !default;
+$small-range:   "#{$screen} and (min-width: #{$small-base}) and (max-width: #{$small-top})" !default;
+$small-up:      "#{$screen} and (min-width: #{$small-top})" !default;
+
+$medium-below:  "#{$screen} and (max-width: #{$medium-top})" !default;
+$medium-range:  "#{$screen} and (min-width: #{$medium-base}) and (max-width: #{$medium-top})" !default;
+$medium-up:     "#{$screen} and (min-width: #{$medium-top})" !default;
+
+$mediumish-below: "#{$screen} and (max-width: #{$mediumish-top})" !default;
+$mediumish-range: "#{$screen} and (min-width: #{$mediumish-base}) and (max-width: #{$mediumish-top})" !default;
+$mediumish-up:    "#{$screen} and (min-width: #{$mediumish-top})" !default;
+
+$large-below:   "#{$screen} and (max-width: #{$large-top})" !default;
+$large-range:   "#{$screen} and (min-width: #{$large-base}) and (max-width: #{$large-top})" !default;
+$large-up:      "#{$screen} and (min-width: #{$large-top})" !default;
+
+$largish-below: "#{$screen} and (max-width: #{$largish-top})" !default;
+$largish-range: "#{$screen} and (min-width: #{$largish-base}) and (max-width: #{$largish-top})" !default;
+$largish-up:    "#{$screen} and (min-width: #{$largish-top})" !default;
+
+$xlarge-below:  "#{$screen} and (max-width: #{$xlarge-top})" !default;
+$xlarge-range:  "#{$screen} and (min-width: #{$xlarge-base}) and (max-width: #{$xlarge-top})" !default;
+$xlarge-up:     "#{$screen} and (min-width: #{$xlarge-top})" !default;
+
+$xxlarge-below: "#{$screen} and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-range: "#{$screen} and (min-width: #{$xxlarge-base}) and (max-width: #{$xxlarge-top})" !default;
+$xxlarge-up:    "#{$screen} and (min-width: #{$xxlarge-top})" !default;
+

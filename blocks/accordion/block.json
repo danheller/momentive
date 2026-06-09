@@ -1,0 +1,35 @@
+{
+	"name": "momentive/accordion",
+	"apiVersion": 3,
+	"title": "Accordion",
+	"category": "momentive",
+	"icon": "list-view",
+	"description": "Collapsible FAQ items. Supports static content or a live FAQ CPT query.",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+
+		"style":        { "type": "string",  "default": "default" },
+		"closeOthers":  { "type": "boolean", "default": false },
+		"queryMode":    { "type": "boolean", "default": false },
+
+		"items": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"question": { "type": "string", "default": "" },
+					"answer":   { "type": "string", "default": "" },
+					"iconSlug": { "type": "string", "default": "" },
+					"category": { "type": "string", "default": "" }
+				}
+			}
+		},
+
+		"queryPostsPerPage": { "type": "number",  "default": 9    },
+		"queryCategory":     { "type": "string",  "default": ""   },
+		"queryLoadMore":     { "type": "boolean", "default": true  }
+	}
+}

@@ -1,0 +1,86 @@
+/*==============================================================
+  0.3 - Placeholders and Mixins
+==============================================================*/
+
+// Adds `position: relative` and an empty `::before` pseudo-element,
+// both absolutely positioned. Used wherever a pseudo-element provides
+// a background layer, overlay, or decorative shape.
+@mixin has-before {
+	position: relative;
+	&:before {
+		position: absolute;
+		content: '';
+	}
+}
+
+// Same pattern for ::after.
+@mixin has-after {
+	position: relative;
+	&:after {
+		position: absolute;
+		content: '';
+	}
+}
+
+// Visually hides text while keeping it accessible to screen readers.
+// Use on elements that display an icon or background image instead of text.
+@mixin hidetext {
+	text-indent: -1000rem;
+	overflow: hidden;
+}
+
+// Styled select wrapper: hides the native arrow and draws a custom chevron
+// using an ::after pseudo-element.
+@mixin minimal-select {
+	@include has-after;
+	&:after {
+		width: .5rem;
+		height: .5rem;
+		right: 1rem;
+		top: 1.75rem;
+		border-right: .125rem solid rgb(0,0,0);
+		border-bottom: .125rem solid rgb(0,0,0);
+		transform: rotate(45deg);
+		pointer-events: none;
+	}
+	select {
+		line-height: 1.5;
+		width: 100%;
+		border: 0;
+		border-radius: .25rem;
+		padding: 1rem 4rem 1rem 1rem;
+		font-size: 1rem;
+		margin: .5rem 0;
+		appearance: none;
+	}
+}
+
+@mixin nomargin { margin: 0; }
+@mixin nopadding { padding: 0; }
+
+@mixin clearfix {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+		margin-bottom: -2px;
+	}
+}
+
+// Pulls an element to the full viewport edge on smaller screens,
+// overriding the standard page padding.
+@mixin to-edge {
+	margin-left: calc( -1 * var(--wp--style--root--padding-left) ) !important;
+	margin-right: calc( -1 * var(--wp--style--root--padding-right) ) !important;
+}
+
+@mixin round {
+	overflow: hidden;
+	border-radius: 1rem;
+}
+
+@mixin rounder { 
+	overflow: hidden;
+	border-radius: 1.5rem; 
+}
+

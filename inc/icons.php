@@ -20,21 +20,21 @@
  * Label is derived from the filename: "dollar-sign.svg" → "Dollar Sign".
  */
 function momentive_get_available_icons(): array {
-    $icon_dir = get_stylesheet_directory() . '/assets/icons/';
-    $files    = glob( $icon_dir . '*.svg' );
+	$icon_dir = get_stylesheet_directory() . '/assets/icons/';
+	$files    = glob( $icon_dir . '*.svg' );
 
-    if ( empty( $files ) ) {
-        return [];
-    }
+	if ( empty( $files ) ) {
+		return [];
+	}
 
-    $icons = [];
-    foreach ( $files as $file ) {
-        $slug          = basename( $file, '.svg' );
-        $icons[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) );
-    }
+	$icons = [];
+	foreach ( $files as $file ) {
+		$slug          = basename( $file, '.svg' );
+		$icons[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) );
+	}
 
-    ksort( $icons );
-    return $icons;
+	ksort( $icons );
+	return $icons;
 }
 
 /**
@@ -166,7 +166,6 @@ function momentive_get_used_icons(): array {
 add_action( 'init', 'momentive_register_icon_block' );
 
 function momentive_register_icon_block(): void {
-
 	wp_register_script(
 		'momentive-icon-picker',
 		get_stylesheet_directory_uri() . '/assets/js/icon-picker.js',
@@ -195,21 +194,16 @@ function momentive_register_icon_block(): void {
 		wp_get_theme()->get( 'Version' )
 	);
 
-	register_block_type( 'momentive/icon-block', [
-		'editor_script'   => 'momentive-icon-block',
-		'editor_style'    => 'momentive-icon-block-editor',
-		'style'           => 'momentive-icon-block-style',
-		'render_callback' => 'momentive_render_icon_block',
-		'attributes'      => [
-			'iconId'          => [ 'type' => 'string', 'default' => ''       ],
-			'shape'           => [ 'type' => 'string', 'default' => 'circle' ],
-			'backgroundColor' => [ 'type' => 'string', 'default' => 'light'  ],
-			'iconColor'       => [ 'type' => 'string', 'default' => 'accent' ],
-			'className'       => [ 'type' => 'string', 'default' => ''       ],
-		],
-	] );
+	register_block_type(
+		get_template_directory() . '/blocks/icon-block',
+		[
+			'render_callback' => 'momentive_render_icon_block',
+			'editor_script'   => 'momentive-icon-block',
+			'editor_style'    => 'momentive-icon-block-editor',
+			'style'           => 'momentive-icon-block-style',
+		]
+	);
 }
-
 
 function momentive_render_icon_block( array $attributes ): string {
 	$icon_id      = sanitize_key( $attributes['iconId']          ?? '' );
@@ -260,19 +254,14 @@ function momentive_register_icon_link_block(): void {
 		wp_get_theme()->get( 'Version' )
 	);
 
-	register_block_type( 'momentive/icon-link', [
-		'editor_script'   => 'momentive-icon-link-block',
-		'style'           => 'momentive-icon-link-style',
-		'render_callback' => 'momentive_render_icon_link_block',
-		'attributes'      => [
-			'url'         => [ 'type' => 'string',  'default' => '' ],
-			'title'       => [ 'type' => 'string',  'default' => '' ],
-			'tagline'     => [ 'type' => 'string',  'default' => '' ],
-			'iconSlug'    => [ 'type' => 'string',  'default' => '' ],
-			'iconSize'    => [ 'type' => 'string',  'default' => 'small' ],
-			'accentColor' => [ 'type' => 'string',  'default' => '' ],
-		],
-	] );
+	register_block_type(
+		get_template_directory() . '/blocks/icon-link',
+		[
+			'render_callback' => 'momentive_render_icon_link_block',
+			'editor_script'   => 'momentive-icon-link-block',
+			'style'           => 'momentive-icon-link-style',
+		]
+	);
 }
 
 function momentive_render_icon_link_block( array $attributes ): string {

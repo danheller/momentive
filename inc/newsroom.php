@@ -61,7 +61,7 @@ function momentive_newsroom_setup() {
 add_action( 'init', 'momentive_newsroom_setup' );
 
 
-/* Give the single tempalte in either the "post" or "press-article" post type the 
+/* Give the single template in either the "post" or "press-article" post type the 
  * "single-article" body class 
  */
 

@@ -1,0 +1,273 @@
+/**
+ * Accordion block — frontend styles
+ * blocks/accordion/style.css
+ *
+ * Three style variants:
+ *   .is-style-default      — clean, minimal (matches RankMath-style simple accordion)
+ *   .is-style-categorized  — category chip on the right of the question
+ *   .is-style-icon         — icon to the left of the question
+ *
+ * Animation uses @starting-style so the panel slides open without JS height
+ * calculation, with a graceful no-op fallback for browsers that don't support it.
+ */
+
+/* ── Wrapper ───────────────────────────────────────────────────────────────── */
+
+.momentive-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 100%;
+}
+
+/* ── Item ──────────────────────────────────────────────────────────────────── */
+
+.accordion-item {
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: var(--wp--custom--border-radius--md, 0.75rem);
+	overflow: hidden;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.accordion-item.is-open {
+	border-color: var(--accent-color, rgb(0, 120, 255));
+}
+
+/* ── Trigger (the button row) ──────────────────────────────────────────────── */
+
+.accordion-trigger {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	padding: 1.125rem 1.25rem;
+	background: none;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	font-size: inherit;
+	font-weight: var(--wp--custom--font-weight--semibold, 600);
+	color: inherit;
+	line-height: 1.4;
+}
+
+.accordion-trigger:focus-visible {
+	outline: 0.125rem solid var(--accent-color, rgb(0, 120, 255));
+	outline-offset: -0.125rem;
+	border-radius: var(--wp--custom--border-radius--md, 0.75rem);
+}
+
+/* Question text takes available space; chip and chevron stay right. */
+.accordion-question {
+	flex: 1;
+}
+
+/* ── Chevron ───────────────────────────────────────────────────────────────── */
+
+.accordion-chevron {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 1.25rem;
+	height: 1.25rem;
+	color: var(--light-text-color, rgb(88, 88, 88));
+	transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.accordion-chevron svg {
+	width: 100%;
+	height: 100%;
+}
+
+.accordion-item.is-open .accordion-chevron {
+	transform: rotate( 180deg );
+	color: var(--accent-color, rgb(0, 120, 255));
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────────────── */
+
+.accordion-panel {
+	overflow: hidden;
+}
+
+.accordion-panel[hidden] {
+	display: none;
+}
+
+.accordion-panel-inner {
+	padding: 0 1.25rem 1.25rem;
+	color: var(--light-text-color, rgb(88, 88, 88));
+	line-height: 1.7;
+}
+
+.accordion-panel-inner > *:first-child {
+	margin-top: 0;
+}
+
+.accordion-panel-inner > *:last-child {
+	margin-bottom: 0;
+}
+
+/* ── Variant: icon ─────────────────────────────────────────────────────────── */
+
+.is-style-icon .accordion-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 1.5rem;
+	height: 1.5rem;
+	color: var(--accent-color, rgb(0, 120, 255));
+	transition: color 0.2s ease;
+}
+
+.is-style-icon .accordion-icon svg {
+	width: 100%;
+	height: 100%;
+	fill: currentColor;
+}
+
+/* ── Variant: categorized ──────────────────────────────────────────────────── */
+
+.accordion-category {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	padding: 0.2em 0.65em;
+	border-radius: 2em;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+	line-height: 1.5;
+
+	/*
+	 * Default category color — overridden per-term via data attribute.
+	 * If the per-category color system (get_solution_color_for_term) is
+	 * extended to this block, inject a --category-color inline style on
+	 * the chip and reference it here.
+	 */
+	background: var(--extralight-accent-color, rgb(224, 243, 251));
+	color: var(--accent-color, rgb(0, 120, 255));
+}
+
+/*
+ * Per-category color overrides.
+ * Extend this map as new FAQ categories are created, mirroring the
+ * solution accent-color system used elsewhere in the theme.
+ *
+ * Example:
+ *   .accordion-category[data-category="membership"]   { background: …; color: …; }
+ *   .accordion-category[data-category="events"]       { background: …; color: …; }
+ */
+
+/* ── Open animation (progressive enhancement) ──────────────────────────────── */
+
+/*
+ * Uses `@starting-style` (Chrome 117+, Firefox 129+) so the panel
+ * height animates from 0 to auto without JS measurement.
+ * In unsupported browsers the panel simply appears / disappears instantly.
+ */
+
+@supports (interpolate-size: allow-keywords) {
+	:root {
+		interpolate-size: allow-keywords;
+	}
+
+	.accordion-panel {
+		transition: height 0.3s ease;
+		height: 0;
+		display: block; /* override [hidden] display:none so transition fires */
+		overflow: hidden;
+	}
+
+	.accordion-panel[hidden] {
+		height: 0;
+		visibility: hidden;
+	}
+
+	.accordion-panel:not([hidden]) {
+		height: auto;
+	}
+
+	@starting-style {
+		.accordion-panel:not([hidden]) {
+			height: 0;
+		}
+	}
+}
+
+/* Respect reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+	.accordion-trigger,
+	.accordion-chevron,
+	.accordion-panel,
+	.is-style-icon .accordion-icon {
+		transition: none;
+	}
+}
+
+/* ── Loading state (query mode load-more) ───────────────────────────────────── */
+
+.momentive-accordion[aria-busy="true"] {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* ── Editor preview tweaks ──────────────────────────────────────────────────── */
+
+.accordion-editor-placeholder,
+.accordion-editor-query-notice {
+	padding: 0.75rem 1rem;
+	background: var(--superlight-accent-color, #eff9fd);
+	border: 1px dashed var(--accent-color, #0078ff);
+	border-radius: 0.5rem;
+	font-size: 0.875rem;
+	opacity: 0.8;
+}
+
+.accordion-editor-item-list {
+	margin-bottom: 0.75rem;
+}
+
+.accordion-editor-item-row {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.375rem 0;
+	border-bottom: 1px solid var(--menu-border-color, #dbe1f3);
+	font-size: 0.875rem;
+}
+
+.accordion-editor-item-row.is-editing {
+	background: var(--extralight-accent-color, rgb(224, 243, 251));
+	border-radius: 0.25rem;
+	padding-left: 0.375rem;
+}
+
+.accordion-editor-item-label {
+	flex: 1;
+	text-align: left;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: inherit;
+	color: inherit;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.accordion-editor-item-actions {
+	display: flex;
+	gap: 0.125rem;
+	flex-shrink: 0;
+}
+
+.accordion-editor-item-fields {
+	padding: 0.75rem;
+	background: var(--wp--preset--color--base, #fff);
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: 0.5rem;
+	margin-bottom: 0.75rem;
+}

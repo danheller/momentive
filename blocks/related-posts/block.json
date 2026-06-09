@@ -2,6 +2,7 @@
 	"name": "momentive/related-posts",
 	"title": "Related Posts",
 	"category": "theme",
-	"editorScript": "file:./index.js",
+	"apiVersion": 3,
+	"editorScript": "file:./editor.js",
 	"dependencies": ["wp-blocks", "wp-element"]
 }
