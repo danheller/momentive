@@ -29,8 +29,8 @@
 		edit: function ( props ) {
 			var attributes    = props.attributes;
 			var setAttributes = props.setAttributes;
-			var context       = props.context || {};
-			var inQueryLoop   = !! context.postId;
+			var context     = props.context || {};
+			var inQueryLoop = context.postType === 'testimonials';
 
 			var optionsState = useState( [] );
 			var options      = optionsState[0];

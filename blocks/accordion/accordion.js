@@ -7,7 +7,6 @@
  * Handles:
  *  - Open / close individual items via <button aria-expanded>.
  *  - "Close others" behaviour when .js-close-others is present.
- *  - Load-more button for query-mode accordions.
  *  - Keyboard: Arrow keys move focus between triggers; Home/End jump to first/last.
  */
 
@@ -66,88 +65,6 @@
 		if ( panel ) panel.setAttribute( 'hidden', '' );
 	}
 
-
-	// ── Query-mode load-more ──────────────────────────────────────────────────
-
-	function initLoadMore( wrapper ) {
-		const btn      = wrapper.querySelector( '.accordion-load-more-btn' );
-		const accordion = wrapper.querySelector( '.momentive-accordion.is-query-mode' );
-
-		if ( ! btn || ! accordion ) return;
-
-		const postsPerPage = parseInt( accordion.dataset.postsPerPage || '9', 10 );
-		const category     = accordion.dataset.category || '';
-		const totalPages   = parseInt( accordion.dataset.totalPages || '1', 10 );
-
-		btn.addEventListener( 'click', function () {
-			const nextPage = parseInt( btn.dataset.page || '1', 10 ) + 1;
-			if ( nextPage > totalPages ) return;
-
-			btn.disabled    = true;
-			btn.textContent = 'Loading…';
-
-			const params = new URLSearchParams( {
-				post_type:      'faq',
-				posts_per_page: postsPerPage,
-				page:           nextPage,
-				orderby:        'menu_order',
-				order:          'ASC',
-			} );
-
-			if ( category ) params.set( 'category_name', category );
-
-			// Use the REST API for the FAQ CPT.
-			// Assumes the CPT is registered with show_in_rest: true and rest_base: 'faqs'.
-			const url = '/wp-json/wp/v2/faqs?' + new URLSearchParams( {
-				per_page: postsPerPage,
-				page:     nextPage,
-				orderby:  'menu_order',
-				order:    'asc',
-				_fields:  'id,title,content,categories',
-			} );
-
-			fetch( url )
-				.then( function ( res ) { return res.json(); } )
-				.then( function ( posts ) {
-					const fragment = document.createDocumentFragment();
-
-					posts.forEach( function ( post ) {
-						const item = buildItemElement( post );
-						fragment.appendChild( item );
-					} );
-
-					accordion.appendChild( fragment );
-
-					// Re-init newly appended triggers.
-					const newTriggers = Array.from(
-						accordion.querySelectorAll( '.accordion-trigger:not([data-init])' )
-					);
-
-					newTriggers.forEach( function ( trigger ) {
-						trigger.setAttribute( 'data-init', '' );
-						trigger.addEventListener( 'click', function () {
-							const isOpen = trigger.getAttribute( 'aria-expanded' ) === 'true';
-							isOpen ? closeItem( trigger ) : openItem( trigger );
-						} );
-					} );
-
-					btn.dataset.page = nextPage;
-					btn.disabled     = false;
-					btn.textContent  = 'Load More';
-
-					if ( nextPage >= totalPages ) {
-						btn.closest( '.accordion-load-more-wrapper' ).hidden = true;
-					}
-				} )
-				.catch( function ( err ) {
-					console.error( 'Accordion load-more error:', err );
-					btn.disabled    = false;
-					btn.textContent = 'Load More';
-				} );
-		} );
-	}
-
-
 	/**
 	 * Build a single .accordion-item element from a REST API post object.
 	 * This mirrors the server-rendered markup in block.php.
@@ -181,11 +98,6 @@
 
 	document.addEventListener( 'DOMContentLoaded', function () {
 		document.querySelectorAll( '.momentive-accordion' ).forEach( initAccordion );
-
-		// Load-more lives in a sibling wrapper just after the accordion.
-		document.querySelectorAll( '.accordion-load-more-wrapper' ).forEach( function ( wrapper ) {
-			initLoadMore( wrapper.closest( '*' ) || wrapper.parentElement );
-		} );
 	} );
 
 } )();

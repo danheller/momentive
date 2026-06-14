@@ -158,9 +158,11 @@ function momentive_register_block_styles() {
 			'bg-dots'          => __( 'Dots Background',       'momentive' ),
 			'bg-rings'         => __( 'Rings Background',      'momentive' ),
 			'bg-dark'          => __( 'Dark Background',       'momentive' ),
-			'bg-light-blue'    => __( 'Light Blue Background', 'momentive' ),
-			'bg-blue-ellipse'  => __( 'Blue Ellipse',          'momentive' ),
-			'bg-gradient-blue' => __( 'Blue Gradient',         'momentive' ),
+			'bg-light'         => __( 'Light Background',      'momentive' ),
+			'bg-gradient'      => __( 'Gradient Background',   'momentive' ),
+			'bg-ellipse'       => __( 'Ellipse',               'momentive' ),
+			'ellipse-bottom'   => __( 'Ellipse Bottom',        'momentive' ),
+			'ellipse-top'      => __( 'Ellipse Top',           'momentive' ),
 		],
 
 		'core/list' => [
@@ -168,15 +170,19 @@ function momentive_register_block_styles() {
 			'column-checks' => __( 'Check Marks', 'momentive' ),
 		],
 
-		'core/quote' => [
-			'shadow-light' => __( 'Shadow',          'momentive' ),
-			'shadow-solid' => __( 'Solid Shadow',    'momentive' ),
-			'quote'        => __( 'Large Pull Quote', 'momentive' ),
+		'core/media-text' => [
+			'stacked'   => __( 'Stacked',         'momentive' ),
 		],
 
 		'core/paragraph' => [
 			'eyebrow'   => __( 'Eyebrow',         'momentive' ),
 			'uppercase' => __( 'Uppercase Label', 'momentive' ),
+		],
+
+		'core/quote' => [
+			'shadow-light' => __( 'Shadow',          'momentive' ),
+			'shadow-solid' => __( 'Solid Shadow',    'momentive' ),
+			'quote'        => __( 'Large Pull Quote', 'momentive' ),
 		],
 
 		'core/heading' => [
@@ -186,7 +192,9 @@ function momentive_register_block_styles() {
 
 		'core/image' => [
 			'shadow' => __( 'Shadow',  'momentive' ),
-			'round'  => __( 'Rounded', 'momentive' ),
+			'round'  => __( 'Round', 'momentive' ),
+			'rounder'  => __( 'Rounder', 'momentive' ),
+
 		],
 
 		'core/social-links' => [
@@ -209,9 +217,28 @@ function momentive_register_block_styles() {
 			] );
 		}
 	}
+	
+
 }
 
+// rename "rounded" image block style
+add_action( 'enqueue_block_editor_assets', function() {
 
+	wp_add_inline_script(
+		'wp-dom-ready',
+		<<<JS
+		wp.domReady( function() {
+			setTimeout( function() {
+				wp.blocks.unregisterBlockStyle(
+					'core/image',
+					'rounded'
+				);
+			}, 2000 );
+		} );
+		JS
+	);
+
+} );
 /*------------------------------------------------------------------------------
   3.2 - Block Pattern Categories
   These appear as filter tabs in the block inserter's Patterns panel.
@@ -254,6 +281,8 @@ require get_template_directory() . '/blocks/post-cta-button/block.php';
 require get_template_directory() . '/blocks/impact-stat/block.php';
 require get_template_directory() . '/blocks/testimonial/block.php';
 require get_template_directory() . '/blocks/accordion/block.php';
+require get_template_directory() . '/blocks/hubspot-form/block.php';
+require get_template_directory() . '/blocks/megamenu-panel/block.php';
 
 
 /*==============================================================================
@@ -470,3 +499,62 @@ require get_template_directory() . '/inc/show-patterns-in-menu.php';
 
 // Removes all comment-related UI, menus, and dashboard widgets.
 require get_template_directory() . '/inc/disable-comments.php';
+
+
+/**
+ * Hide the standard WordPress accordion and icon blocks to avoid ambiguity.
+ */
+
+add_filter( 'allowed_block_types_all', function( $allowed, $context ) {
+
+	if ( ! is_array( $allowed ) ) {
+		$allowed = WP_Block_Type_Registry::get_instance()->get_all_registered();
+		$allowed = array_keys( $allowed );
+	}
+	$blocked = [
+		'core/details',
+		'core/accordion',
+		'core/accordion-item',
+		'core/accordion-heading',
+		'core/accordion-panel',
+		'core/icon',
+	];
+	return array_diff( $allowed, $blocked );
+
+}, 10, 2 );
+
+add_filter( 'block_editor_settings_all', function( $settings ) {
+	if ( isset( $settings['__unstableBlockDefinitions'] ) ) {
+		foreach ( [ 'core/accordion', 'core/accordion-item', 'core/accordion-heading', 'core/accordion-panel', 'core/details', 'core/icon' ] as $name ) {
+			unset( $settings['__unstableBlockDefinitions'][ $name ] );
+		}
+	}
+	return $settings;
+} );
+
+wp_add_inline_script( 'wp-edit-post', "
+wp.domReady(function() {
+
+	const targets = [
+		'core/details',
+		'core/accordion',
+		'core/accordion-item',
+		'core/accordion-heading',
+		'core/accordion-panel',
+		'core/icon'
+	];
+	const unsubscribe = wp.data.subscribe(() => {
+		const ready = targets.every(
+			name => wp.blocks.getBlockType(name)
+		);
+		if ( ! ready ) {
+			return;
+		}
+		targets.forEach(name => {
+			wp.blocks.unregisterBlockType(name);
+		});
+		unsubscribe();
+	});
+
+});
+" );

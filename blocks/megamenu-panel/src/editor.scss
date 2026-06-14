@@ -1,0 +1,62 @@
+/**
+ * Mega Menu Panel — editor styles
+ *
+ * These styles only load in the block editor. They give the collapsed
+ * panel a compact, clearly-labeled appearance so a template full of
+ * panels doesn't dominate the editing canvas.
+ */
+
+.megamenu-panel-editor {
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: 0.5rem;
+	overflow: hidden;
+
+	// ── Header bar ────────────────────────────────────────────────────────────
+
+	&__header {
+		display:      flex;
+		align-items:  center;
+		gap:          0.625rem;
+		padding:      0.625rem 0.875rem;
+		background:   var(--superlight-accent-color, #eff9fd);
+		cursor:       default;
+		font-size:    0.8125rem;
+		line-height:  1.4;
+		color:        var(--wp--preset--color--contrast, #1a1a2e);
+
+		// Push the Edit/Collapse button to the right
+		.components-button {
+			margin-left: auto;
+			white-space: nowrap;
+		}
+	}
+
+	&__label {
+		flex: 1;
+		min-width: 0;
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+	}
+
+	&__slug {
+		display:          inline-block;
+		margin-left:      0.375rem;
+		padding:          0.1em 0.4em;
+		background:       var(--wp--preset--color--base, #fff);
+		border:           1px solid var(--menu-border-color, #dbe1f3);
+		border-radius:    0.25rem;
+		font-family:      monospace;
+		font-size:        0.75em;
+		color:            var(--accent-color, #0078ff);
+		vertical-align:   middle;
+	}
+
+	// ── Expanded canvas ───────────────────────────────────────────────────────
+
+	&__canvas {
+		padding:    1.25rem;
+		background: var(--wp--preset--color--base, #fff);
+		border-top: 1px solid var(--menu-border-color, #dbe1f3);
+	}
+}

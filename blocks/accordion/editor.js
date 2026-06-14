@@ -48,17 +48,17 @@
 		attributes: {
 			style:              { type: 'string',  default: 'default' },
 			closeOthers:        { type: 'boolean', default: false },
+			openFirst:          { type: 'boolean', default: false },
 			queryMode:          { type: 'boolean', default: false },
 			items:              { type: 'array',   default: [] },
 			queryPostsPerPage:  { type: 'number',  default: 9 },
-			queryCategory:      { type: 'string',  default: '' },
-			queryLoadMore:      { type: 'boolean', default: true },
+			queryCategory:      { type: 'string',  default: '' }
 		},
 
 		edit( { attributes, setAttributes } ) {
 			const {
-				style, closeOthers, queryMode,
-				items, queryPostsPerPage, queryCategory, queryLoadMore,
+				style, closeOthers, openFirst, queryMode,
+				items, queryPostsPerPage, queryCategory,
 			} = attributes;
 
 			const blockProps = useBlockProps( {
@@ -124,7 +124,11 @@
 						],
 						onChange: ( val ) => setAttributes( { style: val } ),
 					} ),
-
+					el( ToggleControl, {
+						label:    __( 'Open first item by default', 'momentive' ),
+						checked:  attributes.openFirst,
+						onChange: ( val ) => setAttributes( { openFirst: val } ),
+					} ),
 					el( ToggleControl, {
 						label:    __( 'Close others when one opens', 'momentive' ),
 						checked:  closeOthers,
@@ -154,12 +158,6 @@
 						type:     'number',
 						value:    queryPostsPerPage,
 						onChange: ( val ) => setAttributes( { queryPostsPerPage: parseInt( val, 10 ) || 9 } ),
-					} ),
-
-					el( ToggleControl, {
-						label:    __( 'Show "Load more" button', 'momentive' ),
-						checked:  queryLoadMore,
-						onChange: ( val ) => setAttributes( { queryLoadMore: val } ),
 					} )
 				),
 

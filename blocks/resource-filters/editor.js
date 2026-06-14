@@ -33,10 +33,11 @@
     }
 
     var POST_TYPE_OPTIONS = [
-        { label: 'Blog posts (post)',              value: 'post'            },
+        { label: 'Blog posts (post)',              value: 'post'           },
         { label: 'Newsroom (press-article)',       value: 'press-article'  },
         { label: 'Case Studies',                   value: 'case_studies'   },
         { label: 'Events',                         value: 'events'         },
+        { label: 'FAQ',                            value: 'faq'            },
         { label: 'Guides',                         value: 'guides'         },
         { label: 'Webinars',                       value: 'webinars'       },
         { label: 'Videos',                         value: 'videos'         },

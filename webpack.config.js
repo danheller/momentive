@@ -4,8 +4,9 @@ const path = require('path');
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'impact-stat/index': './blocks/impact-stat/src/index.js',
-		'impact-stat/view':  './blocks/impact-stat/src/view.js',
+		'impact-stat/index':    './blocks/impact-stat/src/index.js',
+		'impact-stat/view':     './blocks/impact-stat/src/view.js',
+		'megamenu-panel/index': './blocks/megamenu-panel/src/index.js',
 	},
 	output: {
 		...defaultConfig.output,

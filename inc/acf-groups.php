@@ -206,7 +206,7 @@ add_action( 'acf/include_fields', function() {
 			'name' => 'accent_color',
 			'aria-label' => '',
 			'type' => 'color_picker',
-			'instructions' => '',
+			'instructions' => 'Child solutions will automatically use the accent color of their parent solution. Setting a parent solution will hide this field.',
 			'required' => 0,
 			'conditional_logic' => 0,
 			'wrapper' => array(
@@ -603,6 +603,56 @@ add_action( 'acf/include_fields', function() {
 	'active' => true,
 	'description' => '',
 	'show_in_rest' => 1,
+) );
+	acf_add_local_field_group( array(
+	'key' => 'group_6a2f336a848ad',
+	'title' => 'FAQ Settings',
+	'fields' => array(
+		array(
+			'key' => 'field_6a2f336b53521',
+			'label' => 'Solution Family',
+			'name' => 'faq_solution',
+			'aria-label' => '',
+			'type' => 'taxonomy',
+			'instructions' => '',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'taxonomy' => 'category',
+			'add_term' => 0,
+			'save_terms' => 1,
+			'load_terms' => 1,
+			'return_format' => 'id',
+			'field_type' => 'select',
+			'allow_null' => 0,
+			'bidirectional' => 0,
+			'multiple' => 0,
+			'bidirectional_target' => array(
+			),
+		),
+	),
+	'location' => array(
+		array(
+			array(
+				'param' => 'post_type',
+				'operator' => '==',
+				'value' => 'faq',
+			),
+		),
+	),
+	'menu_order' => 0,
+	'position' => 'normal',
+	'style' => 'default',
+	'label_placement' => 'top',
+	'instruction_placement' => 'label',
+	'hide_on_screen' => '',
+	'active' => true,
+	'description' => '',
+	'show_in_rest' => 0,
 ) );
 } );
 

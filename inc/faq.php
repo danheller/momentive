@@ -6,7 +6,7 @@
  * Data structure (from site export):
  *  - post_title   — the question text (used as accordion trigger label)
  *  - post_content — the long answer (Gutenberg blocks)
- *  - ACF field: faq_short_answer — a brief HTML summary, used where a
+ *  - post_excerpt - a brief HTML summary, used where a
  *    condensed answer is needed (e.g. rich snippets, cards)
  *  - category taxonomy — solution-scoped categories (same parent "solutions"
  *    term used by Testimonials), used for accordion filtering
@@ -15,19 +15,19 @@
 
 function momentive_faq_setup() {
 	$labels = array(
-		'name'               => _x( 'FAQs', 'Post type general name', 'momentive' ),
+		'name'               => _x( 'FAQ', 'Post type general name', 'momentive' ),
 		'singular_name'      => _x( 'FAQ', 'Post type singular name', 'momentive' ),
-		'menu_name'          => _x( 'FAQs', 'Admin Menu text', 'momentive' ),
+		'menu_name'          => _x( 'FAQ', 'Admin Menu text', 'momentive' ),
 		'name_admin_bar'     => _x( 'FAQ', 'Add New on Toolbar', 'momentive' ),
 		'add_new'            => __( 'Add New', 'momentive' ),
-		'add_new_item'       => __( 'Add New FAQ', 'momentive' ),
-		'new_item'           => __( 'New FAQ', 'momentive' ),
-		'edit_item'          => __( 'Edit FAQ', 'momentive' ),
-		'view_item'          => __( 'View FAQ', 'momentive' ),
-		'all_items'          => __( 'All FAQs', 'momentive' ),
-		'search_items'       => __( 'Search FAQs', 'momentive' ),
-		'not_found'          => __( 'No FAQs found.', 'momentive' ),
-		'not_found_in_trash' => __( 'No FAQs found in Trash.', 'momentive' ),
+		'add_new_item'       => __( 'Add New Question', 'momentive' ),
+		'new_item'           => __( 'New Question', 'momentive' ),
+		'edit_item'          => __( 'Edit Question', 'momentive' ),
+		'view_item'          => __( 'View Question', 'momentive' ),
+		'all_items'          => __( 'All Questions', 'momentive' ),
+		'search_items'       => __( 'Search Questions', 'momentive' ),
+		'not_found'          => __( 'No Questions found.', 'momentive' ),
+		'not_found_in_trash' => __( 'No Questions found in Trash.', 'momentive' ),
 	);
 
 	$args = array(
@@ -37,7 +37,7 @@ function momentive_faq_setup() {
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'show_in_rest'       => true,         // Block editor + REST API (accordion block load-more)
-		'rest_base'          => 'faqs',       // /wp-json/wp/v2/faqs — matches accordion.js
+		'rest_base'          => 'faq',       // /wp-json/wp/v2/faq
 		'menu_icon'          => 'dashicons-editor-help',
 		'menu_position'      => 7,
 		'supports'           => array(
@@ -48,7 +48,7 @@ function momentive_faq_setup() {
 			'page-attributes', // Exposes menu_order for manual sort control
 		),
 		'taxonomies'         => array( 'category' ),
-		'has_archive'        => false,
+		'has_archive'        => 'faq',
 		'rewrite'            => array(
 			'slug'       => 'faq',
 			'with_front' => false,
@@ -93,3 +93,4 @@ add_action( 'enqueue_block_editor_assets', function() {
 		} );
 	" );
 } );
+

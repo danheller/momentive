@@ -54,38 +54,64 @@ function momentive_resource_filters_render( array $attributes, string $content )
 	// This means the newsroom filter shows press-article categories,
 	// the blog shows post categories, etc.
 	$categories = [];
+	
 	if ( $show_categories ) {
-		$query_args = [
-			'taxonomy'   => 'category',
-			'hide_empty' => true,
-			'exclude'    => [ get_option( 'default_category' ) ],
-			'orderby'    => 'name',
-			'order'      => 'ASC',
-		];
-
-		// When a specific non-'post' post type is set, restrict categories
-		// to those that have at least one post of that type.
-		if ( $default_post_type ) {
+		$categories = [];
+		$solutions_parent = get_term_by( 'slug', 'solutions', 'category' );
+	
+		// Post types whose categories are scoped under the 'solutions' parent term.
+		$solution_scoped_post_types = [ 'faq', 'testimonials' ];
+		$use_solution_scope = $solutions_parent
+			&& in_array( $default_post_type, $solution_scoped_post_types, true );
+	
+		if ( $use_solution_scope ) {
+			$solution_term_ids = get_terms( [
+				'taxonomy'   => 'category',
+				'parent'     => $solutions_parent->term_id,
+				'fields'     => 'ids',
+				'hide_empty' => false,
+			] );
+	
+			if ( ! empty( $solution_term_ids ) && ! is_wp_error( $solution_term_ids ) ) {
+				$posts_of_type = get_posts( [
+					'post_type'      => $default_post_type,
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'post_status'    => 'publish',
+				] );
+	
+				if ( ! empty( $posts_of_type ) ) {
+					$categories = get_terms( [
+						'taxonomy'   => 'category',
+						'include'    => $solution_term_ids,
+						'object_ids' => $posts_of_type,
+						'hide_empty' => true,
+						'orderby'    => 'name',
+						'order'      => 'ASC',
+					] );
+					if ( is_wp_error( $categories ) ) $categories = [];
+				}
+			}
+		} else {
+			// For post types with their own flat category structure (e.g. press-article),
+			// just return categories actually used by posts of this type.
 			$posts_of_type = get_posts( [
 				'post_type'      => $default_post_type,
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 				'post_status'    => 'publish',
 			] );
-
+	
 			if ( ! empty( $posts_of_type ) ) {
-				$query_args['object_ids'] = $posts_of_type;
-			} else {
-				// No posts of this type — return no categories.
-				$categories = [];
-				$show_categories = false;
-			}
-		}
-
-		if ( $show_categories ) {
-			$categories = get_terms( $query_args );
-			if ( is_wp_error( $categories ) ) {
-				$categories = [];
+				$categories = get_terms( [
+					'taxonomy'   => 'category',
+					'object_ids' => $posts_of_type,
+					'hide_empty' => true,
+					'exclude'    => [ get_option( 'default_category' ) ],
+					'orderby'    => 'name',
+					'order'      => 'ASC',
+				] );
+				if ( is_wp_error( $categories ) ) $categories = [];
 			}
 		}
 	}

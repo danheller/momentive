@@ -86,13 +86,18 @@
 
 			"gradients": [
 				{
-					"gradient": "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(239, 249, 253) 100%)",
-					"name": "White to Super Light Blue",
+					"gradient": "linear-gradient(rgb(255, 255, 255), rgb(239, 249, 253))",
+					"name": "White to Super Light Accent",
 					"slug": "white-to-superlight"
 				},
 				{
+					"gradient": "linear-gradient(rgb(226, 244, 252), rgb(255, 255, 255))",
+					"name": "Light Accent to White",
+					"slug": "vertical"
+				},
+				{
 					"gradient": "linear-gradient(90deg, rgb(226, 244, 252) 0%, rgb(238, 249, 253) 100%)",
-					"name": "Horizontal Light Blue to Super Light Blue",
+					"name": "Horizontal Light Accent to Super Light Accent",
 					"slug": "light-to-superlight-horizontal"
 				},
 				{
@@ -101,7 +106,7 @@
 					"slug": "dark-navy"
 				},
 				{
-					"gradient": "linear-gradient(180deg, rgb(23, 42, 67) 0%, rgb(49, 53, 112) 100%)",
+					"gradient": "linear-gradient(180deg, rgb(23, 42, 67), rgb(49, 53, 112))",
 					"name": "Navy Purple",
 					"slug": "navy-purple"
 				}

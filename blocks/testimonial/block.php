@@ -24,19 +24,21 @@ add_action( 'init', function () {
 		[
 			'render_callback' => 'momentive_testimonial_render',
 			'editor_script'   => 'momentive-testimonial-editor',
+			'style'           => 'momentive-testimonial',
 		]
 	);
 
 } );
 
 // ── Render callback ───────────────────────────────────────────────────────────
-
+    
 function momentive_testimonial_render( array $attributes, string $content, WP_Block $block ): string {
-	// In a Query Loop, use the context post ID.
-	// Fall back to the explicit attribute for standalone use.
-	$testimonial_id = ! empty( $block->context['postId'] )
-		? (int) $block->context['postId']
-		: ( ! empty( $attributes['testimonialId'] ) ? (int) $attributes['testimonialId'] : 0 );
+	// Use context postId only when inside a Query Loop (which provides a 'query' context).
+	// Outside a query loop, context['postId'] is the current page — not a testimonial.
+	$in_query_loop  = ( $block->context['postType'] ?? '' ) === 'testimonials';
+	$testimonial_id = $in_query_loop
+		? (int) ( $block->context['postId'] ?? 0 )
+		: (int) ( $attributes['testimonialId'] ?? 0 );
 
 	$show_case_study_btn = ! empty( $attributes['showCaseStudyButton'] );
 
@@ -145,7 +147,10 @@ function momentive_testimonial_render( array $attributes, string $content, WP_Bl
 
 add_filter( 'render_block', function( string $html, array $block ): string {
 	if ( $block['blockName'] !== 'momentive/testimonial' ) return $html;
-	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) return '';
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		// Return a zero-size placeholder so WP still enqueues the block stylesheet.
+		return '<div class="wp-block-momentive-testimonial" style="display:none"></div>';
+	}
 	return $html;
 }, 10, 2 );
 

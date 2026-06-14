@@ -1,6 +1,5 @@
 @use 'config' as *;
 
-
 /*
 	TABLE OF CONTENTS
 	─────────────────────────────────────────────────────────────
@@ -32,22 +31,21 @@
 	4.8  Content Collage (text followed by three overlapping images)
 	4.9  Boxed Columns (.is-style-boxed)
 
-
 	5.0  Site Structure
 	5.1  Announcement Bar (.announcement-bar)
 	5.2  Header (.site-header, .wp-block-site-title)
 	5.3  Footer (.site-footer)
+	5.4  Breadcrumbs
 
 	6.0  Homepage
 	6.1  Hero (.hero)
 	6.2  Trust / Logo Ticker (.trust)
 	6.3  Highlights (.highlights)
-	6.4  Solutions (.solutions-wrapper, .solutions-intro, .solutions-slider)
-	6.5  Constellation / Icon Grid (.constellation)
-	6.6  Product Suite (.product-suite)
-	6.7  Testimonials (.testimonials-wrapper, .testimonials-slider)
-	6.8  Featured Blog Post (.featured-blog-wrapper)
-	6.9  Pre-footer CTA (.prefooter)
+	6.4  Constellation / Icon Grid (.constellation)
+	6.5  Product Suite (.product-suite)
+	6.6  Featured Blog Post (.featured-blog-wrapper)
+	6.7  Pre-footer CTA (.prefooter)
+	6.8  Demo / Hubspot Form (.demo-form)
 
 	7.0  News / Blog
 	7.1  Story Card (.story-card)
@@ -55,6 +53,7 @@
 	7.3  Featured Blogs Grid (.featured-blogs)
 	7.4  All Blogs Grid
 	7.5  Single Post
+	7.6  Single Solution
 
 	8.0  Animations
 	8.1  Parallax (.parallax-upward)
@@ -111,7 +110,7 @@
 	// Navigation / menus
 	--menu-border-color:           rgb(219 225 243);
 	--menu-title-text-color:       var(--dark-color);
-	--menu-title-text-color-hover: rgb(19 40 112);
+	--menu-title-text-color-hover: color-mix(in srgb, var(--secondary-color), black 20%); //rgb(19 40 112);
 
 	// Alert / dark band (announcement bar, dark cards)
 	--alert-background:  var(--dark-brand-color);
@@ -200,10 +199,23 @@ h2, h3, .h2, .h3 {
 h2, .h2 { font-size: clamp( 2rem, 3vw, 3rem ); }
 h3, .h3 { font-size: clamp( 1.5rem, 2vw, 2rem ); }
 
+p {
+	line-height: 1.5;
+}
+
+.is-layout-constrained, .is-layout-flow {
+	> p {
+		margin-top: 0;
+	}
+}
 
 /*==============================================================
   1.2 - Forms
 ==============================================================*/
+
+button {
+	font-family: var(--wp--preset--font-family--primary);
+}
 
 input,
 select,
@@ -246,7 +258,149 @@ textarea {
 	opacity: 0.7;
 }
 
+/*==============================================================
+  2.0 - Utility Classes & Placeholders
+==============================================================*/
 
+.center { text-align: center; }
+.balance { text-wrap: balance; }
+
+figure {
+	&.shadow {
+		box-shadow: var(--shadow);
+	}
+}
+
+.line-below {
+	border-bottom: 1px solid var(--menu-border-color);
+}
+
+.is-desktop-only {
+	@media #{$large-below} {
+		display: none !important;
+	}
+}
+
+.is-mobile-only {
+	@media #{$large-up} {
+		display: none !important;
+	}
+}
+
+
+/*==============================================================
+  2.1 - Layout Utilities
+==============================================================*/
+
+
+.to-edge { 
+	@include to-edge;
+	width: 100vw;
+	max-width: 100vw;
+}
+
+.full-width {
+	width: 100%;
+	img {
+		width: 100%;
+	}
+}
+.content-width {
+	max-width: var(--wp--style--global--content-size);
+	margin-left: auto;
+	margin-right: auto;
+	@media #{$largish-up} {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+.slim { max-width: var(--wp--custom--slim-size); }
+.narrow { max-width: var(--wp--custom--narrow-size); }
+.fitted { max-width: var(--wp--custom--fitted-size); }
+.no-margin  { @include nomargin; }
+.no-padding { @include nopadding; }
+
+@media #{$medium-below} {
+	// Stacks and reverses a Columns block on mobile.
+	.is-style-columns-reverse {
+		flex-direction: column-reverse;
+	}
+}
+
+@media #{$xlarge-up} {
+	.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) .wide {
+		width: 100vw;
+		max-width: 100vw;
+		margin-left: calc(50% - 50vw) !important;
+		margin-right: calc(50% - 50vw) !important;
+		padding-inline: 6rem;
+		box-sizing: border-box;
+	}
+	.entry-content > .wide {
+		margin-left: calc( 6rem - var(--wp--style--root--padding-left) ) !important;
+		margin-right: calc( 6rem - var(--wp--style--root--padding-right) ) !important;
+		width: calc(100vw - 12rem );
+		max-width: calc(100vw - 12rem );
+	}
+}
+
+.space-around {
+	padding: 4rem 0;
+	margin: 0;
+}
+
+/*==============================================================
+  2.2 - Visibility Utilities
+==============================================================*/
+
+// Hides an element by fading it out. Toggle via JS by removing this class.
+.hide {
+	opacity: 0;
+	transition: opacity .3s ease;
+}
+
+
+@media #{$small-below} {
+	.is-style-hidden-mobile {
+		display: none !important;
+	}
+}
+
+
+/*==============================================================
+  2.4 - Shape Utilities
+==============================================================*/
+
+// Applied to cards, modals, and sliders to clip overflowing content.
+// NOTE: .round also sets overflow: hidden, which clips box-shadows on
+// child elements. If a child needs a visible shadow, use border-radius
+// directly on that element instead of extending .round.
+.round {
+	@include round;
+}
+
+.rounder, .is-style-rounder { 
+	@include rounder;
+}
+
+// Icon in a circular accent-colored badge.
+// Used for feature highlights and step indicators.
+.shape-circle {
+	--icon-fill: var(--accent-color);
+	margin: 0 auto;
+	width: 3rem;
+	height: 3rem;
+	background: var(--extralight-accent-color);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	img, svg {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+}
 
 /*==============================================================
   3.0 - Global Block Overrides
@@ -353,6 +507,7 @@ textarea {
   3.2 - Columns
 ==============================================================*/
 
+
 .wp-block-columns {
 	.wp-block-column {
 		padding: 1rem;
@@ -360,11 +515,12 @@ textarea {
 		flex-direction: column;
 		row-gap: 1rem;
 		line-height: 1.25;
-		p:not(.h2, .h3, .is-style-eyebrow) {
+/*		p:not(.h2, .h3, .is-style-eyebrow, .is-style-uppercase) {
 			margin: 0 0 1rem;
 			font-size: var(--wp--preset--font-size--regular);
 			line-height: 1.5;
 		}
+*/
 		// Pushes the last element in a column to the bottom, useful
 		// for aligning CTAs across columns of varying height.
 		.column-bottom {
@@ -645,6 +801,7 @@ textarea {
 }
 
 .megamenu-panel {
+	margin: 0;
 	grid-area: 1 / 1;
 	align-self: start; // prevents shorter panels stretching to tallest height
 	opacity: 0;
@@ -662,6 +819,73 @@ textarea {
 	.wp-block-columns {
 		width: var(--wp--style--global--content-size);
 		max-width: 100%;
+	}
+	.wp-block-group {
+		margin: 0;	
+	}
+	.columns-2 {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0 1rem;
+	}
+	.wp-block-buttons {
+		margin: 1rem 0 0;
+		.wp-block-button {
+			width: 100%;
+		}
+	}
+	.is-style-uppercase {
+		margin: 0;
+	}
+	a.icon-link {
+		width: 100%;
+		border-radius: .5rem;
+		padding: .5rem;
+	}
+}
+
+.mega-feature {
+	@include round;
+	position: relative;
+	padding: 1rem 50% 1rem 1rem;
+	min-height: 10rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-image: linear-gradient(45deg, #475173, #172A43);
+	color: var(--light-color);
+	p {
+		line-height: 1.2 !important;
+		margin-bottom: 0;
+	}
+	figure {
+		position: absolute;
+		right: .5rem;
+		top: 50%;
+		transform: translateY(-50%);
+		height: auto;
+		width: 55%;
+		z-index: 0;
+		pointer-events: none;
+		margin: 0;
+	}
+	.wp-block-buttons, .wp-block-button {
+		width: 100%;
+	}
+	.wp-block-button {
+		a { 
+			font-size: var(--wp--preset--font-size--x-small);
+			padding: .375rem .75rem;
+			width: auto;
+		}
+		&.is-style-outline {
+			--button-outline-border: var(--light-color);
+			--button-outline-text-color: var(--light-color);
+			a:hover {
+				background: transparent;
+				box-shadow: 0 0 0 .1rem var(--light-color);
+			}
+		}
 	}
 }
 
@@ -705,8 +929,8 @@ textarea {
 	padding: 0 0 0 1.25rem;
 	margin: 2.25rem 0;
 	border-left: .1rem solid var(--midtone-color);
-	--wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
 	p {
+		font-size: var(--wp--preset--font-size--medium);
 		font-style: italic;
 	}
 }
@@ -797,6 +1021,11 @@ textarea {
 	&.is-ready .swoop-svg path {
 		opacity: 1;
 	}
+	&.has-xxx-large-font-size {
+		.swoop-svg {
+			height: clamp( 3.6rem, 6.5vw, 5rem  );
+		}
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -865,6 +1094,44 @@ ul.is-style-column-checks {
 	&.no-shadow {
 		figure {
 			box-shadow: none;
+		}
+	}
+	&.is-style-stacked {
+		@include rounder;
+		display: grid;
+		grid-template-columns: 1fr !important;
+		grid-template-areas: "Image"
+		"Content";
+		gap: 0;
+		background: var(--light-accent-color);
+		figure.wp-block-media-text__media {
+			grid-area: Image;
+			margin: 0;
+			width: 100%;
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+			box-shadow: none;
+		}
+		.wp-block-media-text__content {
+			grid-area: Content;
+			padding: 1.5rem;
+			.wp-block-heading {
+				font-size: var(--wp--preset--font-size--large);
+				margin: .5rem 0;
+				&:first-child {
+					margin-top: 0;
+				}
+			}
+			.read-more {
+				margin-bottom: 0;
+				a {
+					color: var(--text-color);
+					text-decoration: none;
+				}
+				&:after {
+					top: .5rem;
+				}
+			}
 		}
 	}
 	@media #{$medium-below} {
@@ -1491,6 +1758,93 @@ main.site-content {
 	}
 }
 
+/*==============================================================
+  5.4 - Breadcrumbs
+==============================================================*/
+
+
+.breadcrumbs {
+	margin: 0;
+}
+
+.breadcrumb-bar {
+	@include to-edge;
+	max-width: 100vw;
+	margin-bottom: 3rem;
+	padding-top: .375rem;
+	text-align: left;
+	border-bottom: 1px solid var(--menu-border-color);
+	@media #{$largish-below} {
+		padding: 0 2rem;
+	}
+	.breadcrumbs {
+		width: 100%;
+		max-width: var(--wp--style--global--content-size);
+		margin: 0 auto;
+		padding: 0 0 .75rem;
+	}
+	.breadcrumb-item a:hover, .breadcrumb-item--current {
+		color: var(--accent-color);
+	}
+}
+
+.breadcrumb-list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--regular);
+	color: var(--text-color);
+}
+
+.breadcrumb-item {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	a {
+		color: var(--text-color);
+		text-decoration: none;
+	}
+}
+
+.breadcrumb-sep {
+	@include has-before;
+	text-indent: -1000rem;
+	width: 1.5rem;
+	&:before {
+		text-indent: 0;
+		width: .425em;
+		height: .425em;
+		border-bottom: .075rem solid var(--dark-color);
+		border-right: .075rem solid var(--dark-color);
+		transform: rotate(-45deg);
+		left: .5em;
+		top: .6em;
+	}
+}
+
+.breadcrumb-item--current {
+	color: var(--text-color);
+	font-weight: 600;
+	// Truncate long titles gracefully
+	span {
+		max-width: 44ch;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: inline-block;
+		vertical-align: bottom;
+	}
+}
+
+.breadcrumb-sep {
+	color: var(--light-text-color);
+	user-select: none;
+}
+
 
 /*==============================================================
   6.0 - Homepage
@@ -1533,7 +1887,7 @@ body.home {
 	.wp-block-columns .wp-block-column {
 		padding: 0;
 		p:not(.is-style-eyebrow) {
-			--wp--preset--font-size--regular: var(--wp--preset--font-size--medium);
+			font-size: var(--wp--preset--font-size--medium);
 			line-height: 1.555;
 			margin: 0;
 		}
@@ -1546,6 +1900,17 @@ body.home {
 				display: block;
 				width: 100%;
 			}
+		}
+		.wp-block-button.is-style-outline {
+			a, button {
+				background: var(--light-color);
+			}
+		}
+	}
+	figure a {
+		transition: transform 1s ease;
+		&:hover {
+			transform: scale(1.05);
 		}
 	}
 }
@@ -1628,6 +1993,14 @@ body.home {
 	}
 }
 
+.logos.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+	gap: 4rem;
+	filter: grayscale(1);
+	opacity: .6;
+}
+
 
 /*--------------------------------------------------------------
   6.3 - Highlights
@@ -1686,282 +2059,7 @@ body.home {
 }
 
 /*--------------------------------------------------------------
-  6.4 - Solutions
---------------------------------------------------------------*/
-
-.solutions-wrapper {
-	padding: 0 2rem 3.5rem;
-	overflow: hidden;
-	background-image: linear-gradient(var(--light-color), #64C1EE22);
-	@media #{$largish-up} {
-		padding: 0 0 3.5rem;
-	}
-}
-
-.solutions-intro {
-	padding-right: 25%;
-	background: url(../images/our-approach-graphic.svg);
-	background-position: right top;
-	background-size: 30%;
-	background-repeat: no-repeat;
-	h2 { text-wrap: balance; }
-	p  { font-size:	var(--wp--preset--font-size--medium); }
-}
-
-.solutions-slider {
-	margin: 0 !important;
-	@media #{$largish-below} {
-		&.alignfull {
-			margin-left:  calc(var(--wp--style--root--padding-right) * -1) !important;
-			margin-right: calc(var(--wp--style--root--padding-right) * -1) !important;
-		}
-	}
-	&.has-global-padding {
-		padding-left: 0;
-		padding-right: 0;
-	}
-	&:not(.is-style-light) { // exception to the normal color scheme for MomentiveIQ
-		li.splide__slide:first-child .solution {
-			--solution: #1c2943 !important;
-			.solution-icon {
-				svg {
-					width: 3rem;
-				}
-			}
-		}
-	}
-
-	li { margin-top: 0; }
-
-	.splide__track { margin: 0; }
-	.splide__list { padding-top: 1rem !important; padding-bottom: 5rem !important; }
-	.splide__arrows {
-		@extend .button-arrows;
-		bottom: 0;
-		right: 2rem;
-		@media #{$largish-up} {
-			right: calc(( 100vw - var(--wp--style--global--content-size) ) / 2 );
-		}
-	}
-	+ .wp-block-buttons {
-		margin-top: -1.5rem;
-	}
-}
-
-// Individual solution card. Uses two pseudo-elements for the hover effect:
-// ::before is a white-to-transparent gradient (default state),
-// ::after is a background image that fades in on hover.
-// --slide-bg-image is set inline per slide in the block markup.
-.solution {
-    --solution-dark:    color-mix(in oklab, var(--solution) 72%, black);
-    --solution-bg:      color-mix(in oklab, var(--solution) 14%, white);
-    --solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
-	@include has-before;
-	@include has-after;
-	@include rounder;
-	width: 75vw;
-	padding: 40% 1.5rem 1.5rem;
-	margin-right: 1.5rem;
-	background: linear-gradient(
-		color-mix(in oklab, var(--solution) 70%, white),
-		var(--solution)
-	);
-	color: var(--light-color);
-	transition: background-color .3s, box-shadow .3s;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	text-align: left;
-
-	@media #{$small-up} {
-		width: calc( ( 100vw - 5.5rem ) / 2 );
-	}
-	@media #{$medium-up} {
-		width: calc( ( var(--wp--style--global--content-size) - 6rem ) / 3 );
-	}
-
-	@media #{$largish-up} {
-		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
-	}
-
-	// Gradient layer — sits above bg image, softens the bottom edge
-	// so text stays legible. Stays visible on hover.
-	&::before {
-		z-index: 1;
-		top: 0; left: 0;
-		width: 100%; height: 100%;
-		background: linear-gradient(
-			to bottom,
-			rgba(255,255,255,0) 20%,
-			var(--solution-bg) 65%
-		);
-		transition: opacity .3s;
-		opacity: 0; // hidden until bg image fades in
-	}
-
-
-
-	// Background image layer — fades in on hover
-	&::after {
-		z-index: 0;
-		opacity: 0;
-		top: 0; left: 0;
-		width: 100%; height: 65%;
-		background-image: var(--slide-bg-image);
-		background-size: cover;
-		background-position: center top;
-		background-repeat: no-repeat;
-		transition: opacity .3s;
-	}
-
-	.solution-title,
-	p.solution-excerpt {
-		position: relative;
-		z-index: 2;
-		transition: color .3s;
-		color: var(--light-color);
-	}
-	.solution-title {
-		width: 100%;
-		font-size: 1.75rem;
-		font-weight: 600;
-		margin: 0 0 .5rem;
-	}
-	p.solution-excerpt {
-		margin-top: .5rem;
-		font-size: 1rem;
-		font-weight: 400;
-		line-height: 1.4;
-	}
-	.solution-icon {
-		position: absolute;
-		top: 2rem;
-		left: 1.5rem;
-		z-index: 2;
-		svg {
-			width: 2rem;
-			height: 2rem;
-		}
-	}
-	.solution-link {
-		position: absolute;
-		inset: 0;
-		z-index: 3; // above everything
-	}
-	.solution-readmore, .solution-label {
-		display: none;
-	}
-
-	&:hover {
-		background-color: var(--solution-bg);
-		box-shadow: var(--wp--preset--shadow--layered);	
-		.solution-icon svg {
-			color: var(--light-color);
-		}
-		.solution-title,
-		p.solution-excerpt {
-			color: var(--dark-color);
-		}
-		&::before { opacity: 1; }
-		&::after  { opacity: .7; transition: opacity .5s .1s; }
-	}
-}
-
-// alernate card style
-.is-style-light {
-	.solution {
-		background: var(--light-color);
-		border: 1px solid var(--menu-border-color);
-		color: var(--dark-color);
-		padding: 3.75rem .25rem .25rem;
-		justify-content: start;
-		gap: 1rem;
-		@media #{$largish-up} {
-			width: calc( ( var(--wp--style--global--content-size) - 3rem ) / 3 );
-		}
-
-
-		// No pseudo-element effects in light style
-		&::before, &::after { display: none; }
-
-		.solution-label {
-			position: absolute;
-			top: 1rem;
-			right: 1rem;
-			font-size: .875rem;
-			font-weight: 600;
-			letter-spacing: .08em;
-			text-transform: uppercase;
-			color: var(--solution);
-			border: 1px solid var(--solution);
-			border-radius: 999px;
-			padding: .2em .6em;
-			display: inline-flex;
-			width: fit-content;
-			z-index: 2;
-		}
-
-		.solution-icon {
-			// Push icon down if label is present — 
-			// or handle this with :has() if you want it conditional
-			top: 1rem;
-			left: 1rem;
-			svg { color: var(--solution); width: 1.75rem; height: 1.75rem; }
-		}
-
-		.solution-body {
-			background: var(--solution-bg-soft);
-			border-radius: .75rem;
-			padding: 1.25rem;
-			margin: 0 .75rem .75rem;
-			display: flex;
-			height: 100%;
-			flex-direction: column;
-			gap: .5rem;
-		}
-
-		.solution-title,
-		p.solution-excerpt {
-			color: var(--dark-color);
-			z-index: auto;
-		}
-		
-		.solution-title {
-			font-size: var(--wp--preset--font-size--xx-large);
-		}
-
-		.solution-readmore {
-			display: flex;
-			align-items: center;
-			gap: .25rem;
-			font-weight: 600;
-			color: var(--dark-color);
-			margin-top: auto;
-			&:after {
-				content: '\2192';
-			}
-		}
-
-		&:hover {
-			background: white;
-			box-shadow: var(--wp--preset--shadow--card);
-			// No color changes on hover for light style
-			.solution-title,
-			p.solution-excerpt { color: var(--dark-color); }
-		}
-	}
-	li.splide__slide:first-child .solution {
-		.solution-icon {
-			svg {
-				width: 2rem;
-			}
-		}
-	}
-}
-
-/*--------------------------------------------------------------
-  6.5 - Constellation / Icon Grid
+  6.4 - Constellation / Icon Grid
 --------------------------------------------------------------*/
 
 // Decorative animated icon grid used in the product suite section.
@@ -2013,7 +2111,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.6 - Product Suite
+  6.5 - Product Suite
 --------------------------------------------------------------*/
 
 // Hoverable product row cards. The whole row lifts and scales on hover,
@@ -2072,223 +2170,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.7 - Testimonials
---------------------------------------------------------------*/
-
-.testimonials-wrapper,
-.testimonials-slider {
-	max-width: none;
-}
-
-.testimonials-wrapper {
-	.testimonials-slider {
-		padding-bottom: 5rem;
-		@media #{$largish-up} {
-			margin-left:  calc(var(--wp--style--root--padding-right) * -1);
-			margin-right: calc(var(--wp--style--root--padding-right) * -1);		
-		}
-	}
-	h2 {
-		font-size: var(--wp--preset--font-size--xx-large);
-	}
-}
-
-.testimonials-slider {
-	position: relative;
-	overflow: hidden;
-	max-width: 100vw;
-	margin: 0 !important;
-
-	.splide__list {
-		align-items: stretch;
-		li { margin-right: 1.5rem; }
-	}
-
-	// Arrow buttons, positioned at the bottom-left aligned with the content column.
-
-
-	.splide__arrows {
-		@extend .button-arrows;
-		bottom: 2rem;
-		left: calc(50% - 3.25rem);
-		@media #{$medium-up} {
-			left: 2.5rem;
-		}
-		@media #{$largish-up} {
-			left: calc( 50vw - var(--wp--style--global--content-size) / 2 );
-		}
-		.splide__arrow--prev { right: auto; left: 0; }
-		.splide__arrow--next { right: auto; left: 4rem; }
-	}
-
-
-	.testimonial {
-		--solution-border:      color-mix(in oklab, var(--solution) 50%, white);
-		--solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
-		@include rounder;
-		background: var(--solution-bg-soft);
-		height: 100%;
-		width: calc(100vw - 5rem);
-		padding: clamp( 1.5rem, 4vw, 3rem );
-		font-size: clamp( 1.125rem, 1.5vw, 1.375rem );
-		border: 1px solid var(--solution-border);
-		display: flex;
-		flex-direction: column;
-		justify-content: start;
-		align-items: start;
-		@media #{$medium-up} {
-			width: 80vw;
-		}
-		@media #{$largish-up} {
-			width: calc( ( var(--wp--style--global--content-size) / 2 ) - 0.75rem );
-		}
-	}
-	
-	blockquote {
-		margin: 0 0 1.5rem;
-		// Clamp quote to ~10 lines in the slider context
-		display: -webkit-box;
-		-webkit-line-clamp: 10;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	// Attribution block: photo + name + organization in a small grid.
-	.attribution {
-		padding-top: 1rem;
-		margin: auto 1rem 0;
-		width: 100%;
-		display: grid;
-		grid-template-columns: 4.5rem 1fr;
-		gap: .25rem 1rem;
-		grid-template-areas:
-			"Image Name"
-			"Image Organization";
-		justify-content: start;
-		align-content: center;
-
-		figure {
-			border-radius: 50%;
-			overflow: hidden;
-			width: 4.5rem;
-			height: 4.5rem;
-			grid-area: Image;
-			margin: 0;
-			img {
-				width: 100%;
-				height: auto;
-				object-fit: cover;
-			}
-		}
-		p {
-			margin: 0;
-			width: 100%;
-			line-height: 1.2;
-			text-align: left;
-			align-self: end;
-		}
-		.name {
-			font-size: 1.5rem;
-			font-weight: 600;
-			grid-area: Name;
-			align-self: end;
-		}
-		.organization {
-			font-size: 1rem;
-			grid-area: Organization;
-			align-self: start;
-		}
-	}
-
-	&.single-slide {
-		padding-bottom: 6.5rem;
-		.splide__list {
-			@include rounder;
-			@include has-after;
-			background-color: rgb(237, 246, 255);
-			width: calc(100vw - 2rem);
-			margin-left: auto;
-			margin-right: auto;
-			@media #{$medium-up} {
-				width: calc(100vw - 12rem);
-			}
-			@media #{$largish-up} {
-				width: calc(100vw - 12rem);
-			}
-			&:after {
-				@include rounder;
-				top: 0;
-				left: 6rem;
-				height: 100%;
-				width: calc(100vw - 12rem);				
-				z-index: 0;
-				opacity: 0.4;
-				background-image: url(../images/Ellipse-Base-Gray.svg);
-				background-position-x: 50%;
-				background-position-y: bottom;
-				background-repeat: no-repeat;
-				background-size: 90%;
-				filter: invert(42%) sepia(92%) saturate(200%) hue-rotate(181deg) brightness(100%) contrast(89%);
-			}
-		}
-	
-		.splide__slide {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			@media #{$medium-up} {
-				min-height: 32rem;
-			}
-		}
-
-		.testimonial {
-			background: none;
-			border: none;
-			font-size: var(--wp--preset--font-size--large);
-			width: 100%;	
-			@media #{$medium-up} {
-				width: calc(100vw - 12rem);
-				font-size: var(--wp--preset--font-size--x-large);
-			}
-			@media #{$largish-up} {
-				width: calc(100vw - 12rem);
-			}
-			blockquote {
-				display: block;
-				-webkit-line-clamp: unset;
-				overflow: visible;
-				max-width: var(--wp--style--global--content-size);
-				margin: 0 auto;
-				text-align: center;
-				p {
-					margin: 0;
-				}
-			}
-		}
-		.attribution {
-			width: fit-content;
-			margin: 1rem auto;
-			grid-template-columns: 1fr;
-			.name, .organization {
-				font-size: var(--wp--preset--font-size--regular);
-				text-align: center;
-			}
-			figure {
-				display: none;
-			}
-		}
-		// Re-center arrows below the card rather than left-aligned
-		.splide__arrows {
-			left: 50%;
-			transform: translateX(-50%);
-			width: 7.25rem;
-		}
-	}
-}
-
-
-/*--------------------------------------------------------------
-  6.8 - Featured Blog Post
+  6.6 - Featured Blog Post
 --------------------------------------------------------------*/
 
 // Single large featured post card used at the bottom of the homepage.
@@ -2367,7 +2249,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.9 - Pre-footer CTA
+  6.7 - Pre-footer CTA
 --------------------------------------------------------------*/
 
 // Full-width CTA band that sits above the footer, sharing its background gradient.
@@ -2404,6 +2286,75 @@ body.home {
 			.wp-block-button {
 				display: block;
 				width: 100%;
+			}
+		}
+	}
+}
+
+/*--------------------------------------------------------------
+  6.8 - Demo Form
+--------------------------------------------------------------*/
+
+.demo-form {
+	width: 100%;
+	max-width: none;
+	.wp-block-columns {
+		max-width: var(--wp--style--global--content-size);
+		margin-left: auto;
+		margin-right: auto;
+		column-gap: 5rem;
+	}
+	.wp-block-column {
+		@include nopadding;
+	}
+	form {
+		@include rounder;
+		border: 1px solid var(--menu-border-color);
+		background: var(--superlight-accent-color);
+		padding: 1.5rem;
+		label {
+			color: var(--light-text-color);
+			margin-bottom: .5rem;
+			display: block;
+		}
+		input, textarea {
+			@include round;
+			border: 1px solid var(--menu-border-color);
+			background: var(--light-color);
+			color: var(--light-text-color);
+			padding: .75rem;
+			width: 100% !important;
+		}
+		.hs-form-required, .hs-error-msg {
+			color: #C53030;
+		}
+		.hs-error-msgs {
+		    list-style: none;
+			padding: .5rem 0 0;
+			margin: 0;
+		}
+		.hs-input.invalid.error {
+			border-color: #C53030;
+		}
+		.hs-form-field {
+			margin-bottom: 1.5rem;
+		}
+		.hs-richtext.hs-main-font-element {
+			text-align: center;
+			text-wrap: balance;
+			font-weight: 600;
+			margin-bottom: 1.5rem;
+		}
+		.hs-button {
+			color: var(--button-text-color);
+			background: var(--button-background);
+			border-radius: 3rem;
+			padding: .75rem 1.5rem;
+			transition: background .3s ease;
+			font-weight: 600;
+			font-size: 1rem;
+			&:hover {
+				background: color-mix(in srgb, var(--button-background), black 20%);
 			}
 		}
 	}
@@ -2894,88 +2845,6 @@ body.single-press-article {
 	pointer-events: none;
 }
 
-.breadcrumbs {
-	margin: 0;
-}
-
-.breadcrumb-bar {
-	@include to-edge;
-	max-width: 100vw;
-	margin-bottom: 3rem;
-	padding-top: .375rem;
-	text-align: left;
-	border-bottom: 1px solid var(--menu-border-color);
-	@media #{$largish-below} {
-		padding: 0 2rem;
-	}
-	.breadcrumbs {
-		width: 100%;
-		max-width: var(--wp--style--global--content-size);
-		margin: 0 auto;
-		padding: 0 0 .75rem;
-	}
-	.breadcrumb-item a:hover, .breadcrumb-item--current {
-		color: var(--accent-color);
-	}
-}
-
-.breadcrumb-list {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	font-size: var(--wp--preset--font-size--regular);
-	color: var(--text-color);
-}
-
-.breadcrumb-item {
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-	a {
-		color: var(--text-color);
-		text-decoration: none;
-	}
-}
-
-.breadcrumb-sep {
-	@include has-before;
-	text-indent: -1000rem;
-	width: 1.5rem;
-	&:before {
-		text-indent: 0;
-		width: .425em;
-		height: .425em;
-		border-bottom: .075rem solid var(--dark-color);
-		border-right: .075rem solid var(--dark-color);
-		transform: rotate(-45deg);
-		left: .5em;
-		top: .6em;
-	}
-}
-
-.breadcrumb-item--current {
-	color: var(--text-color);
-	font-weight: 600;
-	// Truncate long titles gracefully
-	span {
-		max-width: 44ch;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: inline-block;
-		vertical-align: bottom;
-	}
-}
-
-.breadcrumb-sep {
-	color: var(--light-text-color);
-	user-select: none;
-}
-
 .byline {
 	display: flex;
 	align-items: center;
@@ -3060,6 +2929,54 @@ body.single-press-article {
 }
 
 /*==============================================================
+  7.6 - Single Solution
+==============================================================*/
+
+body.single-solutions {
+    --solution-dark:    color-mix(in oklab, var(--solution) 72%, black);
+    --solution-bg:      color-mix(in oklab, var(--solution) 14%, white);
+    --solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
+	--superlight-accent-color: var(--solution-bg-soft);
+	.breadcrumb-bar .breadcrumb-item a:hover, .breadcrumb-bar .breadcrumb-item--current {
+		color: var(--solution);
+	}
+	.has-light-to-superlight-horizontal-gradient-background:before {
+		background: linear-gradient(
+			90deg,
+			var(--solution-bg) 0%,
+			var(--solution-bg-soft) 100%
+		) !important;
+	}
+	.is-style-bg-dots {
+		background-color: color-mix(in oklab, var(--solution) 20%, white);
+		&:after {
+			opacity: .3;
+		}
+	}
+	.is-style-bg-ellipse, .single-slide .splide__list {
+		&::after {
+			--solution-bg: color-mix(in oklab, var(--solution) 30%, white);		
+		}
+	}
+	.has-vertical-gradient-background {
+		&:before {
+			background: linear-gradient(var(--solution-bg), var(--light-color)) !important;
+		}
+	}
+	.wp-block-media-text {
+		&.is-style-stacked {
+			background: var(--solution-bg);
+		}
+	}
+
+	.single-slide .splide__list {
+		&::after {
+		
+		}
+	}
+}
+
+/*==============================================================
   8.0 - Animations
 ==============================================================*/
 
@@ -3092,17 +3009,33 @@ body.single-press-article {
 
 .is-style-bg-dots {
 	@include has-after;
-	position: relative;
-	&:after {
+	&::after {
 		z-index: 0;
 		top: 0; left: 0;
 		height: 100%; width: 100%;
-		background: url(../images/dot-background.svg) center center;
+		background-image:
+			// Large accent dot — one per 5×5 tile
+			radial-gradient(
+				circle,
+				var(--accent-color) 2.5px,
+				transparent 2.5px
+			),
+			// Small dots — every grid position
+			radial-gradient(
+				circle,
+				var(--accent-color) 1px,
+				transparent 1px
+			);
+		background-size:
+			12.5rem 12.5rem,   // 5×5 tile for large dots
+			2.5rem 2.5rem; // 1×1 tile for small dots
+		background-position:
+			center center,
+			center center;
+		opacity: 0.4;
 		pointer-events: none;
-		filter: invert(43%) sepia(96%) saturate(5806%)
-				hue-rotate(201deg) brightness(93%) contrast(101%);
 	}
-	// Ensure block content sits above the SVG layer
+
 	> * { position: relative; z-index: 1; }
 }
 
@@ -3128,24 +3061,29 @@ body.single-press-article {
 	a { color: var(--light-color); }
 }
 
-.is-style-bg-light-blue {
+.is-style-bg-light {
 	background: var(--superlight-accent-color);
 }
 
-.is-style-bg-blue-ellipse {
+.is-style-bg-ellipse {
 	@include has-after;
 	background: var(--superlight-accent-color);
-	&:after {
+
+	&::after {
 		z-index: 0;
 		top: 0; left: 0;
 		height: 100%; width: 100%;
-		background: url(../images/bg-ellipse-1.svg) center bottom no-repeat;
+		
+		// The SVG defines the shape; background-color provides the color
+		mask-image: url(../images/Ellipse-Base-Gray.svg);
+		mask-position: right 15%;
+		mask-repeat: no-repeat;
+		mask-size: 100vw;
+		background-color: var(--light-accent-color);		
 		pointer-events: none;
-		background-size: 140vw;
 	}
-	
-	> * { position: relative; z-index: 1; }
 
+	> * { position: relative; z-index: 1; }
 }
 
 .has-light-to-superlight-horizontal-gradient-background {
@@ -3159,4 +3097,46 @@ body.single-press-article {
 		z-index: -2;
 		background: var(--wp--preset--gradient--light-to-superlight-horizontal) !important;
 	}
+}
+
+.has-vertical-gradient-background {
+	background: none !important;
+	@include has-before;
+	&:before {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: -2;
+		background: linear-gradient(var(--superlight-accent-color), var(--light-color)) !important;
+	}
+}
+
+.is-style-ellipse-bottom, .is-style-ellipse-top {
+	@include has-after;
+	&:after {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 0;
+		opacity: .5;
+		background-image: url(../images/Ellipse-Base-Gray.svg);
+		background-repeat: no-repeat;
+		filter: invert(42%) sepia(92%) saturate(200%) hue-rotate(181deg) brightness(100%) contrast(89%);
+	}
+	> * { position: relative; z-index: 1; }
+}
+
+.is-style-ellipse-bottom {
+	&:after {
+		background-position: center bottom;
+		background-size: 88vw auto;
+	}
+}
+
+.is-style-ellipse-top:after {
+	background-position: top center;
+	top: 6.25rem;
+	background-size: cover;
 }

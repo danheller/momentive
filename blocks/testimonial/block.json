@@ -9,7 +9,7 @@
 		"html": false,
 		"inserter": true
 	},
-	"usesContext": ["postId"],
+	"usesContext": ["postId", "postType", "query"],
 	"attributes": {
 		"testimonialId": {
 			"type": "integer",

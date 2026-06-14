@@ -6,14 +6,27 @@
  */
 
 ( function ( blocks, element, blockEditor, components, i18n ) {
-	const { createElement: el } = element;
+	const { createElement: el, Fragment } = element;
 	const { registerBlockType } = blocks;
-	const { InspectorControls } = blockEditor;
+	const { InspectorControls, useBlockProps } = blockEditor;
 	const { PanelBody, PanelRow, TextControl, SelectControl, ColorPicker, Dropdown, Button } = components;
 	const { __ } = i18n;
 
 	// Populated via wp_localize_script( 'momentive-icon-picker', 'momentiveIcons', … )
 	const availableIcons = window.momentiveIcons?.available || {};
+	const svgData = window.momentiveIcons?.svgData || {};
+
+	function renderIconInline( slug ) {
+		const data = svgData[ slug ];
+		if ( ! data || ! data.inner ) return null;
+	
+		return el( 'svg', {
+			viewBox: data.viewBox,
+			'aria-hidden': 'true',
+			focusable: 'false',
+			dangerouslySetInnerHTML: { __html: data.inner },
+		} );
+	}
 
 	// -------------------------------------------------------------------------
 	// Block registration
@@ -35,10 +48,11 @@
 		},
 
 		edit( { attributes, setAttributes } ) {
+			const blockProps = useBlockProps();
 			const { url, title, tagline, iconSlug, iconSize, accentColor } = attributes;
 
 			const IconPicker = window.momentive?.IconPicker;
-			
+
 			const hasContent  = title || iconSlug;
 
 			// Inline style for accent color preview in the canvas
@@ -46,12 +60,12 @@
 				? { '--icon-link-accent': accentColor }
 				: {};
 
-			return [
+			return el( Fragment, null,
 
 				// -----------------------------------------------------------------
 				// Sidebar
 				// -----------------------------------------------------------------
-				el( InspectorControls, {},
+				el( InspectorControls, { key: 'inspector' },
 
 					// Link settings
 					el( PanelBody, { title: __( 'Link', 'momentive' ), initialOpen: true },
@@ -152,8 +166,9 @@
 				// Canvas preview
 				// -----------------------------------------------------------------
 				el( 'div', {
-					className: 'momentive-icon-link-preview wp-block-momentive-icon-link',
-					style: accentStyle,
+					...blockProps,
+					className: `momentive-icon-link-preview wp-block-momentive-icon-link${ blockProps.className ? ' ' + blockProps.className : '' }`,
+					style: { ...blockProps.style, ...accentStyle },
 				},
 					! hasContent
 						? el( 'p', { className: 'momentive-icon-link-placeholder' },
@@ -168,9 +183,7 @@
 								className: 'icon-link__icon',
 								'aria-hidden': 'true',
 							},
-								el( 'svg', { focusable: 'false' },
-									el( 'use', { href: `#icon-${ iconSlug }` } )
-								)
+								renderIconInline( iconSlug )
 							),
 							el( 'span', { className: 'icon-link__text' },
 								el( 'span', { className: 'icon-link__title' }, title ),
@@ -178,7 +191,7 @@
 							)
 						)
 				),
-			];
+			);
 		},
 
 		save() {

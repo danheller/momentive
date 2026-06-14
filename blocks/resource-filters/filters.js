@@ -27,22 +27,53 @@
 		return btn.querySelector( '.load-more-btn' );
 	}
 
+	function initAccordionLoadMore( accordion ) {
+		const btn = document.createElement( 'div' );
+		btn.className = 'load-more-wrapper';
+		btn.innerHTML = `
+			<div class="wp-block-buttons is-content-justification-center">
+				<div class="wp-block-button">
+					<button class="wp-block-button__link wp-element-button load-more-btn" type="button">
+						Load More
+					</button>
+				</div>
+			</div>
+		`;
+		accordion.insertAdjacentElement( 'afterend', btn );
+		return btn.querySelector( '.load-more-btn' );
+	}
+
 	function findNearestQuery( bar ) {
 		let el = bar.nextElementSibling;
 		while ( el ) {
 			const grid = el.querySelector( '.wp-block-post-template' );
-			if ( grid ) return grid;
+			if ( grid ) return { type: 'grid', el: grid };
+	
+			const accordion = el.querySelector( '.momentive-accordion.is-query-mode' );
+			if ( accordion ) return { type: 'accordion', el: accordion };
+	
 			el = el.nextElementSibling;
 		}
-		return bar.closest( '.wp-block-group' )
+		const fallbackGrid = bar.closest( '.wp-block-group' )
 			?.querySelector( '.wp-block-post-template' ) ?? null;
+		if ( fallbackGrid ) return { type: 'grid', el: fallbackGrid };
+	
+		const fallbackAccordion = bar.closest( '.wp-block-group' )
+			?.querySelector( '.momentive-accordion.is-query-mode' ) ?? null;
+		if ( fallbackAccordion ) return { type: 'accordion', el: fallbackAccordion };
+	
+		return null;
 	}
 
 	function initFilterBar( bar ) {
-		const grid = findNearestQuery( bar );
-		if ( ! grid ) return;
-
-		const moreBtn = initLoadMore( grid );
+		const queryTarget = findNearestQuery( bar );
+		if ( ! queryTarget ) return;
+		
+		const isAccordion = queryTarget.type === 'accordion';
+		const grid        = isAccordion ? null : queryTarget.el;
+		const accordion   = isAccordion ? queryTarget.el : null;
+		
+		const moreBtn = isAccordion ? initAccordionLoadMore( accordion ) : initLoadMore( grid );
 
 		// ── Read the default post type from a data attribute set by PHP ───────
 		// This drives renderCard's top-label logic when no post_type filter
@@ -53,12 +84,20 @@
 			categories:  [],
 			postTypes:   [],
 			search:      '',
-			orderby:     'date',
-			order:       'desc',
+			orderby:     isAccordion ? 'menu_order' : 'date',
+			order:       isAccordion ? 'asc' : 'desc',
 			page:        1,
 			totalPages:  1,
 			loading:     false,
 		};
+
+		// Seed totalPages from the data attribute PHP already wrote on the accordion wrapper,
+		// then immediately show or hide the button. Without this, the button stays hidden
+		// until the first fetch fires (which only happens on user interaction).
+		if ( isAccordion && moreBtn ) {
+			state.totalPages = parseInt( accordion.dataset.totalPages || '1', 10 );
+			moreBtn.closest( '.load-more-wrapper' ).hidden = state.totalPages <= 1;
+		}
 
 		const toggle      = bar.querySelector( '.filter-toggle' );
 		const panel       = bar.querySelector( '.filter-panel' );
@@ -150,11 +189,13 @@
 		} );
 
 		// ── Fetch ─────────────────────────────────────────────────────────────
-
 		async function fetchPosts( append = false ) {
 			if ( state.loading ) return;
 			state.loading = true;
-			grid.setAttribute( 'aria-busy', 'true' );
+
+			// aria-busy on whichever container is active.
+			const busyTarget = isAccordion ? accordion : grid;
+			busyTarget.setAttribute( 'aria-busy', 'true' );
 
 			if ( moreBtn ) {
 				moreBtn.disabled    = true;
@@ -187,28 +228,39 @@
 			}
 
 			try {
+				// Single fetch — result used by both grid and accordion paths.
 				const res        = await fetch( `${ endpoint }?${ params }` );
 				state.totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
 				const posts      = await res.json();
 
-				// ── Pass activePostType into renderCard ───────────────────────
-				// This fixes the ReferenceError: postType was previously used
-				// inside renderCard but was only defined in fetchPosts's scope.
-				// Passing it explicitly makes the dependency clear.
-				const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
+				if ( isAccordion ) {
+					const items = posts.map( buildAccordionItem ).join( '' );
 
-				if ( append ) {
-					grid.insertAdjacentHTML( 'beforeend', html );
+					if ( append ) {
+						accordion.insertAdjacentHTML( 'beforeend', items );
+						accordion.querySelectorAll( '.accordion-trigger:not([data-init])' )
+							.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
+					} else {
+						accordion.innerHTML = items;
+						accordion.querySelectorAll( '.accordion-trigger' )
+							.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
+					}
 				} else {
-					grid.innerHTML = html;
+					const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
+
+					if ( append ) {
+						grid.insertAdjacentHTML( 'beforeend', html );
+					} else {
+						grid.innerHTML = html;
+					}
+					initLowerLabels( grid );
 				}
-				initLowerLabels( grid );
 
 			} catch ( err ) {
 				console.error( 'Resource filter fetch error:', err );
 			} finally {
 				state.loading = false;
-				grid.removeAttribute( 'aria-busy' );
+				busyTarget.removeAttribute( 'aria-busy' );
 
 				if ( moreBtn ) {
 					moreBtn.disabled    = false;
@@ -227,6 +279,7 @@
 				'press-article':      '/wp-json/wp/v2/press-article',
 				'case_studies':       '/wp-json/wp/v2/case_studies',
 				'events':             '/wp-json/wp/v2/events',
+				'faq':                '/wp-json/wp/v2/faq',
 				'guides':             '/wp-json/wp/v2/guides',
 				'infographics':       '/wp-json/wp/v2/infographics',
 				'interactive-tools':  '/wp-json/wp/v2/interactive-tools',
@@ -390,6 +443,49 @@
 				} );
 			} );
 		}
+
+		function buildAccordionItem( post ) {
+			const itemId  = 'accordion-item-' + post.id;
+			const panelId = itemId + '-panel';
+
+			// Pull category name from embedded terms (requires _embed=true in the fetch).
+			const terms   = post._embedded?.[ 'wp:term' ] ?? [];
+			const cats    = terms.find( group => group[0]?.taxonomy === 'category' ) ?? [];
+			const catName = cats[0]?.name ?? '';
+			const catSlug = catName ? catName.toLowerCase().replace( /\s+/g, '-' ) : '';
+			const color   = cats[0]?.tag_color ?? '';
+
+			const catHtml = catName
+				? `<span class="accordion-category" data-category="${ esc( catSlug ) }">${ esc( catName ) }</span>`
+				: '';
+
+			return `<div class="accordion-item"${ color ? ` style="--category-color: ${ esc( color ) }"` : '' }>
+				<button class="accordion-trigger" type="button"
+					aria-expanded="false"
+					aria-controls="${ esc( panelId ) }"
+					id="${ esc( itemId ) }" data-init>
+					<span class="accordion-question">${ post.title?.rendered ?? '' }</span>
+					${ catHtml }
+					<span class="accordion-chevron" aria-hidden="true">
+						<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+							<path d="M1.5 4L6 8L10.5 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+						</svg>
+					</span>
+				</button>
+				<div class="accordion-panel" id="${ esc( panelId ) }"
+					role="region" aria-labelledby="${ esc( itemId ) }" hidden>
+					<div class="accordion-panel-inner">${ post.content?.rendered ?? '' }</div>
+				</div>
+			</div>`;
+		}
+		
+		function wireAccordionTrigger( trigger ) {
+			trigger.addEventListener( 'click', function () {
+				const isOpen = trigger.getAttribute( 'aria-expanded' ) === 'true';
+				isOpen ? closeItem( trigger ) : openItem( trigger );
+			} );
+		}
+
 	}
 
 	// ── Boot ──────────────────────────────────────────────────────────────────

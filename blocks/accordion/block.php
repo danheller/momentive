@@ -52,6 +52,7 @@ add_action( 'init', function () {
 function momentive_accordion_render( array $attributes, string $content ): string {
 
 	$style       = sanitize_key( $attributes['style']       ?? 'default' );
+	$open_first  = ! empty( $attributes['openFirst'] );
 	$close_others = ! empty( $attributes['closeOthers'] );
 	$query_mode  = ! empty( $attributes['queryMode'] );
 
@@ -67,14 +68,13 @@ function momentive_accordion_render( array $attributes, string $content ): strin
 			);
 		}, $attributes['items'] ?? [] );
 
-		return momentive_accordion_markup( $items, $style, $close_others );
+		return momentive_accordion_markup( $items, $style, $close_others, false, [], $open_first );
 	}
 
 	// ── Query mode ───────────────────────────────────────────────────────────
 
 	$posts_per_page = intval( $attributes['queryPostsPerPage'] ?? 9 );
 	$category_slug  = sanitize_key( $attributes['queryCategory'] ?? '' );
-	$load_more      = ! empty( $attributes['queryLoadMore'] );
 
 	$query_args = array(
 		'post_type'      => 'faq',
@@ -101,14 +101,25 @@ function momentive_accordion_render( array $attributes, string $content ): strin
 		$cats     = get_the_terms( $post->ID, 'category' );
 		$cat_name = ( $cats && ! is_wp_error( $cats ) ) ? $cats[0]->name : '';
 		$icon_slug = get_field( 'faq_icon', $post->ID ) ?: '';
-
+	
+		// Resolve solution accent color from the category term
+		$color = '';
+		if ( $cats && ! is_wp_error( $cats ) ) {
+			$raw = get_solution_color_for_term( $cats[0]->term_id );
+			if ( $raw ) {
+				$color = sanitize_hex_color( $raw );
+			}
+		}
+	
 		$items[] = array(
-			'question' => $post->post_title,
-			'answer'   => apply_filters( 'the_content', $post->post_content ),
-			'iconSlug' => sanitize_key( $icon_slug ),
-			'category' => $cat_name,
-			'id'       => $post->ID,
-			'link'     => get_permalink( $post->ID ),
+			'question'      => $post->post_title,
+			'answer'        => apply_filters( 'the_content', $post->post_content ),
+			'excerpt'       => $post->post_excerpt,
+			'iconSlug'      => sanitize_key( $icon_slug ),
+			'category'      => $cat_name,
+			'solutionColor' => $color,   // ← new
+			'id'            => $post->ID,
+			'link'          => get_permalink( $post->ID ),
 		);
 	}
 
@@ -121,18 +132,7 @@ function momentive_accordion_render( array $attributes, string $content ): strin
 		'data-category' => $category_slug,
 	);
 
-	$html = momentive_accordion_markup( $items, $style, $close_others, true, $wrapper_attrs );
-
-	// Load-more button (mirrors resource-filters pattern).
-	if ( $load_more && $total_pages > 1 ) {
-		$html .= '<div class="accordion-load-more-wrapper">';
-		$html .= '<div class="wp-block-buttons is-content-justification-center">';
-		$html .= '<div class="wp-block-button">';
-		$html .= '<button class="wp-block-button__link wp-element-button accordion-load-more-btn" type="button" data-page="1">';
-		$html .= __( 'Load More', 'momentive' );
-		$html .= '</button>';
-		$html .= '</div></div></div>';
-	}
+	$html = momentive_accordion_markup( $items, $style, $close_others, true, $wrapper_attrs, $open_first );
 
 	return $html;
 }
@@ -152,7 +152,8 @@ function momentive_accordion_markup(
 	string $style,
 	bool $close_others,
 	bool $query_mode = false,
-	array $wrapper_attrs = []
+	array $wrapper_attrs = [],
+	bool $open_first = false
 ): string {
 
 	if ( empty( $items ) ) return '';
@@ -172,23 +173,27 @@ function momentive_accordion_markup(
 	?>
 	<div class="<?php echo esc_attr( $classes ); ?>"<?php echo $extra; ?>>
 		<?php foreach ( $items as $index => $item ) :
-
-			$item_id = 'accordion-item-' . uniqid();
+			$item_id  = 'accordion-item-' . uniqid();
 			$panel_id = $item_id . '-panel';
+			$is_first_open = $open_first && $index === 0;
 			$has_icon = $style === 'icon' && ! empty( $item['iconSlug'] );
 			$has_cat  = $style === 'categorized' && ! empty( $item['category'] );
-
 		?>
-		<div class="accordion-item">
+		<div class="accordion-item<?php echo $is_first_open ? ' is-open' : ''; ?>"<?php
+			if ( ! empty( $item['solutionColor'] ) ) {
+				echo ' style="--category-color:' . esc_attr( $item['solutionColor'] ) . '"';
+			}
+		?>>
 			<button
 				class="accordion-trigger"
 				type="button"
-				aria-expanded="false"
+				aria-expanded="<?php echo $is_first_open ? 'true' : 'false'; ?>"
 				aria-controls="<?php echo esc_attr( $panel_id ); ?>"
 				id="<?php echo esc_attr( $item_id ); ?>"
 			>
-
-				<?php if ( $has_icon ) : ?>
+				<?php if ( $has_icon ) : 
+					momentive_use_icon( $item['iconSlug'] );
+				?>
 				<span class="accordion-icon" aria-hidden="true">
 					<svg focusable="false">
 						<use href="#icon-<?php echo esc_attr( $item['iconSlug'] ); ?>"></use>
@@ -218,10 +223,22 @@ function momentive_accordion_markup(
 				id="<?php echo esc_attr( $panel_id ); ?>"
 				role="region"
 				aria-labelledby="<?php echo esc_attr( $item_id ); ?>"
-				hidden
+				<?php echo $is_first_open ? '' : 'hidden'; ?>
 			>
 				<div class="accordion-panel-inner">
-					<?php echo wp_kses_post( $item['answer'] ); ?>
+					<?php if ( ! empty( $item['excerpt'] ) ) : ?>
+						<?php echo wp_kses_post( $item['excerpt'] ); ?>
+						<?php if ( ! empty( $item['link'] ) ) : ?>
+							<p class="accordion-read-more">
+								<a href="<?php echo esc_url( $item['link'] ); ?>">
+									<?php esc_html_e( 'Read more', 'momentive' ); ?>
+									<span class="screen-reader-text">: <?php echo esc_html( $item['question'] ); ?></span>
+								</a>
+							</p>
+						<?php endif; ?>
+					<?php else : ?>
+						<?php echo wp_kses_post( $item['answer'] ); ?>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>

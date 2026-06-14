@@ -11,6 +11,7 @@
 	"attributes": {
 
 		"style":        { "type": "string",  "default": "default" },
+		"openFirst":    { "type": "boolean", "default": false },
 		"closeOthers":  { "type": "boolean", "default": false },
 		"queryMode":    { "type": "boolean", "default": false },
 
@@ -29,7 +30,6 @@
 		},
 
 		"queryPostsPerPage": { "type": "number",  "default": 9    },
-		"queryCategory":     { "type": "string",  "default": ""   },
-		"queryLoadMore":     { "type": "boolean", "default": true  }
+		"queryCategory":     { "type": "string",  "default": ""   }
 	}
 }

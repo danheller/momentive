@@ -92,6 +92,79 @@ add_action( 'init', 'momentive_solutions_setup' );
 
 
 /*
+ * For solution singular posts, apply the accent color as a root-level variable.
+ * If the solution is a child page, use the parent solution's accent color.
+ */
+
+add_action( 'wp_head', function() {
+	if ( ! is_singular( 'solutions' ) ) return;
+
+	$post_id = get_the_ID();
+	$parent_id = wp_get_post_parent_id( $post_id );
+
+	// If this is a child post, use the parent's accent color
+	$source_id = $parent_id ? $parent_id : $post_id;
+	$color = get_field( 'accent_color', $source_id );
+
+	if ( ! $color ) return;
+	echo '<style>:root { --solution: ' . esc_attr( $color ) . '; }</style>';
+} );
+
+add_filter( 'acf/prepare_field/name=accent_color', function( $field ) {
+	// Only run in the admin editor context
+	if ( ! is_admin() ) return $field;
+
+	$post_id = acf_get_valid_post_id();
+	if ( ! $post_id ) return $field;
+
+	$post = get_post( $post_id );
+	if ( $post && $post->post_parent ) {
+		return false; // Returning false hides the field entirely
+	}
+
+	return $field;
+} );
+
+/* 
+ * Add editor javascript to show/hide accent color field based on whether there is a parent post.
+ */
+
+add_action( 'enqueue_block_editor_assets', function() {
+	$screen = get_current_screen();
+	if ( ! $screen ) return;
+
+	$post_type = $screen->post_type;
+
+	if ( 'solutions' != $post_type ) return;
+
+	wp_enqueue_script(
+		'momentive-solutions-editor',
+		get_theme_file_uri( 'assets/js/solutions-editor.js' ),
+		[ 'wp-data' ],
+		filemtime( get_theme_file_path( 'assets/js/solutions-editor.js' ) ),
+		true
+	);
+} );
+
+
+/* 
+ * For new 'solution' posts, use "patterns/solution-content.php" pattern. 
+ */
+
+add_action( 'init', function() {
+	$cpt = get_post_type_object( 'solutions' );
+	if ( ! $cpt ) return;
+	$registry = WP_Block_Patterns_Registry::get_instance();
+	$pattern  = $registry->get_registered( 'momentive/solution-content' );
+	if ( $pattern && ! empty( $pattern['content'] ) ) {
+		$cpt->template = momentive_blocks_to_cpt_template(
+			parse_blocks( $pattern['content'] )
+		);
+	}
+	$cpt->template_lock = false;
+}, 30 );
+
+/*
  * Slider card block
  */
  
@@ -114,6 +187,21 @@ add_action( 'init', function() {
 		],
 	]);
 });
+
+/*
+ * Enqueue solutions CSS conditionally
+ */
+ 
+add_action( 'enqueue_block_assets', function() {
+	if ( ! has_block( 'acf/solution-slide' ) ) return;
+
+	wp_enqueue_style(
+		'momentive-solutions',
+		get_template_directory_uri() . '/assets/css/solutions.css',
+		[],
+		wp_get_theme()->get( 'Version' )
+	);
+} );
 
 /*
  * Populate "icons" select list with options from the icon system

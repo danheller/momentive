@@ -260,6 +260,7 @@ function momentive_register_icon_link_block(): void {
 			'render_callback' => 'momentive_render_icon_link_block',
 			'editor_script'   => 'momentive-icon-link-block',
 			'style'           => 'momentive-icon-link-style',
+			'editor_style'    => 'momentive-icon-link-style',
 		]
 	);
 }
@@ -274,6 +275,14 @@ function momentive_render_icon_link_block( array $attributes ): string {
 					: 'small';
 	$accent_color = sanitize_hex_color( $attributes['accentColor'] ?? '' );
 
+	// If no manual override, try to resolve from the linked post
+	if ( ! $accent_color && ! empty( $attributes['url'] ) ) {
+		$post_id = url_to_postid( $attributes['url'] );
+		if ( $post_id ) {
+			$accent_color = sanitize_hex_color( get_field( 'accent_color', $post_id ) ?: '' );
+		}
+	}
+
 	// Nothing useful to render without at least a title or URL.
 	if ( ! $title && ! $url ) {
 		return '';
@@ -284,17 +293,9 @@ function momentive_render_icon_link_block( array $attributes ): string {
 		momentive_use_icon( $icon_slug );
 	}
 
-	// TODO: if $accent_color is empty, look up the linked post's accent color
-	// from ACF meta or the shared Solutions taxonomy term here, once that system
-	// is in place. Something like:
-	//
-	//   if ( ! $accent_color && $linked_post_id ) {
-	//       $accent_color = get_field( 'accent_color', $linked_post_id );
-	//   }
-
 	// Inline custom property carries the accent color into the CSS cascade.
 	$style_attr = $accent_color
-		? ' style="' . esc_attr( '--icon-link-accent:' . $accent_color ) . '"'
+		? ' style="--icon-link-accent:' . esc_attr( $accent_color ) . '"'
 		: '';
 
 	// Icon markup
@@ -340,11 +341,23 @@ function momentive_render_icon_link_block( array $attributes ): string {
 add_action( 'enqueue_block_editor_assets', 'momentive_icon_block_editor_assets' );
 
 function momentive_icon_block_editor_assets(): void {
-	// Enqueue the shared picker so it's guaranteed to load.
 	wp_enqueue_script( 'momentive-icon-picker' );
 
+	$available = momentive_get_available_icons(); // [ slug => label ]
+	$icons_data = [];
+
+	foreach ( $available as $slug => $label ) {
+		$parsed = momentive_parse_svg_file( $slug );
+		$icons_data[ $slug ] = [
+			'label'   => $label,
+			'viewBox' => $parsed ? $parsed['viewBox'] : '0 0 24 24',
+			'inner'   => $parsed ? $parsed['inner']   : '',
+		];
+	}
+
 	wp_localize_script( 'momentive-icon-picker', 'momentiveIcons', [
-		'available' => momentive_get_available_icons(),
+		'available' => $available,   // keep for backward compat (icon-picker uses this)
+		'svgData'   => $icons_data,  // new: full SVG data for inline rendering
 	] );
 }
 

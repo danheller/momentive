@@ -1,0 +1,50 @@
+<!-- wp:template-part {"slug":"header","tagName":"header","className":"site-header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"site-content"} -->
+<main class="wp-block-group site-content">
+
+<!-- wp:group {"className":"is-style-bg-ellipse hero-background","layout":{"type":"constrained"}} -->
+<div class="wp-block-group is-style-bg-ellipse hero-background">
+  <!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+  <p class="is-style-eyebrow">Resources</p>
+  <!-- /wp:paragraph -->
+
+  <!-- wp:heading {"level":1,"fontSize":"display-large"} -->
+  <h1 class="wp-block-heading has-display-large-font-size">FAQ</h1>
+  <!-- /wp:heading -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"all-blogs content-width","layout":{"type":"constrained"}} -->
+<div class="wp-block-group all-blogs content-width">
+
+  <!-- wp:momentive/resource-filters {"defaultPostType":"faq","showSearch":true,"showSort":false} /-->
+
+  <!-- wp:query {"queryId":20,"query":{"perPage":50,"pages":0,"offset":0,"postType":"faq","order":"asc","orderBy":"menu_order","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[]},"className":"alignwide"} -->
+  <div class="wp-block-query alignwide">
+
+    <!-- wp:post-template {"layout":{"type":"default"}} -->
+      <!-- wp:momentive/accordion {"mode":"single"} -->
+        <!-- wp:post-title /-->
+        <!-- wp:post-content /-->
+      <!-- /wp:momentive/accordion -->
+    <!-- /wp:post-template -->
+
+    <!-- wp:query-pagination -->
+    <div class="wp-block-query-pagination">
+      <!-- wp:query-pagination-previous /-->
+      <!-- wp:query-pagination-numbers /-->
+      <!-- wp:query-pagination-next /-->
+    </div>
+    <!-- /wp:query-pagination -->
+
+  </div>
+  <!-- /wp:query -->
+
+</div>
+<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","className":"site-footer"} /-->

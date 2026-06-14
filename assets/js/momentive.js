@@ -17,21 +17,21 @@
 			d: 'M5,30 Q250,5 495,30 M5,55 Q250,30 495,55',
 		},
 	};
-	
+
 	function getSwoopKey( el ) {
 		for ( const key of Object.keys( SWOOPS ) ) {
 			if ( el.classList.contains( key ) ) return key;
 		}
 		return 'swoop-default';
 	}
-	
+
 	function buildSVG( swoop ) {
 		const svg = document.createElementNS( 'http://www.w3.org/2000/svg', 'svg' );
 		svg.setAttribute( 'viewBox', swoop.viewBox );
 		svg.setAttribute( 'preserveAspectRatio', 'none' );
 		svg.setAttribute( 'aria-hidden', 'true' );
 		svg.classList.add( 'swoop-svg' );
-	
+
 		// Support multiple paths (e.g. swoop-double)
 		const paths = Array.isArray( swoop.d ) ? swoop.d : [ swoop.d ];
 		paths.forEach( d => {
@@ -39,37 +39,37 @@
 			path.setAttribute( 'd', d );
 			svg.appendChild( path );
 		} );
-	
+
 		return svg;
 	}
-	
+
 	function initSwoop( heading ) {
 		const strong = heading.querySelector( 'strong' );
 		if ( ! strong ) return;
-	
+
 		const swoopKey = getSwoopKey( heading );
 		const swoop    = SWOOPS[ swoopKey ];
 		const svg      = buildSVG( swoop );
-	
+
 		strong.style.position = 'relative';
 		strong.appendChild( svg );
-	
+
 		// Wait for the browser to paint before measuring path length.
 		// Double-rAF ensures we're past the style recalc phase.
 		requestAnimationFrame( () => {
 			requestAnimationFrame( () => {
 				svg.querySelectorAll( 'path' ).forEach( path => {
 					const len = path.getTotalLength();
-	
+
 					// Bail out if measurement still failed
 					if ( ! len ) {
 						path.style.strokeDasharray  = '';
 						path.style.strokeDashoffset = '';
 						return;
 					}
-//					path.style.setProperty( '--swoop-path-length', len );	
+//					path.style.setProperty( '--swoop-path-length', len );
 				} );
-	
+
 				// Start observing only after the path is correctly hidden.
 				// This also prevents the "flash" on headings already in the viewport.
 				heading.classList.add( 'is-ready' );
@@ -77,7 +77,7 @@
 			} );
 		} );
 	}
-	
+
 	function observe( heading ) {
 		const io = new IntersectionObserver(
 			( entries ) => {
@@ -92,126 +92,145 @@
 		);
 		io.observe( heading );
 	}
-	
+
 	document.addEventListener( 'DOMContentLoaded', () => {
 		document.querySelectorAll( '.is-style-has-swoop' ).forEach( heading => {
 			initSwoop( heading );
 		} );
 	} );
 
-	// megamenus
-	const navItems = document.querySelectorAll('.wp-block-navigation-item.has-megamenu');
-	const panels = document.querySelectorAll('.megamenu-panel');
+	// ── Megamenu ──────────────────────────────────────────────────────────────
 	
-	function openPanel(name) {
-		if (window.innerWidth < 1024) return;
+	const navItems  = document.querySelectorAll( '.wp-block-navigation-item.has-megamenu' );
+	const panels    = document.querySelectorAll( '.megamenu-panel' );
+	const container = document.querySelector( '.megamenu-panels' );
+	
+	// Pending open timer — cancelled if the cursor leaves before it fires.
+	let openTimer = null;
+	
+	function openPanel( name ) {
+		if ( window.innerWidth < 1024 ) return;
 		closeAll();
-		
-		const panel = document.querySelector(`.megamenu-panel.megamenu--${name}`);
-		const trigger = document.querySelector(`.megamenu--${name}`);
-		if (!panel) return;
-		
-		// Measure the incoming panel's natural height
+	
+		const panel   = document.querySelector( `.megamenu-panel[data-menu="${ name }"]` );
+		const trigger = document.querySelector(
+			`.wp-block-navigation-item.has-megamenu[data-menu="${ name }"], .megamenu--${ name }`
+		);
+		if ( ! panel ) return;
+	
 		panel.style.opacity = '0';
 		panel.style.display = 'block';
-		const targetHeight = panel.scrollHeight;
+		const targetHeight  = panel.scrollHeight;
 		panel.style.display = '';
 		panel.style.opacity = '';
-		
-		// Animate the container to that height
-		const container = document.querySelector('.megamenu-panels');
-		container.style.height = `${targetHeight}px`;
-		
-		panel.classList.add('is-open');
-		trigger?.setAttribute('aria-expanded', 'true');
+	
+		container.style.height = `${ targetHeight }px`;
+		panel.classList.add( 'is-open' );
+		trigger?.setAttribute( 'aria-expanded', 'true' );
 	}
-
+	
+	function scheduleOpen( name ) {
+		const alreadyOpen = container?.querySelector( '.megamenu-panel.is-open' );
+	
+		// No panel open: open immediately — deliberate hover, no diagonal-travel risk.
+		if ( ! alreadyOpen ) {
+			cancelOpen();
+			openPanel( name );
+			return;
+		}
+	
+		// Panel already open: delay to absorb accidental corner-brushing while the
+		// user moves their cursor diagonally from the nav toward the panel below.
+		cancelOpen();
+		openTimer = setTimeout( () => openPanel( name ), 160 );
+	}
+	
+	function cancelOpen() {
+		clearTimeout( openTimer );
+		openTimer = null;
+	}
+	
 	function closeAll() {
-		panels.forEach(p => p.classList.remove('is-open'));
-		navItems.forEach(n => n.setAttribute('aria-expanded', 'false'));
-		document.querySelector('.megamenu-panels').style.height = '';
+		cancelOpen(); // prevent a delayed open from firing after close
+		panels.forEach(   p => p.classList.remove( 'is-open' ) );
+		navItems.forEach( n => n.setAttribute( 'aria-expanded', 'false' ) );
+		if ( container ) container.style.height = '';
 	}
 	
-	navItems.forEach(item => {
-		const name = [...item.classList]
-			.find(c => c.startsWith('megamenu--'))
-			?.replace('megamenu--', '');
-		
-		item.addEventListener('mouseenter', () => openPanel(name));
-		item.addEventListener('focus', () => openPanel(name), true);
-	});
+	navItems.forEach( item => {
+		const name = item.dataset.menu
+			?? [ ...item.classList ]
+				.find( c => c.startsWith( 'megamenu--' ) )
+				?.replace( 'megamenu--', '' );
 	
-	document.addEventListener('keydown', e => {
-		if (e.key === 'Escape') closeAll();
-	});
+		if ( ! name ) return;
 	
-	document.addEventListener('click', e => {
-		if (!e.target.closest('.site-header')) closeAll();
-	});
-
-	document.querySelector('.site-header')?.addEventListener('mouseleave', closeAll);
-
-	// Replace the focus listener with a keydown listener on nav items
-	navItems.forEach(item => {
-		const name = [...item.classList]
-			.find(c => c.startsWith('megamenu--'))
-			?.replace('megamenu--', '');
-		
-		item.addEventListener('mouseenter', () => openPanel(name));
-		
-		// Open panel on Enter/Space; allow the link to be followed with click
-		item.querySelector('a')?.addEventListener('keydown', e => {
-		if (e.key === 'Enter' || e.key === ' ') {
-			const isOpen = item.getAttribute('aria-expanded') === 'true';
-			if (isOpen) {
+		item.addEventListener( 'mouseenter', () => scheduleOpen( name ) );
+		item.addEventListener( 'mouseleave', cancelOpen ); // cursor left before delay fired
+	
+		item.querySelector( 'a' )?.addEventListener( 'keydown', e => {
+			if ( e.key !== 'Enter' && e.key !== ' ' ) return;
+			const isOpen = item.getAttribute( 'aria-expanded' ) === 'true';
+			if ( isOpen ) {
 				closeAll();
 			} else {
 				e.preventDefault();
-				openPanel(name);
-				// Move focus to first focusable element in panel
-				const panel = document.querySelector(`.megamenu-panel.megamenu--${name}`);
-				panel?.querySelector('a, button')?.focus();
+				openPanel( name );
+				document.querySelector( `.megamenu-panel[data-menu="${ name }"]` )
+					?.querySelector( 'a, button' )
+					?.focus();
 			}
-		}
-		});
-	});
+		} );
+	} );
 	
-	// Arrow keys within an open panel move between focusable items
-	document.querySelector('.megamenu-panels')?.addEventListener('keydown', e => {
-		if (!['ArrowDown', 'ArrowUp', 'Tab'].includes(e.key)) return;
-		const openPanel = document.querySelector('.megamenu-panel.is-open');
-		if (!openPanel) return;
-		
-		const focusable = [...openPanel.querySelectorAll('a, button')];
-		const current = document.activeElement;
-		const index = focusable.indexOf(current);
-		
-		if (e.key === 'ArrowDown') {
+	document.addEventListener( 'keydown', e => {
+		if ( e.key === 'Escape' ) closeAll();
+	} );
+	
+	document.addEventListener( 'click', e => {
+		if ( ! e.target.closest( '.site-header' ) ) closeAll();
+	} );
+	
+	document.querySelector( '.site-header' )?.addEventListener( 'mouseleave', closeAll );
+	
+	// Arrow keys within an open panel move between focusable items.
+	container?.addEventListener( 'keydown', e => {
+		if ( ! [ 'ArrowDown', 'ArrowUp' ].includes( e.key ) ) return;
+		const openPanel = container.querySelector( '.megamenu-panel.is-open' );
+		if ( ! openPanel ) return;
+	
+		const focusable = [ ...openPanel.querySelectorAll( 'a, button' ) ];
+		const index     = focusable.indexOf( document.activeElement );
+	
+		if ( e.key === 'ArrowDown' ) {
 			e.preventDefault();
-			focusable[Math.min(index + 1, focusable.length - 1)]?.focus();
-		} else if (e.key === 'ArrowUp') {
+			focusable[ Math.min( index + 1, focusable.length - 1 ) ]?.focus();
+		} else if ( e.key === 'ArrowUp' ) {
 			e.preventDefault();
-			if (index <= 0) {
-				// Return focus to the triggering nav item
+			if ( index <= 0 ) {
+				const activeMenu = openPanel.dataset.menu;
 				closeAll();
-				document.querySelector(`.wp-block-navigation-item.has-megamenu[aria-expanded="false"] a`)?.focus();
+				document.querySelector(
+					`.wp-block-navigation-item.has-megamenu[data-menu="${ activeMenu }"] a,
+					 .megamenu--${ activeMenu } a`
+				)?.focus();
 			} else {
-				focusable[index - 1]?.focus();
+				focusable[ index - 1 ]?.focus();
 			}
 		}
-	});
+	} );
 
-	// prefooter: calculate the footer gradient based on its height
-	
+	// ── Prefooter gradient ────────────────────────────────────────────────────
+
 	function updateFooterGradient() {
-		const prefooter = document.querySelector('.prefooter');
-		const footer = document.querySelector('.site-footer');
-		
+		const prefooter = document.querySelector( '.prefooter' );
+		const footer    = document.querySelector( '.site-footer' );
+
 		const extraHeight = prefooter ? prefooter.offsetHeight : 0;
-		footer.style.setProperty('--gradient-overshoot', `calc(100% + ${extraHeight}px)`);
+		footer?.style.setProperty( '--gradient-overshoot', `calc(100% + ${ extraHeight }px)` );
 	}
-	
+
 	updateFooterGradient();
-	window.addEventListener('resize', updateFooterGradient);
+	window.addEventListener( 'resize', updateFooterGradient );
 
 } () );

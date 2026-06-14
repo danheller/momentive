@@ -9,9 +9,9 @@
  */
 
 ( function ( blocks, element, blockEditor, components, i18n ) {
-	const { createElement: el } = element;
+	const { createElement: el, Fragment } = element;
 	const { registerBlockType } = blocks;
-	const { InspectorControls } = blockEditor;
+	const { InspectorControls, useBlockProps } = blockEditor;
 	const { PanelBody, SelectControl } = components;
 	const { __ } = i18n;
 
@@ -64,6 +64,7 @@
 		},
 
 		edit( { attributes, setAttributes } ) {
+			const blockProps = useBlockProps();
 			const IconPicker = window.momentive?.IconPicker;
 			const { iconId, shape, backgroundColor, iconColor } = attributes;
 			const iconLabel = availableIcons[ iconId ] || __( '(none selected)', 'momentive' );
@@ -76,8 +77,10 @@
 				`is-color-${ iconColor }`,
 			].filter( Boolean ).join( ' ' );
 
-			return [
-				el( InspectorControls, {},
+			return el(
+				Fragment,
+				null,
+				el( InspectorControls, { key: 'inspector' },
 					el( PanelBody, { title: __( 'Icon Settings', 'momentive' ), initialOpen: true },
 						IconPicker
 							? el( IconPicker, {
@@ -110,7 +113,7 @@
 					)
 				),
 
-				el( 'div', { className: 'momentive-icon-block-preview' },
+				el( 'div', { ...blockProps, className: `momentive-icon-block-preview ${ blockProps.className || '' }`.trim() },
 					el( 'span', { className: iconClasses },
 						el( 'svg', { 'aria-hidden': 'true', focusable: 'false' },
 							el( 'use', { href: `#icon-${ iconId }` } )
@@ -120,7 +123,7 @@
 						__( 'Icon: ', 'momentive' ) + iconLabel
 					)
 				),
-			];
+			)
 		},
 
 		save() {

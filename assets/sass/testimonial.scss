@@ -1,45 +1,36 @@
 @use 'config' as *;
 
-.button-arrows {
-	position: absolute;
-	z-index: 1;
-	width: 100%;
-	.splide__arrow {
-		transition: background .3s ease;
-		background: var(--button-background);
-		border-radius: 50%;
-		width: 2.5rem;
-		height: 2.5rem;
-		@media #{$medium-up} {
-			width: 3.125rem;
-			height: 3.125rem;			
-		}
-		&:disabled {
-			opacity: 1;
-			background: var(--button-inactive-background);
-		}
-		svg {
-			fill: var(--button-text-color);
-			width: 1rem;
-			height: 1rem;
-		}
-	}
-	.splide__arrow--prev {
-		left: auto;
-		right: 3rem;
-		@media #{$medium-up} {
-			right: 4rem;
-		}
-	}
-	.splide__arrow--next {
-		right: 0;
-	}
-}
-
-
 /*--------------------------------------------------------------
  * Testimonials
 --------------------------------------------------------------*/
+
+.testimonial-quote {
+	display: block;
+	max-width: var(--wp--style--global--content-size);
+	margin: 0 auto;
+	p {
+		margin: 0;
+	}
+}
+
+.wp-block-columns .wp-block-column {
+	.attribution {
+		.name {
+			font-weight: 600;
+			margin: 0;
+		}
+		.organization {
+			margin: 0;
+		}
+	}
+	.testimonial-quote p {
+		font-size: var(--wp--preset--font-size--large);
+		margin-bottom: 1rem;
+		@media #{$medium-up} {
+			font-size: var(--wp--preset--font-size--x-large);
+		}
+	}
+}
 
 .testimonials-wrapper,
 .testimonials-slider {
@@ -74,7 +65,6 @@
 
 
 	.splide__arrows {
-		@extend .button-arrows;
 		bottom: 2rem;
 		left: calc(50% - 3.25rem);
 		@media #{$medium-up} {
@@ -110,7 +100,7 @@
 		}
 	}
 	
-	blockquote {
+	.testimonial-quote {
 		margin: 0 0 1.5rem;
 		// Clamp quote to ~10 lines in the slider context
 		display: -webkit-box;
@@ -171,7 +161,7 @@
 		.splide__list {
 			@include rounder;
 			@include has-after;
-			background-color: rgb(237, 246, 255);
+			background-color: var(--solution-bg-soft, --superlight-accent-color);
 			width: calc(100vw - 2rem);
 			margin-left: auto;
 			margin-right: auto;
@@ -181,22 +171,22 @@
 			@media #{$largish-up} {
 				width: calc(100vw - 12rem);
 			}
-			&:after {
+			&::after {
 				@include rounder;
 				top: 0;
 				left: 6rem;
 				height: 100%;
-				width: calc(100vw - 12rem);				
+				width: calc(100vw - 12rem);
 				z-index: 0;
-				opacity: 0.4;
-				background-image: url(../images/Ellipse-Base-Gray.svg);
-				background-position-x: 50%;
-				background-position-y: bottom;
-				background-repeat: no-repeat;
-				background-size: 90%;
-				filter: invert(42%) sepia(92%) saturate(200%) hue-rotate(181deg) brightness(100%) contrast(89%);
+				opacity: 0.3;
+				background-color: var(--solution, rgb(0, 120, 255));
+				mask-image: url(../images/Ellipse-Base-Gray.svg);
+				mask-position: 50% bottom;
+				mask-repeat: no-repeat;
+				mask-size: 80%;
 			}
 		}
+
 	
 		.splide__slide {
 			display: flex;
@@ -210,22 +200,22 @@
 		.testimonial {
 			background: none;
 			border: none;
-			font-size: var(--wp--preset--font-size--large);
-			width: 100%;	
+			width: 100%;
 			@media #{$medium-up} {
 				width: calc(100vw - 12rem);
-				font-size: var(--wp--preset--font-size--x-large);
 			}
 			@media #{$largish-up} {
 				width: calc(100vw - 12rem);
 			}
-			blockquote {
+			.testimonial-quote {
 				display: block;
 				-webkit-line-clamp: unset;
 				overflow: visible;
 				max-width: var(--wp--style--global--content-size);
+				font-size: var(--wp--preset--font-size--x-large);
 				margin: 0 auto;
 				text-align: center;
+				text-wrap: balance;
 				p {
 					margin: 0;
 				}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "momentive/megamenu-panel",
+  "version": "1.0.0",
+  "title": "Mega Menu Panel",
+  "category": "momentive",
+  "description": "A megamenu panel. Add Columns or Group blocks as direct children.",
+  "keywords": ["megamenu", "menu", "panel", "navigation"],
+  "textdomain": "momentive",
+  "attributes": {
+    "panelLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "menuSlug": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "inserter": true
+  },
+  "editorScript": "file:../build/megamenu-panel/index.js",
+  "editorStyle":  "file:../build/megamenu-panel/index.css"
+}

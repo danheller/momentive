@@ -16,21 +16,18 @@
 .momentive-accordion {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0;
 	width: 100%;
 }
+
+
 
 /* ── Item ──────────────────────────────────────────────────────────────────── */
 
 .accordion-item {
-	border: 1px solid var(--menu-border-color, #dbe1f3);
-	border-radius: var(--wp--custom--border-radius--md, 0.75rem);
+	border-bottom: 1px solid var(--menu-border-color, #dbe1f3);
 	overflow: hidden;
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.accordion-item.is-open {
-	border-color: var(--accent-color, rgb(0, 120, 255));
 }
 
 /* ── Trigger (the button row) ──────────────────────────────────────────────── */
@@ -40,12 +37,12 @@
 	align-items: center;
 	gap: 0.75rem;
 	width: 100%;
-	padding: 1.125rem 1.25rem;
+	padding: 1.25rem 0;
 	background: none;
 	border: none;
 	cursor: pointer;
 	text-align: left;
-	font-size: inherit;
+	font-size: var(--wp--preset--font-size--medium);
 	font-weight: var(--wp--custom--font-weight--semibold, 600);
 	color: inherit;
 	line-height: 1.4;
@@ -69,10 +66,11 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	width: 1.25rem;
-	height: 1.25rem;
+	width: .75rem;
+	height: .75rem;
 	color: var(--light-text-color, rgb(88, 88, 88));
 	transition: transform 0.25s ease, color 0.2s ease;
+	margin-right: .75rem;
 }
 
 .accordion-chevron svg {
@@ -82,7 +80,6 @@
 
 .accordion-item.is-open .accordion-chevron {
 	transform: rotate( 180deg );
-	color: var(--accent-color, rgb(0, 120, 255));
 }
 
 /* ── Panel ─────────────────────────────────────────────────────────────────── */
@@ -96,7 +93,7 @@
 }
 
 .accordion-panel-inner {
-	padding: 0 1.25rem 1.25rem;
+	padding: 0 0 1.5rem;
 	color: var(--light-text-color, rgb(88, 88, 88));
 	line-height: 1.7;
 }
@@ -111,14 +108,61 @@
 
 /* ── Variant: icon ─────────────────────────────────────────────────────────── */
 
+.is-style-icon {
+	position: relative;
+}
+
+.is-style-icon:before {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: -3rem;
+	right: 0;
+
+	background: url(../../assets/images/our-approach-graphic.svg);
+	background-position: right top;
+	background-size: 66%;
+	background-repeat: no-repeat;
+	pointer-events: none;
+}
+
+.is-style-bg-ellipse {
+	@include has-after;
+	background: var(--solution-bg-soft, var(--superlight-accent-color));
+
+	&::after {
+		z-index: 0;
+		top: 0; left: 0;
+		height: 100%; width: 100%;
+		
+		// The SVG defines the shape; background-color provides the color
+		mask-image: url(../images/Ellipse-Base-Gray.svg);
+		mask-position: center bottom;
+		mask-repeat: no-repeat;
+		mask-size: 140vw;
+		background-color: var(--solution-bg, var(--light-accent-color));		
+		pointer-events: none;
+	}
+
+	> * { position: relative; z-index: 1; }
+}
+
+
+.is-style-icon .accordion-chevron {
+	width: 1.125rem;
+	height: 1.125rem;
+	margin-right: 0;
+}
+
 .is-style-icon .accordion-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	width: 1.5rem;
-	height: 1.5rem;
-	color: var(--accent-color, rgb(0, 120, 255));
+	width: 3rem;
+	height: 3rem;
+	color: var(--secondary-color);
 	transition: color 0.2s ease;
 }
 
@@ -128,13 +172,76 @@
 	fill: currentColor;
 }
 
+.is-style-icon .accordion-item {
+	padding-bottom: .5rem;
+}
+
+.is-style-icon .accordion-trigger {
+	font-size: var(--wp--preset--font-size--large);
+	gap: 1rem;
+	padding-bottom: .75rem;
+}
+
+.is-style-icon .accordion-panel {
+	margin-left: 4rem;
+}
+
+.accordion-read-more a {
+	position: relative;
+	display: inline-block;
+	color: #000;
+	font-size: var(--wp--preset--font-size--regular);;
+	font-weight: 600;
+	padding-right: 1rem;
+	text-decoration: none;
+}
+
+.accordion-read-more a:after {
+	position: absolute;
+	content: '';
+	border-right:  .0625rem solid rgb(34,34,34);
+	border-bottom: .0625rem solid rgb(34,34,34);
+	width:  .5rem;
+	height: .5rem;
+	transition: transform .3s ease, border-color .3s;
+	transform: rotate(-45deg);
+	transform-origin: 50% 50%;
+	top: .625rem;
+	margin-left: .375rem;
+}
+.accordion-read-more a:hover {
+	color: var(--secondary-color); 
+}
+.accordion-read-more a:hover:after {
+	transform: rotate(-45deg) translate( .25rem, .25rem );
+	border-color: var(--secondary-color);
+}
+
 /* ── Variant: categorized ──────────────────────────────────────────────────── */
+
+.momentive-accordion.is-style-categorized {
+	gap: 1.5rem;
+	margin-bottom: 4rem;
+}
+
+.momentive-accordion.is-style-categorized + .load-more-wrapper {
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.momentive-accordion.is-style-categorized .accordion-item {
+	--category-color: var(--light-text-color);
+	border-radius: 1rem;
+	border: 1px solid var(--menu-border-color);
+	padding: .5rem .5rem .5rem 1.5rem;
+	
+}
 
 .accordion-category {
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
-	padding: 0.2em 0.65em;
+	padding: 0.375rem 1rem;
 	border-radius: 2em;
 	font-size: 0.8125rem;
 	font-weight: 500;
@@ -147,8 +254,12 @@
 	 * extended to this block, inject a --category-color inline style on
 	 * the chip and reference it here.
 	 */
-	background: var(--extralight-accent-color, rgb(224, 243, 251));
-	color: var(--accent-color, rgb(0, 120, 255));
+	--category-text: var(--text-color);
+	--category-bg: color-mix(in oklab, var(--category-color) 17%, white);
+	--category-border-color: color-mix(in oklab, var(--category-color) 40%, white);
+	border: 1px solid var(--category-border-color);
+	background: var(--category-bg);
+	color: var(--category-text);
 }
 
 /*
@@ -205,6 +316,11 @@
 	.is-style-icon .accordion-icon {
 		transition: none;
 	}
+}
+
+.load-more-wrapper .wp-block-buttons {
+	margin-bottom: 3rem;
+	display: flex;
 }
 
 /* ── Loading state (query mode load-more) ───────────────────────────────────── */

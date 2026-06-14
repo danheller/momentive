@@ -334,9 +334,9 @@ Block styles add an `is-style-{name}` CSS class to a block and appear in the edi
 | `core/group` | `bg-dots` | Dot pattern background (accent-tinted SVG) |
 | `core/group` | `bg-rings` | Rings + shapes SVG background |
 | `core/group` | `bg-dark` | Dark navy background, flips text to white |
-| `core/group` | `bg-light-blue` | Superlight accent background |
-| `core/group` | `bg-blue-ellipse` | Blue ellipse gradient (used in page heroes) |
-| `core/group` | `bg-gradient-blue` | Blue-to-transparent gradient |
+| `core/group` | `bg-light` | Superlight accent background |
+| `core/group` | `bg-ellipse` | Ellipse gradient (used in page heroes) |
+| `core/group` | `bg-gradient` | Blue-to-transparent gradient |
 | `core/columns` | `outline` | Bordered card columns with rounded corners |
 | `core/columns` | `columns-reverse` | Reverses column order on mobile |
 | `core/heading` | `eyebrow` | Small caps label style in accent color |
