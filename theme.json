@@ -96,6 +96,11 @@
 					"slug": "vertical"
 				},
 				{
+					"gradient": "linear-gradient(rgb(255, 255, 255), rgb(239, 249, 253), rgb(255, 255, 255))",
+					"name": "White to Super Light Accent to White",
+					"slug": "white-light-white"
+				},
+				{
 					"gradient": "linear-gradient(90deg, rgb(226, 244, 252) 0%, rgb(238, 249, 253) 100%)",
 					"name": "Horizontal Light Accent to Super Light Accent",
 					"slug": "light-to-superlight-horizontal"
@@ -208,6 +213,11 @@
 					"name": "X Large",
 					"size": "clamp(3.75rem, 10vw, 6.25rem)",
 					"slug": "x-large"
+				},
+				{
+					"name": "XX Large",
+					"size": "clamp(4.375rem, 12vw, 7.5rem)",
+					"slug": "xx-large"
 				}
 			],
 			"units": ["px", "em", "rem", "vh", "vw", "%"]

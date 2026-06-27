@@ -3,97 +3,7 @@ Theme Name: momentive
 Description: Used to style blocks in the editor.
 */
 
-
-
-/*--------------------------------------------------------------
-0.1 - Breakpoints
---------------------------------------------------------------*/
-
-
-// custom responsive mix
-$screen-xxsmall: 30em !default;		/* 480px */
-$screen-xsmall: 35em !default;		/* 560px */
-$screen-small: 40em !default; 		/* 640px */
-$screen-medium: 48em !default; 		/* 768px */
-$screen-mediumish: 56em !default;   /* 896px */
-$screen-large: 67.5em !default; 	/* 1080px */
-$screen-largish: 77.5em !default; 	/* 1240px */
-$screen-xlarge: 90em !default; 		/* 1440px */
-$screen-xxlarge: 120em !default; 	/* 1920px */
-
-// Here we define the lower and upper bounds for each media size
-$base-font: 16 !default;
-$increment: calc( 1 / $base-font );
-
-$xxsmall-base: 0em;
-$xxsmall-top: $screen-xsmall;
-
-$xsmall-base: $screen-xxsmall + $increment;
-$xsmall-top: $screen-xsmall;
-
-$small-base: $screen-xsmall + $increment;
-$small-top: $screen-small;
-
-$medium-base: $screen-small + $increment;
-$medium-top: $screen-medium;
-
-$mediumish-base: $screen-medium + $increment;
-$mediumish-top: $screen-mediumish;
-
-$large-base: $screen-medium + $increment;
-$large-top: $screen-large;
-
-$largish-base: $screen-large + $increment;
-$largish-top: $screen-largish;
-
-$xlarge-base: $screen-large + $increment;
-$xlarge-top: $screen-xlarge;
-
-$xxlarge-base: $screen-xlarge + $increment;
-$xxlarge-top: $screen-xxlarge;
-
-// Media Queries
-$screen: "only screen" !default;
-
-$landscape: "#{$screen} and (orientation: landscape)" !default;
-$portrait: "#{$screen} and (orientation: portrait)" !default;
-
-$xxsmall-below: "#{$screen} and (max-width: #{$xxsmall-top})" !default;
-$xxsmall-range: "#{$screen} and (min-width: #{$xxsmall-base}) and (max-width: #{$xxsmall-top})" !default;
-$xxsmall-up: "#{$screen} and (min-width: #{$xxsmall-top})" !default;
-
-$xsmall-below: "#{$screen} and (max-width: #{$xsmall-top})" !default;
-$xsmall-range: "#{$screen} and (min-width: #{$xsmall-base}) and (max-width: #{$xsmall-top})" !default;
-$xsmall-up: "#{$screen} and (min-width: #{$xsmall-top})" !default;
-
-$small-below: "#{$screen} and (max-width: #{$small-top})" !default;
-$small-range: "#{$screen} and (min-width: #{$small-base}) and (max-width: #{$small-top})" !default;
-$small-up: "#{$screen} and (min-width: #{$small-top})" !default;
-
-$medium-below: "#{$screen} and (max-width: #{$medium-top})" !default;
-$medium-range: "#{$screen} and (min-width: #{$medium-base}) and (max-width: #{$medium-top})" !default;
-$medium-up: "#{$screen} and (min-width: #{$medium-top})" !default;
-
-$mediumish-below: "#{$screen} and (max-width: #{$mediumish-top})" !default;
-$mediumish-range: "#{$screen} and (min-width: #{$mediumish-base}) and (max-width: #{$mediumish-top})" !default;
-$mediumish-up: "#{$screen} and (min-width: #{$mediumish-top})" !default;
-
-$large-below: "#{$screen} and (max-width: #{$large-top})" !default;
-$large-range: "#{$screen} and (min-width: #{$large-base}) and (max-width: #{$large-top})" !default;
-$large-up: "#{$screen} and (min-width: #{$large-top})" !default;
-
-$largish-below: "#{$screen} and (max-width: #{$largish-top})" !default;
-$largish-range: "#{$screen} and (min-width: #{$largish-base}) and (max-width: #{$largish-top})" !default;
-$largish-up: "#{$screen} and (min-width: #{$largish-top})" !default;
-
-
-$xlarge-below: "#{$screen} and (max-width: #{$xlarge-top})" !default;
-$xlarge-range: "#{$screen} and (min-width: #{$xlarge-base}) and (max-width: #{$xlarge-top})" !default;
-$xlarge-up: "#{$screen} and (min-width: #{$xlarge-top})" !default;
-
-$xxlarge-below: "#{$screen} and (max-width: #{$xxlarge-top})" !default;
-$xxlarge-range: "#{$screen} and (min-width: #{$xxlarge-base}) and (max-width: #{$xxlarge-top})" !default;
-$xxlarge-up: "#{$screen} and (min-width: #{$xxlarge-top})" !default;
+@use 'config' as *;
 
 /*--------------------------------------------------------------
 0.3 - Variables
@@ -188,7 +98,7 @@ html{scroll-behavior:smooth}body{line-height:1}a{text-decoration-skip-ink:auto}a
 }
 
 %minimal-select {
-	@extend %has-after;
+	@include has-after;
 	&:after {
 		width: .5rem;
 		height: .5rem;
@@ -1125,7 +1035,7 @@ table.wp-block-table td:last-child {
 
 .acf-block-preview > div {
 	padding: 2rem 1.25rem 1.25rem;
-	@extend %has-before;
+	@include has-before;
 	border: 1px solid rgba( var( --gray ), .3 );
 	border-radius: .25rem;
 
@@ -1159,10 +1069,22 @@ table.wp-block-table td:last-child {
 	
 }
 
+#acf-group_6a315103ceeae .acf-fields > .acf-field[data-name="product_category"] {
+	min-height: 0 !important; /* kill the JS-applied equalizing height */
+}
+
 .editor-styles-wrapper {
 	line-height: 1.5;
+	
+	.hero-background {
+		margin-top: 0 !important;
+		padding-top: .5rem;
+	}
+	figure, ul, li {
+		width: 100%;
+	}
 
-	.is-style-uppercase {
+	.is-style-uppercase, .is-style-eyebrow {
 		text-transform: uppercase;
 		font-size: .875rem;
 		font-weight: 600;
@@ -1170,7 +1092,6 @@ table.wp-block-table td:last-child {
 	}
 	
 	.is-style-eyebrow {
-		@extend .is-style-uppercase;
 		color: var(--accent-color);
 		letter-spacing: .2rem;
 		&.wp-block {
@@ -1182,7 +1103,7 @@ table.wp-block-table td:last-child {
 	.is-root-container {
 		h1, h2, h3, h4, h5, h6 {
 			line-height: 1.2;
-			@extend %has-before;
+			@include has-before;
 			padding-top: 1.25rem;
 			&:before {
 				top: .2rem;
@@ -1376,7 +1297,7 @@ table.wp-block-table td:last-child {
 
 body.post-type-press-article, body.post-type-post {
 	.entry-header {
-		@extend %to-edge;
+		@include to-edge;
 		max-width: none;
 		background: linear-gradient(var(--light-color) 0%, var(--superlight-accent-color) 100%); // was: rgba(100, 193, 238, 0.133)
 		border-bottom: 1px solid var(--menu-border-color);
@@ -1400,7 +1321,7 @@ body.post-type-press-article, body.post-type-post {
 		}
 
 		.wp-block-buttons, .header-content {
-			@extend %nomargin;
+			margin: 0;
 		}
 		@media #{$large-up} {
 			.header-inner {
@@ -1428,14 +1349,14 @@ body.post-type-press-article, body.post-type-post {
 		}
 	}	
 	.post-layout {
-		@extend %nomargin;
+		margin: 0;
 		gap: 3rem;
 		max-width: none !important;
 		padding: 3.75rem 0;
 		> .wp-block-column {
 			padding: 0;
 			.entry-content {
-				@extend %nomargin;
+				margin: 0;
 			}
 		}
 		.wp-block {
@@ -1489,24 +1410,6 @@ body.post-type-press-article {
 	}
 }
 
-.read-more {
-	@extend %has-after;
-	font-weight: 600;
-	padding-right: 1rem;
-	&:after {
-		border-right:  .0625rem solid rgb(34,34,34);
-		border-bottom: .0625rem solid rgb(34,34,34);
-		width:  .5rem;
-		height: .5rem;
-		transition: transform .3s ease, border-color .3s;
-		transform: rotate(-45deg);
-		transform-origin: 50% 50%;
-		top: .625rem;
-		margin-left: .375rem;
-	}
-}
-
-
 .story-card {
 	height: 100%;
 	padding: 0;
@@ -1536,7 +1439,7 @@ body.post-type-press-article {
 	}
 	
 	.story-content {
-		@extend %nomargin;
+		margin: 0;
 		padding: 1rem 1.5rem 1.5rem;
 		height: 100%;
 		display: flex;
@@ -1615,10 +1518,6 @@ body.post-type-press-article {
 		display: flex;
 		justify-content: space-between;
 	}
-
-	.wp-block-read-more {
-		@extend .read-more;
-	}
 }
 
 
@@ -1645,24 +1544,8 @@ body.post-type-press-article {
 	}
 }
 
-.is-style-bg-dots {
-	@extend %has-after;
-	position: relative;
-	&:after {
-		z-index: 0;
-		top: 0; left: 0;
-		height: 100%; width: 100%;
-		background: url(../images/dot-background.svg) center center;
-		pointer-events: none;
-		filter: invert(43%) sepia(96%) saturate(5806%)
-				hue-rotate(201deg) brightness(93%) contrast(101%);
-	}
-	// Ensure block content sits above the SVG layer
-	> * { position: relative; z-index: 1; }
-}
-
 .is-style-bg-rings {
-	@extend %has-after;
+	@include has-after;
 	background: rgb(20, 29, 60);
 	&:after {
 		z-index: 0;
@@ -1692,8 +1575,8 @@ body.post-type-press-article {
 	background: var(--superlight-accent-color);
 }
 
-.is-style-bg-blue-ellipse {
-	@extend %has-after;
+.is-style-bg-ellipse {
+	@include has-after;
 	background: var(--superlight-accent-color);
 	&:after {
 		z-index: 0;
@@ -1734,6 +1617,61 @@ header.site-header.is-selected:after {
 			}
 		}
 		*/
+	}
+}
+
+.mega-feature {
+	@include round;
+	position: relative;
+	padding: 1rem 50% 1rem 1rem !important;
+	min-height: 10rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-image: linear-gradient(45deg, #475173, #172A43);
+	color: var(--light-color);
+	p {
+		line-height: 1.2 !important;
+		margin-bottom: 0;
+	}
+	figure {
+		position: absolute !important;
+		right: .5rem;
+		top: 50%;
+		transform: translateY(-50%);
+		height: auto;
+		width: 55%;
+		z-index: 0;
+		pointer-events: none;
+		margin: 0 !important;
+	}
+	.wp-block-buttons, .wp-block-button {
+		width: 100%;
+	}
+	.wp-block-buttons {
+		margin-top: .75rem;
+	}
+	.wp-block-button {
+		a { 
+			font-size: var(--wp--preset--font-size--x-small);
+			padding: .375rem .75rem;
+			width: auto;
+		}
+		&.is-style-outline {
+			a {
+				color: #fff !important;
+				border-color: #fff !important;
+				&:hover {
+					background: transparent;
+					box-shadow: 0 0 0 .1rem var(--light-color);
+				}
+			}
+		}
+	}
+	.is-style-outline .wp-block-button__link {
+		color: #fff !important;
+		margin: 0 !important;
+		font-size: var(--wp--preset--font-size--x-small) !important;
 	}
 }
 

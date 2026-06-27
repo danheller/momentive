@@ -1,0 +1,27 @@
+To find unused icons:
+
+# From your site's root, with icons already in wp-content/themes/momentive/assets/icons/
+grep -roh 'box-bx-[a-z0-9-]*' . | sed 's/^box-//' | sort -u | while read slug; do
+    [ -f "wp-content/themes/momentive/assets/icons/${slug}.svg" ] || echo "MISSING: $slug"
+done
+
+SQL statements to find out how often custom fields are used on the current site
+
+- To use these, open phpMyAdmin from the WP Engine dashboard, then use the SQL tab to query the wp_postmeta table.
+- Useful to find out whether a custom field is used at all, and if it is, can help you find some example posts and see what it does.  
+- We could consider adding a dashboard screen to get all this info more quickly.
+
+Examples (from when I was investigating fields on "press-article" posts)
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'show_post_excerpt' and meta_value = 'true';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'additional_about_sections' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'display_featured_image_on_page' AND meta_value = 'true';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'display_featured_image_on_page' AND meta_value = 'false';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'resource_cta_enable_cta' AND meta_value = 'true';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'alternate_hero_image' AND meta_value = 'true';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'hero_overline' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'hero_title' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'hero_subtitle' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'resource_cta_description' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE meta_key LIKE 'static_utm_content' AND meta_value != '';
+SELECT * FROM `wp_postmeta` WHERE ( meta_key LIKE '%related_case%' OR meta_key LIKE '%case_study_logo%' ) AND meta_value != ''
+

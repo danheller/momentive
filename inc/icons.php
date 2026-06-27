@@ -158,6 +158,30 @@ function momentive_get_used_icons(): array {
 	return array_unique( $momentive_icons_used ?? [] );
 }
 
+/**
+ * Render a single icon's <svg><use> markup and register it for the
+ * footer sprite in one call.
+ *
+ * @param string $slug       Icon slug (matches a file in /assets/icons/).
+ * @param string $extra_attrs Optional extra attributes for the <svg> tag,
+ *                             e.g. 'class="tab-icon"'. Passed through as-is —
+ *                             callers are responsible for escaping any
+ *                             dynamic values included here.
+ * @return string SVG markup, or '' if the slug is empty.
+ */
+function momentive_render_icon( string $slug, string $extra_attrs = '' ): string {
+	if ( ! $slug ) {
+		return '';
+	}
+ 
+	momentive_use_icon( $slug );
+ 
+	return sprintf(
+		'<svg aria-hidden="true" focusable="false"%s><use href="#icon-%s"></use></svg>',
+		$extra_attrs ? ' ' . $extra_attrs : '',
+		esc_attr( $slug )
+	);
+}
 
 // ---------------------------------------------------------------------------
 // Icon block registration  (momentive/icon-block)

@@ -154,20 +154,27 @@ function momentive_register_block_styles() {
 			'outline'         => __( 'Outline',  'momentive' ), // bordered card columns
 		],
 
+		'core/column' => [
+			'outline'         => __( 'Outline',  'momentive' ), // bordered card columns
+		],
+
 		'core/group' => [
-			'bg-dots'          => __( 'Dots Background',       'momentive' ),
-			'bg-rings'         => __( 'Rings Background',      'momentive' ),
-			'bg-dark'          => __( 'Dark Background',       'momentive' ),
-			'bg-light'         => __( 'Light Background',      'momentive' ),
-			'bg-gradient'      => __( 'Gradient Background',   'momentive' ),
-			'bg-ellipse'       => __( 'Ellipse',               'momentive' ),
-			'ellipse-bottom'   => __( 'Ellipse Bottom',        'momentive' ),
-			'ellipse-top'      => __( 'Ellipse Top',           'momentive' ),
+			'bg-dots'              => __( 'Dots Background',       'momentive' ),
+			'bg-rings'             => __( 'Rings Background',      'momentive' ),
+			'bg-dark'              => __( 'Dark Background',       'momentive' ),
+			'bg-light'             => __( 'Light Background',      'momentive' ),
+			'bg-gradient'          => __( 'Gradient Background',   'momentive' ),
+			'bg-ellipse'           => __( 'Ellipse',               'momentive' ),
+			'ellipse-bottom'       => __( 'Ellipse Bottom',        'momentive' ),
+			'ellipse-top'          => __( 'Ellipse Top',           'momentive' ),
+			'purple-seafoam-wash'  => __( 'Purple Seafoam Wash',   'momentive' ),
+			'cloudy-sunset'        => __( 'Cloudy Sunset',         'momentive' ),
 		],
 
 		'core/list' => [
-			'no-disc' => __( 'No Disc', 'momentive' ),
-			'column-checks' => __( 'Check Marks', 'momentive' ),
+			'no-disc'              => __( 'No Disc',               'momentive' ),
+			'column-checks'        => __( 'Orange Checks',         'momentive' ),
+			'circle-checks'        => __( 'Circle Checks',         'momentive' ),
 		],
 
 		'core/media-text' => [
@@ -195,6 +202,10 @@ function momentive_register_block_styles() {
 			'round'  => __( 'Round', 'momentive' ),
 			'rounder'  => __( 'Rounder', 'momentive' ),
 
+		],
+
+		'core/button' => [
+			'superlight' => __( 'Superlight',  'momentive' ), // blue pill
 		],
 
 		'core/social-links' => [
@@ -278,11 +289,18 @@ require get_template_directory() . '/blocks/table-of-contents/block.php';
 require get_template_directory() . '/blocks/social-share/block.php';
 require get_template_directory() . '/blocks/post-byline/block.php';
 require get_template_directory() . '/blocks/post-cta-button/block.php';
+require get_template_directory() . '/blocks/related-posts/block.php';
 require get_template_directory() . '/blocks/impact-stat/block.php';
 require get_template_directory() . '/blocks/testimonial/block.php';
 require get_template_directory() . '/blocks/accordion/block.php';
 require get_template_directory() . '/blocks/hubspot-form/block.php';
 require get_template_directory() . '/blocks/megamenu-panel/block.php';
+require get_template_directory() . '/blocks/product-marquee/block.php';
+require get_template_directory() . '/blocks/product-solution-tabs/block.php';
+require get_template_directory() . '/blocks/webinar-cta/block.php';
+require get_template_directory() . '/blocks/webinar-schedule/block.php';
+require get_template_directory() . '/blocks/webinar-status/block.php';
+require get_template_directory() . '/blocks/recording/block.php';
 
 
 /*==============================================================================
@@ -298,8 +316,13 @@ require get_template_directory() . '/inc/solutions.php';
 require get_template_directory() . '/inc/newsroom.php';
 
 require get_template_directory() . '/inc/authors.php';
+require get_template_directory() . '/inc/people.php';
+
 require get_template_directory() . '/inc/testimonials.php';
 require get_template_directory() . '/inc/faq.php';
+require get_template_directory() . '/inc/products.php';
+require get_template_directory() . '/inc/webinars.php';
+require get_template_directory() . '/inc/recordings.php'; // not a post type, but a passthrough to what were formerly "assets"
 
 
 /*==============================================================================
@@ -330,93 +353,6 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 	return $query;
 }, 10, 2 );
 
-
-/**
- * Resolve the accent color for a category term by hopping through
- * its related Solution post (ACF relationship field).
- *
- * Falls back to the term's own tag_color field if no solution is linked,
- * so existing data continues to work during any transition period.
- */
-function get_solution_color_for_term( int $term_id ): string {
-	static $cache = [];
-	if ( isset( $cache[ $term_id ] ) ) return $cache[ $term_id ];
-
-	$solution = get_field( 'solution_relationship', 'category_' . $term_id );
-	$post     = is_array( $solution ) ? ( $solution[0] ?? null ) : $solution;
-	$color    = $post ? (string) get_field( 'accent_color', $post->ID ) : '';
-
-	// Fallback: read tag_color directly off the term (remove once all terms have a linked solution).
-	if ( ! $color ) {
-		$color = (string) get_field( 'tag_color', 'category_' . $term_id );
-	}
-
-	$cache[ $term_id ] = $color;
-	return $cache[ $term_id ];
-}
-
-/**
- * Inject per-term --solution CSS variable onto each <a> in
- * the core/post-terms block (category taxonomy only).
- *
- * Requires: ACF field "tag_color" registered on the category taxonomy.
- */
-add_filter( 'render_block', function ( string $html, array $block, WP_Block $instance ): string {
-
-	// Only touch post-terms blocks showing the category taxonomy.
-	if ( 'core/post-terms' !== ( $block['blockName'] ?? '' ) ) {
-		return $html;
-	}
-	if ( 'category' !== ( $block['attrs']['term'] ?? '' ) ) {
-		return $html;
-	}
-
-	// Resolve the post ID from block context (works inside Query Loop).
-	$post_id = $instance->context['postId'] ?? get_the_ID();
-	if ( ! $post_id ) {
-		return $html;
-	}
-
-	$terms = get_the_terms( $post_id, 'category' );
-	if ( ! $terms || is_wp_error( $terms ) ) {
-		return $html;
-	}
-
-	foreach ( $terms as $term ) {
-		// ACF stores term meta with the "category_" prefix on term IDs.
-		$color = get_solution_color_for_term( $term->term_id );
-		if ( ! $color ) {
-			continue;
-		}
-
-		$color = esc_attr( sanitize_hex_color( $color ) );
-		$slug  = preg_quote( $term->slug, '/' );
-
-		// Match the <a> whose href contains this category's slug segment.
-		// The slug always appears as /slug/ in WP category permalinks.
-		$html = preg_replace(
-			'/(<a\b)([^>]*href=["\'][^"\']*\/' . $slug . '\/["\'][^>]*)(>)/',
-			'$1$2 style="--solution:' . $color . '"$3',
-			$html
-		);
-	}
-
-	return $html;
-}, 10, 3 );
-
-add_action( 'rest_api_init', function () {
-	register_rest_field( 'category', 'tag_color', [
-		'get_callback' => function ( $term ) {
-			$color = get_solution_color_for_term( (int) $term['id'] );
-			return $color ? sanitize_hex_color( $color ) : null;
-		},
-		'schema' => [
-			'description' => 'Hex color for category tag.',
-			'type'        => [ 'string', 'null' ],
-			'context'     => [ 'view', 'embed' ],
-		],
-	] );
-} );
 
 /*==============================================================================
   6.0 - Front-End Features
@@ -490,15 +426,21 @@ require get_template_directory() . '/inc/acf-groups.php';
 // "Edit Header" and "Edit Footer" hover buttons visible to logged-in editors.
 require get_template_directory() . '/inc/header-footer-edit-buttons.php';
 
-// Renames "Posts" to "Blog" throughout the WordPress admin.
+// Rename "Posts" to "Blog" throughout the WordPress admin.
 require get_template_directory() . '/inc/rename-posts-to-blog.php';
 
-// Adds a "Patterns" item to the dashboard left menu with submenu links
-// to synced patterns, theme patterns, and "Add New".
-require get_template_directory() . '/inc/show-patterns-in-menu.php';
+// Customize the dashboard sidebar menu order.
+require get_template_directory() . '/inc/custom-menu-order.php';
+
+// Pattern setup
+require get_template_directory() . '/inc/patterns.php';
+
+// Check for a block recursively within content (including within patterns)
+require get_template_directory() . '/inc/check-content-for-block.php';
 
 // Removes all comment-related UI, menus, and dashboard widgets.
 require get_template_directory() . '/inc/disable-comments.php';
+
 
 
 /**

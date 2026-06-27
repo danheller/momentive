@@ -1,0 +1,46 @@
+What this is
+This file is a running log of legacy-site findings, intentional divergences from how things work on the current site, and open questions. The authoritative current state will live in CLAUDE.md and README.md. CLAUDE.md is the most up-to-date, while README.md is currently stale, but will be updated before the project is finished or handed off.
+
+This list is not exhaustive; I started out noting issues as I encountered them, to revisit in the rebuild later. Many of them have been addressed already, but are just included here to document a decision that was made or a discrepancy from the current site that was intentional. 
+
+Headline "swoop" 
+- On the production site, there's an animation loop, in which the underline disappears every 10 seconds and is redrawn. 
+- Is the repetition necessary, or would it be better for it to draw once?
+- Currently the rebuilt version only swoops once
+
+Colors
+- Product and solution accent colors are translated into lighter background hues. There are some cases for the overall site where deriving the light color from the full-strength color didn't work (because they don't match well), so for example, the default "light" and "superlight" accent colors couldn't be turned into a diluted version of the main accent color
+
+MomentiveIQ icon grid
+- This block shows 14 image carousels in a grid, each with 2-3 small (24 x 24 pixel) thumbnail images that slowly rotate / fade transition. The delay between transitions vary for these carousels from 4250ms to 7250ms. There's some image repetition across the carousels. 
+- The rebuilt version is a custom block (icon shuffle) that cycles in a pool of images
+
+Testimonials (current version)
+- The current homepage's "testimonials" slider block is showing 148 blocks and has 470 KB of HTML. When we started the rebuild project, it was 82 slides and 250 KB. The total size of the HTML markup on the homepage now (found by viewing source and saving it to a static file) is 918 KB, so > half the markup is the testimonial block.
+- If you visit a testimonials slider with fewer slides (e.g. at the bottom of https://momentivesoftware.com/reviews/), you'll notice the design makes the last slide unreadable, since it's cropped and can't slide into the viewable area of the browser.
+- The distance of next/previous movement seems to be miscalculated - the slide/grid alignment changes each time.
+- There are lots of extra fields for testimonials that don't look like they're used. They may be for a previous version of a testimonials block that showed a hero image or more content. We've left those fields out for now until we can find anywhere they're used.
+
+Menu
+- On the current site, there's a gap that can allow the visitor to "miss" a dropdown
+- We tried implementing the megamenu from the Figma file on the rebuilt site. It isn't very usable because the dropdowns are too big. We're considering design changes – using click instead of hover, making things more compact, or leaving things (like descriptions) out.
+- We haven't implemented responsiveness for the megamenu yet. Waiting to decide about any design changes first.
+
+Homepage sliders
+- The site uses autoplay sliders heavily. If a slider (like News) is lower on the page, the first slide seen depends on how long the visitor took to scroll down.
+- On the rebuilt site, the slider doesn't start autoplaying until it enters the viewport, preventing the newest press release from sliding out of view before it's reached.
+- Autosliding sliders are set to "rewind" once they reach the last slide on the rebuilt site. That matches the behavior on the current site.
+
+
+Blog (https://momentivesoftware.com/blog/)
+- The "featured" area looks outdated – everything is at least 6 months old. Is this process too manual, and is there a case for automating this more or simplifying the featuring process so it can be opened up to content writers/editors more easily?
+- On the current site, the "load more" ajax at the bottom is broken (or working intermittently/slowly). 
+- Why is there no search field on the blog archive? (Whereas there is a search field on the newsroom archive.)
+
+Newsroom/press releases
+- I can't tell how the "recommended for you" posts are selected - ask Colleen?
+- How are some featured images overridden on the single view, e.g. https://momentivesoftware.com/momentive-in-action/inspiring-leaders-tawny-kotchko/
+- On the current site, the search field on the newsroom archive doesn't work (or may be intermittent/slow).	
+
+File permissions
+- I've noticed when pushing site updates from Local to Wp Engine that sometimes the file permissions are set wrong (644), preventing features that are working locally from working on WPE. If you see discrepancies, it's worth checking whether any recent files have wrong permissions. Deleting the file and re-uploading it through sFTP seems to solve the problem and prevent it from recurring in future pushes for the particular files. 

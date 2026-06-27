@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "momentive/product-marquee",
+  "version": "1.0.0",
+  "title": "Product Marquee",
+  "category": "momentive",
+  "icon": "slides",
+  "description": "Two auto-scrolling rows of product cards, drawn from the Products CPT. Row 1 scrolls left, row 2 scrolls right. Pauses on hover.",
+  "supports": {
+    "html": false,
+    "align": [ "wide", "full" ]
+  },
+  "attributes": {},
+  "textdomain": "momentive",
+  "style": "file:./style.css",
+  "editorScript": "file:./editor.js",
+  "editorStyle": "file:./editor.css"
+}

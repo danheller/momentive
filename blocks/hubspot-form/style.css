@@ -1,0 +1,270 @@
+
+
+.hbspt-form { /* was .demo-form { */
+	width: 100%;
+	max-width: none;
+	.wp-block-columns {
+		max-width: var(--wp--style--global--content-size);
+		margin-left: auto;
+		margin-right: auto;
+		column-gap: 5rem;
+	}
+	.wp-block-column {
+		padding: 0;
+	}
+	form {
+		label {
+			color: var(--light-text-color);
+			margin-bottom: .5rem;
+			display: block;
+		}
+		input, textarea {
+			border-radius: 1rem;
+			border: 1px solid var(--menu-border-color);
+			background: var(--light-color);
+			color: var(--light-text-color);
+			padding: .75rem;
+			width: 100% !important;
+		}
+		.hs-form-required, .hs-error-msg {
+			color: #C53030;
+		}
+		.hs-error-msgs {
+			list-style: none;
+			padding: .5rem 0 0;
+			margin: 0;
+		}
+		.hs-input.invalid.error {
+			border-color: #C53030;
+		}
+		.hs-form-field {
+			margin-bottom: 1.5rem;
+		}
+		.hs-richtext.hs-main-font-element {
+			text-align: center;
+			text-wrap: balance;
+			font-weight: 600;
+			margin-bottom: 1.5rem;
+		}
+		.hs-button {
+			color: var(--button-text-color);
+			background: var(--button-background);
+			border-radius: 3rem;
+			padding: .75rem 1.5rem;
+			transition: background .3s ease;
+			font-weight: 600;
+			font-size: 1rem;
+		}
+		.hs-button:hover {
+				background: color-mix(in srgb, var(--button-background), black 20%);
+		}
+	}
+}
+
+.demo-form {
+	form {
+		border-radius: 1.5rem;
+		border: 1px solid var(--menu-border-color);
+		background: var(--superlight-accent-color);
+		padding: 1.5rem;
+	}
+}
+
+.wp-block-acf-hubspot-form {
+
+	/* -------------------------------------------------------------------------
+	 * Step 1: inline email + button row
+	 * -------------------------------------------------------------------------*/
+
+	.hubspot-form__capture {
+		display: flex;
+		align-items: center;
+		gap: .5rem;
+		flex-wrap: wrap;
+	}
+
+	.hubspot-form__email-input {
+		flex: 1 1 16rem;
+		min-width: 0;
+		padding: .5rem 1.25rem;
+		border: 2px solid var(--menu-border-color, currentColor);
+		border-radius: .75rem;
+		font-size: 1rem;
+		background: transparent;
+		color: var(--text-color);
+		transition: border-color .2s ease, box-shadow .2s ease;
+
+		&::placeholder {
+			color: var(--text-color);
+			opacity: .55;
+		}
+
+		&:focus {
+			outline: none;
+			border-color: var(--button-background);
+			box-shadow: 0 0 0 .15rem color-mix(in srgb, var(--button-background) 30%, transparent);
+		}
+	}
+
+	.hubspot-form__submit {
+		flex-shrink: 0;
+		background: var(--button-background);
+		border-radius: .75rem;
+		padding: .75rem 1.5rem;
+		font-weight: 600;
+		font-size: 1rem;
+		color: var(--button-text-color);
+		border: none;
+		cursor: pointer;
+		transition: background .3s ease;
+		&:hover {
+			background: color-mix(in srgb, var(--button-background), black 20%);
+		}
+	}
+
+	/* -------------------------------------------------------------------------
+	 * Step 2: modal overlay + panel
+	 * -------------------------------------------------------------------------*/
+}
+
+/* Prevent body scroll while the modal is open.*/
+body.hubspot-modal-open {
+	overflow: hidden;
+}
+
+.hubspot-form__modal {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgb(0 0 0 / .45);
+	padding: 1.5rem;
+
+	/* Hidden state — the `hidden` attribute keeps it out of the a11y tree;
+	 * the CSS transition animates the visible→hidden direction gracefully. */
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .2s ease;
+
+	&.is-open {
+		opacity: 1;
+		pointer-events: auto;
+
+		.hubspot-form__modal-panel {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	/* Override display:none that `hidden` would apply so the transition works.
+	 * We rely on opacity + pointer-events instead of display toggling.*/
+	&[hidden] {
+		display: flex !important; /* stylelint-disable-line*/
+	}
+}
+
+.hubspot-form__modal-panel {
+	position: relative;
+	background: #fff;
+	color: #111;
+	border-radius: 1rem;
+	padding: 2rem;
+	width: 100%;
+	max-width: 38rem;
+	max-height: 90dvh;
+	overflow-y: auto;
+	box-shadow: 0 1.5rem 3rem rgb(0 0 0 / .2);
+
+	/* Entrance animation — starts slightly scaled down.*/
+	transform: scale(.96);
+	opacity: 0;
+	transition: transform .2s ease, opacity .2s ease;
+}
+
+.hubspot-form__modal-close {
+	position: absolute;
+	top: .75rem;
+	right: .75rem;
+	background: none;
+	border: none;
+	font-size: 2rem;
+	line-height: 1;
+	color: var(--light-text-color);
+	cursor: pointer;
+	transition: color .15s ease;
+
+	&:hover {
+		color: var(--text-color);
+	}
+}
+
+.hubspot-form__modal-body {
+	/* Give HubSpot's injected form room to breathe.*/
+	margin-top: .5rem;
+
+	/* Nudge HubSpot's own field styles to feel at home.*/
+	.hs-form-field label {
+		font-size: 1;
+		margin-top: .5rem;
+		margin-bottom: .25rem;
+		display: block;
+	}
+
+	.hs-input {
+		width: 100%;
+		padding: .625rem 1rem;
+		border: .1rem solid var(--menu-border-color);
+		border-radius: .5rem;
+		font-size: 1rem;
+		margin-bottom: .25rem;
+	}
+	
+	.hs-input.invalid {
+		border-color: rgb(197, 48, 48);
+	}
+	
+	.hs-input:focus {
+		border-color: var(--accent-color);
+	}
+	
+	.hs-error-msgs {
+		list-style: none;
+		margin: 0 .5rem .25rem 0;
+		padding: 0;
+		line-height: 1.2;
+		color: rgb(197, 48, 48);
+	}
+	
+	.hs-form-required {
+		color: rgb(197, 48, 48);
+	}
+
+	.hs-button {
+		background: var(--button-background);
+		color: var(--button-text-color);
+		border: none;
+		border-radius: 3rem;
+		padding: .75rem 2rem;
+		font-weight: 600;
+		font-size: 1rem;
+		cursor: pointer;
+		width: 100%;
+		transition: background .3s ease;
+
+		&:hover {
+			background: color-mix(in srgb, var(--button-background), black 20%);
+		}
+	}
+	.hs-submit {
+		margin-top: 1rem;
+	}
+	fieldset {
+		max-width: 100% !important;
+	}
+	fieldset.form-columns-1 .hs-input {
+		width: 100% !important;
+	}
+
+}

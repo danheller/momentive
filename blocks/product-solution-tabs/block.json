@@ -1,0 +1,16 @@
+{
+	"name": "momentive/product-solution-tabs",
+	"apiVersion": 3,
+	"title": "Product Solution Tabs",
+	"category": "momentive",
+	"icon": "screenoptions",
+	"description": "Tabbed grid of products, grouped by Solution. Tabs and order are curated via a Relationship field; products within each tab are pulled live and ordered by their Order field.",
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"acf": {
+		"mode": "edit",
+		"renderTemplate": false
+	}
+}

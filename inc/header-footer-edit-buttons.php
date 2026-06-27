@@ -24,11 +24,8 @@ function momentive_fse_edit_buttons() {
 
     // Build editor URLs.
     // FSE template parts use this URL pattern:
-    // /wp-admin/site-editor.php?postType=wp_template_part&postId=THEME//SLUG
-    $theme_slug  = get_stylesheet(); // child theme slug if using one
-    $header_url  = admin_url( 'site-editor.php?postType=wp_template_part&postId=' . $theme_slug . '//header' );
-    $footer_url  = admin_url( 'site-editor.php?postType=wp_template_part&postId=' . $theme_slug . '//footer' );
-
+    $header_url  = admin_url( 'site-editor.php?p=%2Fwp_template_part%2Fmomentive%2F%2Fheader&canvas=edit&focusMode=true' );
+    $footer_url  = admin_url( 'site-editor.php?p=%2Fwp_template_part%2Fmomentive%2F%2Ffooter&canvas=edit&focusMode=true' );
     ?>
     <div id="momentive-fse-edit-ui" aria-hidden="true">
         <button class="fse-edit-trigger" data-target="header">

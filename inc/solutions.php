@@ -107,7 +107,7 @@ add_action( 'wp_head', function() {
 	$color = get_field( 'accent_color', $source_id );
 
 	if ( ! $color ) return;
-	echo '<style>:root { --solution: ' . esc_attr( $color ) . '; }</style>';
+	echo '<style>body { --page-accent-color: ' . esc_attr( $color ) . '; }</style>';
 } );
 
 add_filter( 'acf/prepare_field/name=accent_color', function( $field ) {
@@ -144,6 +144,198 @@ add_action( 'enqueue_block_editor_assets', function() {
 		filemtime( get_theme_file_path( 'assets/js/solutions-editor.js' ) ),
 		true
 	);
+} );
+
+
+/**
+ * Resolve the accent color for a category term by hopping through
+ * its related Solution post (ACF relationship field).
+ *
+ * Falls back to the term's own tag_color field if no solution is linked,
+ * so existing data continues to work during any transition period.
+ */
+function get_solution_color_for_term( int $term_id ): string {
+	static $cache = [];
+	if ( isset( $cache[ $term_id ] ) ) return $cache[ $term_id ];
+
+	$solution = get_field( 'solution_relationship', 'category_' . $term_id );
+	$post     = is_array( $solution ) ? ( $solution[0] ?? null ) : $solution;
+	$color    = $post ? (string) get_field( 'accent_color', $post->ID ) : '';
+
+	// Fallback: read tag_color directly off the term (remove once all terms have a linked solution).
+	if ( ! $color ) {
+		$color = (string) get_field( 'tag_color', 'category_' . $term_id );
+	}
+
+	$cache[ $term_id ] = $color;
+	return $cache[ $term_id ];
+}
+
+/**
+ * Resolve the category term(s) linked to a given Solution post.
+ *
+ * @param int $solution_id Post ID of the Solution post.
+ * @return int[] Matching category term IDs (usually 0 or 1).
+ */
+function get_terms_for_solution( int $solution_id ): array {
+	$matches = [];
+	foreach ( momentive_get_solution_term_map() as $term_id => $mapped_solution_id ) {
+		if ( $mapped_solution_id === $solution_id ) {
+			$matches[] = $term_id;
+		}
+	}
+	return $matches;
+}
+
+/**
+ * Solution ⇄ category term lookups.
+ *
+ * Both functions below share one underlying cache, built by walking the
+ * category terms that are direct children of "Solutions" once per request
+ * and recording each one's related_solution link. There's no native
+ * taxonomy relationship to query directly (related_solution is a post_object
+ * field on the term, not a taxonomy term itself), so this loop-and-cache
+ * approach is the simplest way to support lookups in either direction
+ * without re-querying.
+ */
+
+/**
+ * Internal: build (once) and return the term → solution map.
+ *
+ * @return array<int,int> term_id => solution post ID
+ */
+function momentive_get_solution_term_map(): array {
+	static $map = null;
+
+	if ( $map !== null ) {
+		return $map;
+	}
+
+	$map = [];
+
+	$parent = get_term_by( 'slug', 'solutions', 'category' );
+	$terms  = $parent
+		? get_terms( [
+			'taxonomy'   => 'category',
+			'parent'     => $parent->term_id,
+			'hide_empty' => false,
+		] )
+		: [];
+
+	if ( ! is_wp_error( $terms ) ) {
+		foreach ( $terms as $term ) {
+			$related = get_field( 'related_solution', 'category_' . $term->term_id );
+			$post    = is_array( $related ) ? ( $related[0] ?? null ) : $related;
+			$id      = $post ? (int) ( is_object( $post ) ? $post->ID : $post ) : 0;
+
+			if ( $id ) {
+				$map[ (int) $term->term_id ] = $id;
+			}
+		}
+	}
+
+	return $map;
+}
+
+
+/**
+ * Every Solution post that has at least one category term linked to it —
+ * i.e. every Solution with potential products to show. Used to drive the
+ * tab list without requiring a manually curated field.
+ *
+ * @return int[] Solution post IDs, deduplicated, unordered (sort by
+ *               solution_order at the call site).
+ */
+function get_solutions_with_products(): array {
+	return array_values( array_unique( array_values( momentive_get_solution_term_map() ) ) );
+}
+
+/**
+ * Build a category term <a> with the per-term --solution CSS variable.
+ *
+ * @param WP_Term $term The category term.
+ * @return string Anchor HTML.
+ */
+function momentive_term_link_with_color( WP_Term $term ): string {
+	$style = '';
+	$color = get_solution_color_for_term( $term->term_id );
+	if ( $color ) {
+		$color = sanitize_hex_color( $color );
+		if ( $color ) {
+			$style = sprintf( ' style="--solution:%s"', esc_attr( $color ) );
+		}
+	}
+
+	return sprintf(
+		'<a href="%s" rel="tag"%s>%s</a>',
+		esc_url( get_category_link( $term->term_id ) ),
+		$style,
+		esc_html( $term->name )
+	);
+}
+
+
+/**
+ * Inject per-term --solution CSS variable onto each <a> in
+ * the core/post-terms block (category taxonomy only).
+ *
+ * Requires: ACF field "tag_color" registered on the category taxonomy.
+ */
+add_filter( 'render_block', function ( string $html, array $block, WP_Block $instance ): string {
+
+	// Only touch post-terms blocks showing the category taxonomy.
+	if ( 'core/post-terms' !== ( $block['blockName'] ?? '' ) ) {
+		return $html;
+	}
+	if ( 'category' !== ( $block['attrs']['term'] ?? '' ) ) {
+		return $html;
+	}
+
+	// Resolve the post ID from block context (works inside Query Loop).
+	$post_id = $instance->context['postId'] ?? get_the_ID();
+	if ( ! $post_id ) {
+		return $html;
+	}
+
+	$terms = get_the_terms( $post_id, 'category' );
+	if ( ! $terms || is_wp_error( $terms ) ) {
+		return $html;
+	}
+
+	foreach ( $terms as $term ) {
+		// ACF stores term meta with the "category_" prefix on term IDs.
+		$color = get_solution_color_for_term( $term->term_id );
+		if ( ! $color ) {
+			continue;
+		}
+
+		$color = esc_attr( sanitize_hex_color( $color ) );
+		$slug  = preg_quote( $term->slug, '/' );
+
+		// Match the <a> whose href contains this category's slug segment.
+		// The slug always appears as /slug/ in WP category permalinks.
+		$html = preg_replace(
+			'/(<a\b)([^>]*href=["\'][^"\']*\/' . $slug . '\/["\'][^>]*)(>)/',
+			'$1$2 style="--solution:' . $color . '"$3',
+			$html
+		);
+	}
+
+	return $html;
+}, 10, 3 );
+
+add_action( 'rest_api_init', function () {
+	register_rest_field( 'category', 'tag_color', [
+		'get_callback' => function ( $term ) {
+			$color = get_solution_color_for_term( (int) $term['id'] );
+			return $color ? sanitize_hex_color( $color ) : null;
+		},
+		'schema' => [
+			'description' => 'Hex color for category tag.',
+			'type'        => [ 'string', 'null' ],
+			'context'     => [ 'view', 'embed' ],
+		],
+	] );
 } );
 
 
@@ -193,7 +385,7 @@ add_action( 'init', function() {
  */
  
 add_action( 'enqueue_block_assets', function() {
-	if ( ! has_block( 'acf/solution-slide' ) ) return;
+	if ( ! momentive_content_has_block( 'acf/solution-slide' ) ) return;
 
 	wp_enqueue_style(
 		'momentive-solutions',
@@ -224,4 +416,3 @@ add_filter( 'acf/load_field/name=solution_icon', function( $field ) {
 	);
 	return $field;
 } );
-

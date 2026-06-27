@@ -29,13 +29,14 @@ function momentive_testimonials_setup() {
 		'show_in_menu'       => true,
 		'show_in_rest'       => true,        // Block editor support
 		'menu_icon'          => 'dashicons-format-quote',
+		'menu_position'      => 40,
 		'supports'           => array(
 			'title',    // Author name as post title (makes admin list readable)
 			'editor',   // Quote text lives here
 			'thumbnail', // Author photo fallback if not using ACF
 			'revisions',
 		),
-		'taxonomies'   => array( 'category' ),
+		'taxonomies'   => array( 'category', 'post_tag' ),
 		'has_archive'        => false,
 		'rewrite'            => false,
 		'capability_type'    => 'post',

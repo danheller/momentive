@@ -1,6 +1,7 @@
 <?php
 /**
- * Add a grouped submenu for patterns to the WP dashboard sidebar
+ * Add a "Patterns" item to the dashboard left menu with submenu links
+ * to synced patterns, theme patterns, and "Add New".
  */
 
 add_action( 'admin_menu', function () {
@@ -15,7 +16,7 @@ add_action( 'admin_menu', function () {
 		'edit.php?post_type=wp_block', // ← direct URL, no callback needed
 		'',
 		'dashicons-layout',
-		25
+		4
 	);
 
 	add_submenu_page(
@@ -60,9 +61,15 @@ add_filter( 'submenu_file', function ( $submenu_file ) {
 	return $submenu_file;
 } );
 
+/**
+ * Add custom categories for block patterns
+ */
+
 add_action( 'init', function () {
-	register_block_pattern_category( 'momentive-sections',  [ 'label' => 'Sections' ] );
-	register_block_pattern_category( 'momentive-headers',   [ 'label' => 'Headers' ] );
-	register_block_pattern_category( 'momentive-cards',     [ 'label' => 'Cards' ] );
-	register_block_pattern_category( 'momentive-cta',       [ 'label' => 'Calls to Action' ] );
+	register_block_pattern_category( 'momentive-section',   [ 'label' => 'Section' ] );
+	register_block_pattern_category( 'momentive-hero',      [ 'label' => 'Hero' ] );
+	register_block_pattern_category( 'momentive-card',      [ 'label' => 'Card' ] );
+	register_block_pattern_category( 'momentive-cta',       [ 'label' => 'Call to Action' ] );
 } );
+
+ 

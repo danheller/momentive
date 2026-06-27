@@ -26,10 +26,9 @@ if ( $bg_image_url ) $style .= "--slide-bg-image: url('{$bg_image_url}');";
 	<?php endif; ?>
 
 	<?php if ( $icon_slug ) :
-		momentive_use_icon( $icon_slug );
 	?>
 		<span class="solution-icon" aria-hidden="true">
-			<svg focusable="false"><use href="#icon-<?php echo esc_attr( $icon_slug ); ?>"></use></svg>
+			<?php echo momentive_render_icon( $icon_slug ); ?>
 		</span>
 	<?php endif; ?>
 

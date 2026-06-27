@@ -47,28 +47,20 @@ $title         = get_the_title();
     <?php // ── Card body ──────────────────────────────────────────────────── ?>
 
     <div class="story-content">
-
-        <?php // Lower label: categories, linked — blog posts only ?>
-        <?php if ( $is_blog ) : ?>
-            <?php
-            $cats = get_the_category();
-            if ( ! empty( $cats ) ) :
-                $cat_links = array_map( function ( $cat ) {
-                    return sprintf(
-                        '<a href="%s" rel="tag">%s</a>',
-                        esc_url( get_category_link( $cat->term_id ) ),
-                        esc_html( $cat->name )
-                    );
-                }, $cats );
-            ?>
-            <div class="taxonomy-category lower-label wp-block-post-terms">
-                <?php echo implode(
-                    '<span class="wp-block-post-terms__separator"> </span>',
-                    $cat_links
-                ); ?>
-            </div>
-            <?php endif; ?>
-        <?php endif; ?>
+		<?php // Lower label: categories, linked — blog posts only 
+			if ( $is_blog ) :
+			$cats = get_the_category();
+			if ( ! empty( $cats ) ) :
+				$cat_links = array_map( 'momentive_term_link_with_color', $cats );
+			?>
+			<div class="taxonomy-category lower-label wp-block-post-terms">
+				<?php echo implode(
+					'<span class="wp-block-post-terms__separator"> </span>',
+					$cat_links
+				); ?>
+			</div>
+			<?php endif; ?>
+		<?php endif; ?>
 
         <<?php echo 'h' . $heading_level; ?> class="wp-block-post-title">
             <a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a>

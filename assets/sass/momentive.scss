@@ -24,9 +24,9 @@
 	4.1  Eyebrow & Uppercase (.is-style-eyebrow, .is-style-uppercase)
 	4.2  Heading Size Classes (.h2, .h3)
 	4.3  Quote Style (.is-style-quote)
-	4.4  Read More Link (.read-more)
+	4.4  Read More nad Back Links (.read-more, .back-link)
 	4.5  Animated Swoop Underline (.is-style-has-swoop)
-	4.6  Check Mark List (.is-style-column-checks)
+	4.6  List Styles
 	4.7  Media-Text Blocks
 	4.8  Content Collage (text followed by three overlapping images)
 	4.9  Boxed Columns (.is-style-boxed)
@@ -43,9 +43,8 @@
 	6.3  Highlights (.highlights)
 	6.4  Constellation / Icon Grid (.constellation)
 	6.5  Product Suite (.product-suite)
-	6.6  Featured Blog Post (.featured-blog-wrapper)
+	6.6  Featured Item
 	6.7  Pre-footer CTA (.prefooter)
-	6.8  Demo / Hubspot Form (.demo-form)
 
 	7.0  News / Blog
 	7.1  Story Card (.story-card)
@@ -92,6 +91,12 @@
 	--aqua-color:                 #daf7fb;
 	--secondary-color:            #f26522; // orange
 	--midtone-color:              rgb(100 107 133);
+
+	// page-level accent colors allow for overrides
+	--page-accent-color:          var(--accent-color);
+	--page-accent-color-bg:       var(--light-accent-color);
+	--page-accent-color-bg-soft:  var(--superlight-accent-color);
+
 
 	// Buttons — orange CTA
 	--button-background:          var(--secondary-color);
@@ -175,7 +180,7 @@ a:not(.wp-element-button) {
 b,
 strong,
 th {
-	font-weight: var(--wp--custom--font-weight--medium);
+	font-weight: var(--wp--custom--font-weight--semi-bold);
 }
 
 // Highlight style: a partial underline drawn as a background gradient.
@@ -448,6 +453,29 @@ figure {
 			}
 		}
 	}
+	&.is-style-superlight {
+		a {
+			font-weight: 400;
+			color: var(--text-color);
+			background: var(--page-accent-color-bg);
+			border: 1px solid #0000001A;
+			padding: 1.25rem 2.5rem;
+			transition: box-shadow .3s ease;
+
+				cursor: default;        /* Changes the hand cursor back to the standard arrow */
+				pointer-events: none;
+				background: #eee;
+			&[href] {
+				cursor: pointer;
+				pointer-events: auto;
+				background: var(--page-accent-color-bg);
+
+				&:hover {
+					box-shadow: var(--wp--preset--shadow--card);
+				}
+			}
+		}
+	}
 }
 
 // Prev/next arrow buttons, positioned below the slider at the right edge
@@ -515,12 +543,6 @@ figure {
 		flex-direction: column;
 		row-gap: 1rem;
 		line-height: 1.25;
-/*		p:not(.h2, .h3, .is-style-eyebrow, .is-style-uppercase) {
-			margin: 0 0 1rem;
-			font-size: var(--wp--preset--font-size--regular);
-			line-height: 1.5;
-		}
-*/
 		// Pushes the last element in a column to the bottom, useful
 		// for aligning CTAs across columns of varying height.
 		.column-bottom {
@@ -534,11 +556,9 @@ figure {
 	}
 
 	// Bordered card columns with rounded corners.
-	&.is-style-outline {
-		.wp-block-column {
-			@include rounder;
-			border: 1px solid var(--menu-border-color);
-		}
+	&.is-style-outline, .is-style-outline {
+		@include rounder;
+		border: 1px solid var(--menu-border-color);
 	}
 }
 
@@ -563,10 +583,6 @@ figure {
 		&.is-style-button {
 			padding: 0;
 			margin-top: .5rem;
-
-			a.wp-block-navigation-item__content {
-				&:hover { color: inherit; }
-			}
 		}
 
 		&.has-megamenu {
@@ -595,14 +611,16 @@ figure {
 				transform: rotate(225deg) translateY(-.1rem);
 			}
 		}
-
+		&:hover {
+			color: var(--menu-title-text-color-hover);
+		}
 	}
 
 	// ── Links ────────────────────────────────────────────────────────────────
 
 	a.wp-block-navigation-item__content {
 		color: var(--menu-title-text-color);
-		&:hover { color: var(--menu-title-text-color-hover); }
+		&:hover { color: inherit; }
 	}
 
 	// ── Responsive breakpoint overrides (replaces WP's hardcoded 600px) ──────
@@ -692,7 +710,7 @@ figure {
 			top: calc(var(--announcement-bar-height, 0px) + 6rem);
 			height: calc( 100vh - var(--announcement-bar-height, 0px) - 6rem );
 			bottom: auto;
-			box-shadow:  var(--wp--preset--shadow--diffuse);
+			box-shadow: var(--wp--preset--shadow--diffuse);
 			@media #{$medium-up} {
 				top: calc(var(--announcement-bar-height, 0px) + 3.125rem);
 				height: calc( 100vh - var(--announcement-bar-height, 0px) - 3.125rem );
@@ -903,6 +921,10 @@ figure {
 	font-size: .875rem;
 	font-weight: 600;
 	letter-spacing: .1rem;
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
 }
 
 .is-style-eyebrow {
@@ -936,17 +958,94 @@ figure {
 }
 
 /*--------------------------------------------------------------
-  4.4 - Read More Link
+  4.4 - Read More and Back Links
 --------------------------------------------------------------*/
 
 // Inline "Read more →" link with a CSS chevron arrow.
 // The arrow is drawn using border-right + border-bottom on ::after,
 // rotated 45°. Hover state nudges it right via translate.
 .read-more {
-	@include has-after;
 	font-size: var(--wp--preset--font-size--regular);;
 	font-weight: 600;
+	a {
+		@include has-after;
+		color: var(--text-color);
+		text-decoration: none;
+		padding-right: 1rem;
+		&:after {
+			font-weight: 300;
+			margin-left: .375rem;
+		}
+	}
+	&.chevron a {
+		&:after {
+			border-right:  .0625rem solid currentColor;
+			border-bottom: .0625rem solid currentColor;
+			width:  .5rem;
+			height: .5rem;
+			transition: transform .3s ease, border-color .3s;
+			transform: rotate(-45deg);
+			transform-origin: 50% 50%;
+			top: .375rem;
+		}		
+	}
+	&.has-arrow {
+		a {
+			&:hover {
+				color: var(--secondary-color); 
+			}
+		}
+	
+	}
+}
+
+.has-arrow {
+	&.wp-block-button {
+		a {
+			position: relative;
+			padding-right: 2rem;
+			&:after {
+				position: absolute;
+				top: .75rem;
+			}
+		}
+	}
+	a {
+		&:after {
+			content: '\2192';
+			top: 0;
+			line-height: 1;
+			font-weight: 300;
+			font-size: 1.25rem;
+			transition: transform .3s ease;
+			margin-left: .25rem;
+
+		}
+		&:hover {
+			&:after {
+				transform: translateX(.25rem);
+			}
+		}
+	}
+/*
+	&.upward a {
+		color: var(--secondary-color);
+		&:after {
+			font-size: 1.375rem;
+			transform: rotate(-45deg);
+			top: -0.125rem;
+		}
+		&:hover:after {
+			transform: rotate(-45deg) translateX(.25rem);
+		}
+	}
+*/
+}
+
+a.read-more {
+	@include has-after;
 	padding-right: 1rem;
+	color: var(--text-color);
 	text-decoration: none;
 	&:after {
 		border-right:  .0625rem solid rgb(34,34,34);
@@ -961,6 +1060,25 @@ figure {
 	}
 }
 
+.back-link {
+	a {
+		@include has-before;
+		color: var(--text-color);
+		text-decoration: none;
+		padding-left: 1rem;
+		&:before {
+			border-left:  .0625rem solid currentColor;
+			border-top: .0625rem solid currentColor;
+			width:  .375rem;
+			height: .375rem;
+			transition: transform .3s ease, border-color .3s;
+			transform: rotate(-45deg);
+			transform-origin: 50% 50%;
+			top: .375rem;
+			left: .25rem;
+		}		
+	}
+}
 
 /*--------------------------------------------------------------
   4.5 - Animated Swoop Underline (.is-style-has-swoop)
@@ -1021,6 +1139,12 @@ figure {
 	&.is-ready .swoop-svg path {
 		opacity: 1;
 	}
+	
+	&.has-display-large-font-size {
+		.swoop-svg {
+			bottom: -0.15em; 
+		}
+	}
 	&.has-xxx-large-font-size {
 		.swoop-svg {
 			height: clamp( 3.6rem, 6.5vw, 5rem  );
@@ -1038,7 +1162,7 @@ figure {
 
 
 /*--------------------------------------------------------------
-  4.6 - Column List With Check Marks (.is-style-column-checks)
+  4.6 - List Styles
 --------------------------------------------------------------*/
 
 ul.is-style-column-checks {
@@ -1068,6 +1192,40 @@ ul.is-style-column-checks {
 			border-bottom: .2rem solid var(--secondary-color);
 			border-right: .2rem solid var(--secondary-color);
 			transform: rotate( 45deg );
+		}
+	}
+}
+
+ul.is-style-circle-checks {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	li {
+		@include has-before;
+		@include has-after;
+		padding-left: 2rem;
+		
+		&:before {
+			top: .3rem;
+			left: .475rem;
+			width: .3125rem;
+			height: .6rem;
+			border-bottom: .125rem solid var(--light-color);
+			border-right: .125rem solid var(--light-color);
+			transform: rotate( 45deg );
+			z-index: 1;
+		}
+		&:after {
+			top: 0;
+			left: 0;
+			width: 1.25rem;
+			height: 1.25rem;
+			border-radius: 50%;
+			background: var(--page-accent-color);
+			z-index: 0;
 		}
 	}
 }
@@ -1125,11 +1283,13 @@ ul.is-style-column-checks {
 			.read-more {
 				margin-bottom: 0;
 				a {
-					color: var(--text-color);
-					text-decoration: none;
-				}
-				&:after {
-					top: .5rem;
+					&:hover {
+						color: var(--secondary-color);
+						&:after {
+							border-color: var(--secondary-color);
+							transform: rotate(-45deg) translate(.25rem,.25rem);
+						}
+					}
 				}
 			}
 		}
@@ -1175,6 +1335,7 @@ ul.is-style-column-checks {
 	padding: 4rem 2rem;
 	&:after {
 		@include rounder;
+		mask-position: center 7.5vw !important;
 	}
 	.content-collage-inner {
 		grid-column: 2;
@@ -1288,6 +1449,24 @@ ul.is-style-column-checks {
 			background: none;
 			box-shadow: none;
 		}
+		&:hover {
+			.read-more {
+				a {
+					color: var(--secondary-color);	
+					&:after {
+						transform: translateX(.25rem);
+					}		
+				}
+				&.has-arrow.upward {
+					a {
+						color: var(--secondary-color);
+						&:after {
+							transform: rotate(-45deg) translateX(.25rem);						
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	.wp-block-heading {
@@ -1306,19 +1485,22 @@ ul.is-style-column-checks {
 	}
 	figure {
 		margin-bottom: 1rem;
+		img {
+			object-fit: contain;
+		}
+		a {
+			&:after {
+				content: '';
+				position: absolute;
+				inset: 0;
+			}
+		}
 	}
 	.read-more {
 		margin: auto 0 0 !important;
-		&:after {
-			content: '\2192';
-			border: none;
-			transform: none;
-			top: 0;
-		}
-		a {
-			color: var(--dark-color);
-			text-decoration: none;
-		}
+	}
+	&.small-gap {
+		gap: 1rem;
 	}
 }
 
@@ -1338,7 +1520,7 @@ ul.is-style-column-checks {
 	background: var(--alert-background);
 	color: var(--alert-text-color);
 	font-size: 1rem;
-	font-weight: 500;
+	font-weight: 600;
 	position: sticky;
 	top: 0;
 	z-index: 10;
@@ -1773,7 +1955,7 @@ main.site-content {
 	margin-bottom: 3rem;
 	padding-top: .375rem;
 	text-align: left;
-	border-bottom: 1px solid var(--menu-border-color);
+	border-bottom: 1px solid #0000001A;
 	@media #{$largish-below} {
 		padding: 0 2rem;
 	}
@@ -1784,8 +1966,12 @@ main.site-content {
 		padding: 0 0 .75rem;
 	}
 	.breadcrumb-item a:hover, .breadcrumb-item--current {
-		color: var(--accent-color);
+		color: var(--page-accent-color);
 	}
+}
+
+.hero-background > .breadcrumb-bar { // when nested in background, don't shift
+	margin-left: 0 !important;	
 }
 
 .breadcrumb-list {
@@ -1882,7 +2068,7 @@ body.home {
 		font-weight: 600;
 		line-height: 1.2;
 		letter-spacing: -0.05rem;
-		margin: 0;
+		margin: 1rem 0 1.5rem;
 	}
 	.wp-block-columns .wp-block-column {
 		padding: 0;
@@ -2140,12 +2326,13 @@ body.home {
 		&:hover {
 			transform: scale(1.01);
 			box-shadow: rgba(0, 0, 0, 0.125) 0 0 .75rem 0;
-			.read-more {
-				&:after {
-					transform: rotate(-45deg) translate( .25rem, .25rem );
-					border-color: var(--secondary-color);
+			.read-more.chevron {
+				a { 
+					color: var(--secondary-color); 
+					&:after {
+						transform: rotate(-45deg) translate( .25rem, .25rem );
+					}
 				}
-				a { color: var(--secondary-color); }
 			}
 		}
 	}
@@ -2161,8 +2348,6 @@ body.home {
 
 	.read-more {
 		margin: 0;
-		&:after { top: .375rem; }
-		a { text-decoration: none; }
 	}
 
 	figure { margin: 0; }
@@ -2170,7 +2355,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.6 - Featured Blog Post
+  6.6 - Featured Item
 --------------------------------------------------------------*/
 
 // Single large featured post card used at the bottom of the homepage.
@@ -2233,7 +2418,6 @@ body.home {
 		a {
 			@extend .read-more;
 			color: var(--light-color);
-			text-decoration: none;
 			&:after {
 				top: .5rem;
 				border-color: var(--light-color);
@@ -2246,6 +2430,48 @@ body.home {
 		overflow: hidden;
 	}
 }
+
+.featured-item {
+	@include rounder;
+	max-width: var(--wp--style--global--content-size);
+	margin-left: auto;
+	margin-right: auto;
+	transition: transform .5s ease, box-shadow .5s ease;
+	transform-origin: 50% 50%;
+	padding: 0 2.5rem;
+	figure { 
+		margin: 0; 
+	}
+	figure, .wp-block-heading, .wp-block-button {
+		 a {
+		 	text-decoration: none;
+			&:after {
+				content: '';
+				position: absolute;
+				inset: 0;
+			}
+		}
+	}
+	&:hover {
+		box-shadow: rgba(0, 0, 0, 0.2) 0 0 .75rem 0;
+		.read-more {
+			a {
+				color: var(--secondary-color);
+			}
+			&.chevron a:after {
+				transform: rotate(-45deg) translate( .25rem, .25rem );
+			}
+			&.has-arrow a:after {
+				transform: translateX( .25rem );
+			}
+			&.has-arrow.upward a:after {
+				transform: translateX( .25rem ) rotate(-45deg);
+			}
+
+		}
+	}
+}
+
 
 
 /*--------------------------------------------------------------
@@ -2291,74 +2517,6 @@ body.home {
 	}
 }
 
-/*--------------------------------------------------------------
-  6.8 - Demo Form
---------------------------------------------------------------*/
-
-.demo-form {
-	width: 100%;
-	max-width: none;
-	.wp-block-columns {
-		max-width: var(--wp--style--global--content-size);
-		margin-left: auto;
-		margin-right: auto;
-		column-gap: 5rem;
-	}
-	.wp-block-column {
-		@include nopadding;
-	}
-	form {
-		@include rounder;
-		border: 1px solid var(--menu-border-color);
-		background: var(--superlight-accent-color);
-		padding: 1.5rem;
-		label {
-			color: var(--light-text-color);
-			margin-bottom: .5rem;
-			display: block;
-		}
-		input, textarea {
-			@include round;
-			border: 1px solid var(--menu-border-color);
-			background: var(--light-color);
-			color: var(--light-text-color);
-			padding: .75rem;
-			width: 100% !important;
-		}
-		.hs-form-required, .hs-error-msg {
-			color: #C53030;
-		}
-		.hs-error-msgs {
-		    list-style: none;
-			padding: .5rem 0 0;
-			margin: 0;
-		}
-		.hs-input.invalid.error {
-			border-color: #C53030;
-		}
-		.hs-form-field {
-			margin-bottom: 1.5rem;
-		}
-		.hs-richtext.hs-main-font-element {
-			text-align: center;
-			text-wrap: balance;
-			font-weight: 600;
-			margin-bottom: 1.5rem;
-		}
-		.hs-button {
-			color: var(--button-text-color);
-			background: var(--button-background);
-			border-radius: 3rem;
-			padding: .75rem 1.5rem;
-			transition: background .3s ease;
-			font-weight: 600;
-			font-size: 1rem;
-			&:hover {
-				background: color-mix(in srgb, var(--button-background), black 20%);
-			}
-		}
-	}
-}
 
 
 /*==============================================================
@@ -2368,6 +2526,25 @@ body.home {
 /*--------------------------------------------------------------
   7.1 - Story Card
 --------------------------------------------------------------*/
+
+.top-label { // reusable style
+	@include rounder;
+	background: var(--dark-brand-color);
+	font-size: .875rem;
+	line-height: 1;
+	font-weight: 400;
+	color: var(--light-color);
+	padding: .5rem .75rem;
+	width: fit-content;
+	a {
+		line-height: 1;
+		color: var(--light-color);
+		pointer-events: none;
+		cursor: default;
+		text-decoration: none;
+	}
+
+}
 
 // Reusable post card used in the news slider, blog grid,
 // and any Query Loop with post template.
@@ -2424,27 +2601,6 @@ body.home {
 		background: var(--light-color);
 	}
 
-	// label pill — absolute-positioned over the featured image.
-	.top-label {
-		position: absolute;
-		top: .75rem; left: .75rem;
-		background: #172A43;
-		font-size: .875rem;
-		line-height: 1;
-		font-weight: 400;
-		color: var(--light-color);
-		padding: .75rem 1rem;
-		border-radius: 3rem;
-		margin: 0;
-		a {
-			line-height: 1;
-			color: var(--light-color);
-			pointer-events: none;
-			cursor: default;
-			text-decoration: none;
-		}
-	}
-	
 	.lower-label {
 		max-height: 3.3em; // shows roughly one line of tags
 	}
@@ -2478,6 +2634,14 @@ body.home {
 		font-size: 1rem;
 		line-height: 1.5;
 		margin-bottom: 1rem;
+		&.top-label { // label pill — absolute-positioned over the featured image.
+			position: absolute;
+			top: .75rem;
+			left: .75rem;
+			margin: 0;
+			font-size: .875rem;
+		}
+		
 	}
 
 	.wp-block-post-date {
@@ -2566,12 +2730,9 @@ body.home {
 }
 
 .related-posts {
+	max-width: var(--wp--style--global--content-size);
+	margin: 0 auto;
 	padding: 2rem 0 4rem;
-	&__inner {
-		margin: 0 auto;
-		padding: 0 var(--wp--style--root--padding-right);
-	}
-
 	&__heading {
 		font-size: var(--wp--preset--font-size--xxx-large);
 		margin: 0 0 2rem;
@@ -2786,6 +2947,9 @@ body.single-article {
 		max-width: 48.5rem;
 		width: 66%;
 		flex-basis: auto;
+		p {
+			margin: 1rem 0;
+		}
 	}
 	.post-sidebar {
 		width: 18.75rem;
@@ -2929,52 +3093,46 @@ body.single-press-article {
 }
 
 /*==============================================================
-  7.6 - Single Solution
+  7.6 - Single Posts
 ==============================================================*/
 
-body.single-solutions {
-    --solution-dark:    color-mix(in oklab, var(--solution) 72%, black);
-    --solution-bg:      color-mix(in oklab, var(--solution) 14%, white);
-    --solution-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
-	--superlight-accent-color: var(--solution-bg-soft);
-	.breadcrumb-bar .breadcrumb-item a:hover, .breadcrumb-bar .breadcrumb-item--current {
-		color: var(--solution);
-	}
-	.has-light-to-superlight-horizontal-gradient-background:before {
-		background: linear-gradient(
-			90deg,
-			var(--solution-bg) 0%,
-			var(--solution-bg-soft) 100%
-		) !important;
-	}
+body.single-solutions, body.single-product {
+	--page-accent-color-bg:      color-mix(in oklab, var(--page-accent-color) 14%, white);
+	--page-accent-color-bg-soft: color-mix(in oklab, var(--page-accent-color) 7%, white);
+	--superlight-accent-color: var(--page-accent-color-bg-soft);
 	.is-style-bg-dots {
-		background-color: color-mix(in oklab, var(--solution) 20%, white);
-		&:after {
+		background: color-mix(in oklab, var(--page-accent-color) 20%, white);
+		&:before {
 			opacity: .3;
 		}
 	}
 	.is-style-bg-ellipse, .single-slide .splide__list {
 		&::after {
-			--solution-bg: color-mix(in oklab, var(--solution) 30%, white);		
+			--page-accent-color-bg: color-mix(in oklab, var(--page-accent-color) 50%, white);		
 		}
 	}
 	.has-vertical-gradient-background {
 		&:before {
-			background: linear-gradient(var(--solution-bg), var(--light-color)) !important;
+			background: linear-gradient(var(--page-accent-color-bg), var(--light-color)) !important;
 		}
+	}
+	.product-gradient {
+		&:before {
+			background: linear-gradient(
+				80deg,
+				color-mix(in oklch, var(--page-accent-color) 40%, white) 25%,
+				var(--page-icon-color)
+			);
+			opacity: .2;
+		}	
 	}
 	.wp-block-media-text {
 		&.is-style-stacked {
-			background: var(--solution-bg);
-		}
-	}
-
-	.single-slide .splide__list {
-		&::after {
-		
+			background: var(--page-accent-color-bg);
 		}
 	}
 }
+
 
 /*==============================================================
   8.0 - Animations
@@ -2993,7 +3151,7 @@ body.single-solutions {
 	top: 0;
 	animation: parallax linear;
 	animation-timeline: view(-8rem);
-	--parallax-distance: -3rem;
+	--parallax-distance: -4.5rem;
 }
 
 @keyframes parallax {
@@ -3004,54 +3162,10 @@ body.single-solutions {
 
 /*==============================================================
   9.0 - Block Backgrounds
+  Note: Need to organize these so gradients are all using :after 
+  and background SVGs are all using :before.
 ==============================================================*/
 
-
-.is-style-bg-dots {
-	@include has-after;
-	&::after {
-		z-index: 0;
-		top: 0; left: 0;
-		height: 100%; width: 100%;
-		background-image:
-			// Large accent dot — one per 5×5 tile
-			radial-gradient(
-				circle,
-				var(--accent-color) 2.5px,
-				transparent 2.5px
-			),
-			// Small dots — every grid position
-			radial-gradient(
-				circle,
-				var(--accent-color) 1px,
-				transparent 1px
-			);
-		background-size:
-			12.5rem 12.5rem,   // 5×5 tile for large dots
-			2.5rem 2.5rem; // 1×1 tile for small dots
-		background-position:
-			center center,
-			center center;
-		opacity: 0.4;
-		pointer-events: none;
-	}
-
-	> * { position: relative; z-index: 1; }
-}
-
-.is-style-bg-rings {
-	@include has-after;
-	&:after {
-		z-index: 0;
-		top: 0; left: 0;
-		height: 100%; width: 100%;
-		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
-		pointer-events: none;
-		background-size: 135vw;
-	}
-	
-	> * { position: relative; z-index: 1; }
-}
 
 .is-style-bg-dark {
 	background: var(--alert-background);
@@ -3066,53 +3180,74 @@ body.single-solutions {
 }
 
 .is-style-bg-ellipse {
-	@include has-after;
-	background: var(--superlight-accent-color);
-
-	&::after {
-		z-index: 0;
-		top: 0; left: 0;
-		height: 100%; width: 100%;
-		
+	background: var(--page-accent-color-bg-soft);
+	&::after {		
 		// The SVG defines the shape; background-color provides the color
 		mask-image: url(../images/Ellipse-Base-Gray.svg);
 		mask-position: right 15%;
 		mask-repeat: no-repeat;
 		mask-size: 100vw;
-		background-color: var(--light-accent-color);		
+		background-color: var(--page-accent-color-bg);		
 		pointer-events: none;
 	}
+	&.stretch-background:after {
+		mask-size: 180vw;
+		mask-position: center bottom;
+	}
+}
 
-	> * { position: relative; z-index: 1; }
+
+/* gradients use :before */
+
+.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-vertical-gradient-background, .has-white-to-superlight-gradient-background {
+	background: none !important;
+}
+
+
+.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-white-to-superlight-gradient-background, .has-vertical-gradient-background, .product-gradient {
+	@include has-before;
+	&:before {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: -2;
+	}
 }
 
 .has-light-to-superlight-horizontal-gradient-background {
-	background: none !important;
-	@include has-before;
 	&:before {
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		z-index: -2;
-		background: var(--wp--preset--gradient--light-to-superlight-horizontal) !important;
+		background: linear-gradient(
+			90deg,
+			var(--page-accent-color-bg) 0%,
+			var(--page-accent-color-bg-soft) 100%
+		) !important;
 	}
 }
 
-.has-vertical-gradient-background {
-	background: none !important;
-	@include has-before;
+.has-white-light-white-gradient-background {
 	&:before {
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
 		z-index: -2;
-		background: linear-gradient(var(--superlight-accent-color), var(--light-color)) !important;
+		background: linear-gradient(var(--light-color), var(--page-accent-color-bg), var(--light-color)) !important;
 	}
 }
 
-.is-style-ellipse-bottom, .is-style-ellipse-top {
+.fade-to-white {
+	@include has-before;
+	&:before {
+		z-index: 1;
+		bottom: 0;
+		left: 0;
+		height: 20%;
+		width: 100%;
+		background: linear-gradient(rgba(255,255,255,0), var(--light-color)) ;
+	}
+}
+
+
+/* background SVGs use :after */
+
+.is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-rings, .is-style-bg-dots {
 	@include has-after;
 	&:after {
 		width: 100%;
@@ -3120,23 +3255,87 @@ body.single-solutions {
 		top: 0;
 		left: 0;
 		z-index: 0;
-		opacity: .5;
-		background-image: url(../images/Ellipse-Base-Gray.svg);
-		background-repeat: no-repeat;
-		filter: invert(42%) sepia(92%) saturate(200%) hue-rotate(181deg) brightness(100%) contrast(89%);
 	}
+}
+
+.has-vertical-gradient-background {
+	&:before {
+		background: linear-gradient(var(--page-accent-color-bg-soft), var(--light-color)) !important;
+	}
+}
+
+.has-white-to-superlight-gradient-background {
+	&:before {
+		background: linear-gradient(var(--light-color), var(--page-accent-color-bg-soft)) !important;
+	}
+}
+
+.is-style-bg-rings {
+	&:after {
+		z-index: 0;
+		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
+		pointer-events: none;
+		background-size: 135vw;
+	}	
+}
+
+.is-style-bg-rings, .is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-dots {
 	> * { position: relative; z-index: 1; }
 }
 
-.is-style-ellipse-bottom {
+.is-style-ellipse-bottom, .is-style-ellipse-top {
 	&:after {
-		background-position: center bottom;
-		background-size: 88vw auto;
+		z-index: 0;
+		// The SVG defines the shape; background-color provides the color
+		mask-image: url(../images/Ellipse-Base-Gray.svg);
+		mask-repeat: no-repeat;
+		mask-size: 100vw;
+		background-color: var(--page-accent-color-bg);		
 	}
 }
 
+.is-style-ellipse-bottom:after {
+	mask-position: center bottom;
+	mask-size: 88vw auto;
+}
+
 .is-style-ellipse-top:after {
-	background-position: top center;
+	mask-position: top center;
 	top: 6.25rem;
-	background-size: cover;
+	mask-size: cover;
+}
+
+.is-style-bg-dots {
+	&::after {
+		z-index: 0;
+		background-image:
+			// Large accent dot — one per 5×5 tile
+			radial-gradient(
+				circle,
+				var(--page-accent-color) 2.5px,
+				transparent 2.5px
+			),
+			// Small dots — every grid position
+			radial-gradient(
+				circle,
+				var(--page-accent-color) 1px,
+				transparent 1px
+			);
+		background-size:
+			12.5rem 12.5rem,   // 5×5 tile for large dots
+			2.5rem 2.5rem; // 1×1 tile for small dots
+		background-position:
+			center top,
+			center top;
+		opacity: .4;
+		pointer-events: none;
+	}
+}
+
+
+.is-style-purple-seafoam-wash { // used for MomentiveIQ feature block on the products archive page
+	background:
+		radial-gradient(ellipse 85% 140% at 64% 110%, rgba(189, 233, 226, 0.5) 0%, rgba(189, 233, 226, 0.25) 45%, rgba(189, 233, 226, 0) 85%),
+		radial-gradient(ellipse 70% 100% at 2% -10%, rgba(204, 201, 243, 0.5) 0%, rgba(204, 201, 243, 0.22) 45%, rgba(204, 201, 243, 0) 85%),
+		#fbfdff;
 }

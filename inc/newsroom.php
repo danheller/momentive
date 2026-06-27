@@ -74,19 +74,6 @@ add_filter( 'body_class', function( $classes ) {
 
 } );
 
-/* Register the related posts pattern as a reusable block. */
-
-add_action( 'init', function() {
-	register_block_type( get_template_directory() . '/blocks/related-posts', [
-		'render_callback' => function() {
-			if ( ! is_singular( [ 'post', 'press-article' ] ) ) return '';
-			ob_start();
-			get_template_part( 'patterns/related-posts' );
-			return ob_get_clean();
-		},
-	] );
-} );
-
 function momentive_blocks_to_cpt_template( array $blocks ): array {
 	$template = [];
 	foreach ( $blocks as $block ) {
@@ -186,7 +173,7 @@ add_action( 'enqueue_block_editor_assets', function() {
 add_filter( 'render_block', function( $block_content, $block ) {
 
 	if ( $block['blockName'] !== 'core/post-featured-image' ) return $block_content;
-	if ( ! is_singular( [ 'post', 'press-article' ] ) ) return $block_content;
+	if ( ! is_singular( [ 'post', 'press-article', 'webinar' ] ) ) return $block_content;
 
 	$hero_image = get_field( 'hero_image' );
 	if ( ! $hero_image ) return $block_content;
@@ -201,3 +188,60 @@ add_filter( 'render_block', function( $block_content, $block ) {
 	return preg_replace( '/<img[^>]+>/', $replacement, $block_content, 1 );
 
 }, 10, 2 );
+
+
+/* When a query template has the "order-by-modified" class, adjust the order accordingly.
+ * Note: make sure the class is added to the template block inside the query, not to the 
+ * query itself.
+ */
+
+add_filter( 'query_loop_block_query_vars', function( $query, $block, $page ) {
+    $class_list = $block->attributes['className'] ?? '';
+    error_log( 'Query vars filter fired. classList: ' . $class_list );
+
+    if ( strpos( $class_list, 'order-by-modified' ) !== false ) {
+        $query['orderby'] = 'modified';
+        $query['order']   = $query['order'] ?? 'DESC';
+    }
+
+    return $query;
+}, 10, 3 );
+
+/* When showing the modified date with
+ * <!-- wp:post-date {"displayType":"modified"} /-->
+ * show a publish date if it matches the modified date
+ */
+ 
+add_filter( 'render_block', function ( string $html, array $block, WP_Block $instance ): string {
+	if ( 'core/post-date' !== ( $block['blockName'] ?? '' ) ) {
+		return $html;
+	}
+	if ( 'modified' !== ( $block['attrs']['displayType'] ?? '' ) ) {
+		return $html;
+	}
+	// Core already rendered something (modified != published) — leave it.
+	if ( '' !== trim( $html ) ) {
+		return $html;
+	}
+
+	$post_id = $instance->context['postId'] ?? get_the_ID();
+	if ( ! $post_id ) {
+		return $html;
+	}
+
+	$format    = $block['attrs']['format'] ?? get_option( 'date_format' );
+	$datetime  = get_the_date( 'c', $post_id );
+	$formatted = get_the_date( $format, $post_id );
+
+	$class = 'wp-block-post-date';
+	if ( ! empty( $block['attrs']['textAlign'] ) ) {
+		$class .= ' has-text-align-' . $block['attrs']['textAlign'];
+	}
+
+	return sprintf(
+		'<div class="%s"><time datetime="%s">%s</time></div>',
+		esc_attr( $class ),
+		esc_attr( $datetime ),
+		esc_html( $formatted )
+	);
+}, 10, 3 );

@@ -26,6 +26,7 @@ function momentive_authors_setup() {
 		'public'             => true,
 		'hierarchical'       => false,
 		'menu_icon'          => 'dashicons-groups',
+		'menu_position'      => 50,
 		'show_in_rest'       => true,
 		'taxonomies'   => array( 'category' ),
 		'supports'           => array(

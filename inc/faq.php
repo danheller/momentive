@@ -39,7 +39,7 @@ function momentive_faq_setup() {
 		'show_in_rest'       => true,         // Block editor + REST API (accordion block load-more)
 		'rest_base'          => 'faq',       // /wp-json/wp/v2/faq
 		'menu_icon'          => 'dashicons-editor-help',
-		'menu_position'      => 7,
+		'menu_position'      => 45,
 		'supports'           => array(
 			'title',        // The question
 			'excerpt',      // The short answer

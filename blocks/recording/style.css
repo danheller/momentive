@@ -1,0 +1,21 @@
+.recording {
+	margin-block: 1.5rem;
+
+	.recording__player {
+		position: relative;
+		width: 100%;
+
+		/* Make bare iframe embeds (YouTube, Vimeo) responsive with a 16:9 box.
+		 * Providers that bring their own responsive wrapper (e.g. Wistia's
+		 * padded container) are left alone — we only constrain direct-child
+		 * iframes so we don't fight their markup. */
+		> iframe {
+			display: block;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			height: auto;
+			border: 0;
+			border-radius: .5rem;
+		}
+	}
+}
