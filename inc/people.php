@@ -118,20 +118,235 @@ function momentive_seed_person_roles() {
 }
 add_action( 'init', 'momentive_seed_person_roles', 20 ); // after taxonomy registration
 
+
+
 /**
- * Lock the Person Role vocabulary: remove create/edit/delete/assign-new
- * capabilities so the meta box becomes a checklist of the fixed terms only.
+ * Backstop: when a post is saved with an empty byline, default post_author_ref
+ * to the current user's linked People profile (read from their user meta).
+ *
+ * Seeds only when empty, so it never overrides a byline set deliberately. This
+ * is the save-time safety net; the load_value filter below is what makes the
+ * default visible in the editor.
  */
-function momentive_lock_person_roles( $args, $taxonomy ) {
-	if ( 'person_role' !== $taxonomy ) {
-		return $args;
+add_action( 'acf/save_post', function ( $post_id ) {
+	if ( get_post_type( $post_id ) !== 'post' ) {
+		return;
 	}
-	$args['capabilities'] = array(
-		'manage_terms' => 'do_not_allow', // hides the Roles admin submenu
-		'edit_terms'   => 'do_not_allow', // no renaming/editing terms
-		'delete_terms' => 'do_not_allow', // no deleting terms
-		'assign_terms' => 'edit_posts',   // editors can still assign existing roles
+	if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+
+	// Only seed when the byline is currently empty.
+	$existing = get_field( 'post_author_ref', $post_id );
+	if ( ! empty( $existing ) ) {
+		return;
+	}
+
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		return; // WP-CLI / import context — nothing to seed from.
+	}
+
+	$person_id = msw_resolve_linked_person( $user_id );
+	if ( $person_id ) {
+		update_field( 'post_author_ref', array( $person_id ), $post_id );
+	}
+}, 20 );
+
+/**
+ * Add a "Linked Accounts" column to the People list table, showing every WP
+ * user whose linked_person points at this profile. For a shared byline like
+ * "Momentive Software" this lists all the developer accounts that post as it.
+ */
+add_filter( 'manage_people_posts_columns', function ( $columns ) {
+	$new = array();
+	foreach ( $columns as $key => $label ) {
+		$new[ $key ] = $label;
+		if ( 'title' === $key ) {
+			$new['linked_accounts'] = __( 'Linked Accounts', 'momentive' );
+		}
+	}
+	if ( ! isset( $new['linked_accounts'] ) ) {
+		$new['linked_accounts'] = __( 'Linked Accounts', 'momentive' );
+	}
+	return $new;
+} );
+
+add_action( 'manage_people_posts_custom_column', function ( $column, $post_id ) {
+	if ( 'linked_accounts' !== $column ) {
+		return;
+	}
+
+	$users = get_users( array(
+		'meta_key'   => 'linked_person',
+		'meta_value' => $post_id,
+		'fields'     => array( 'ID', 'display_name', 'user_login' ),
+	) );
+
+	if ( empty( $users ) ) {
+		echo '<span aria-hidden="true">—</span><span class="screen-reader-text">' .
+			esc_html__( 'No linked accounts', 'momentive' ) . '</span>';
+		return;
+	}
+
+	$links = array();
+	foreach ( $users as $u ) {
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( get_edit_user_link( $u->ID ) ),
+			esc_html( $u->display_name )
+		);
+	}
+	echo wp_kses_post( implode( ', ', $links ) );
+}, 10, 2 );
+
+/**
+ * Add a "Linked Person" column to the Users list table, showing the People
+ * profile this user posts as (their byline identity). Multiple users may share
+ * one person (e.g. several developers posting as "Momentive Software").
+ */
+add_filter( 'manage_users_columns', function ( $columns ) {
+	$columns['linked_person'] = __( 'Linked Person', 'momentive' );
+	return $columns;
+} );
+
+add_filter( 'manage_users_custom_column', function ( $output, $column, $user_id ) {
+	if ( 'linked_person' !== $column ) {
+		return $output;
+	}
+
+	$person_id = msw_resolve_linked_person( $user_id );
+
+	if ( ! $person_id ) {
+		return '<span aria-hidden="true">—</span><span class="screen-reader-text">' .
+			esc_html__( 'No linked person', 'momentive' ) . '</span>';
+	}
+
+	// Flag a stale link: the stored person no longer exists or isn't a person.
+	if ( get_post_type( $person_id ) !== 'people' ) {
+		return sprintf(
+			'<span style="color:#b32d2e;">%s</span>',
+			esc_html( sprintf( __( '⚠ Missing person (#%d)', 'momentive' ), $person_id ) )
+		);
+	}
+
+	return sprintf(
+		'<a href="%s">%s</a>',
+		esc_url( get_edit_post_link( $person_id ) ),
+		esc_html( get_the_title( $person_id ) )
 	);
-	return $args;
+}, 10, 3 );
+
+/**
+ * Prefill post_author_ref with the current user's linked People profile when
+ * they open a NEW post, so the byline default is visible in the editor rather
+ * than only applied silently on save.
+ *
+ * Only fires when there is no saved value yet (new post / never set). Existing
+ * posts return their stored value unchanged, so this never overrides a byline
+ * a developer set deliberately.
+ */
+add_filter( 'acf/load_value/name=post_author_ref', function ( $value, $post_id, $field ) {
+	if ( ! is_admin() ) {
+		return $value;
+	}
+	if ( ! empty( $value ) ) {
+		return $value;
+	}
+	if ( ! is_numeric( $post_id ) ) {
+		return $value;
+	}
+	// Only default on genuinely new posts (auto-draft).
+	if ( 'auto-draft' !== get_post_status( $post_id ) ) {
+		return $value;
+	}
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		return $value;
+	}
+	$person_id = msw_resolve_linked_person( $user_id );
+	if ( $person_id ) {
+		return array( $person_id );
+	}
+	return $value;
+}, 10, 3 );
+
+/**
+ * Resolve a linked_person field value to a plain post ID, regardless of whether
+ * the field returns an ID, a WP_Post object, or an array (post-object multiple).
+ */
+function msw_resolve_linked_person( $user_id ) {
+	$raw = get_field( 'linked_person', 'user_' . (int) $user_id );
+
+	if ( empty( $raw ) ) {
+		return 0;
+	}
+	if ( is_object( $raw ) ) {
+		return (int) $raw->ID;          // post-object, return format = object
+	}
+	if ( is_array( $raw ) ) {
+		$first = reset( $raw );
+		return is_object( $first ) ? (int) $first->ID : (int) $first; // multiple
+	}
+	return (int) $raw;                   // already an ID
 }
-add_filter( 'register_taxonomy_args', 'momentive_lock_person_roles', 10, 2 );
+
+/**
+ * Add a "Filter by role" dropdown above the People list table.
+ */
+add_action( 'restrict_manage_posts', function ( $post_type ) {
+	if ( 'people' !== $post_type ) {
+		return;
+	}
+
+	$tax   = 'person_role';
+	$terms = get_terms( array(
+		'taxonomy'   => $tax,
+		'hide_empty' => false,
+	) );
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return;
+	}
+
+	$current = isset( $_GET[ $tax ] ) ? sanitize_text_field( wp_unslash( $_GET[ $tax ] ) ) : '';
+
+	printf( '<select name="%s" id="%s">', esc_attr( $tax ), esc_attr( $tax ) );
+	printf( '<option value="">%s</option>', esc_html__( 'All roles', 'momentive' ) );
+	foreach ( $terms as $term ) {
+		printf(
+			'<option value="%s"%s>%s</option>',
+			esc_attr( $term->slug ),
+			selected( $current, $term->slug, false ),
+			esc_html( $term->name )
+		);
+	}
+	echo '</select>';
+} );
+
+/**
+ * Apply the role filter to the People query.
+ */
+add_filter( 'parse_query', function ( $query ) {
+	global $pagenow;
+
+	if ( ! is_admin() || 'edit.php' !== $pagenow ) {
+		return $query;
+	}
+	if ( empty( $query->query_vars['post_type'] ) || 'people' !== $query->query_vars['post_type'] ) {
+		return $query;
+	}
+
+	$tax = 'person_role';
+	if ( ! empty( $_GET[ $tax ] ) ) {
+		$slug = sanitize_text_field( wp_unslash( $_GET[ $tax ] ) );
+		$query->query_vars['tax_query'] = array(
+			array(
+				'taxonomy' => $tax,
+				'field'    => 'slug',
+				'terms'    => $slug,
+			),
+		);
+	}
+
+	return $query;
+} );

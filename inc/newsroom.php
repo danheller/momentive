@@ -245,3 +245,66 @@ add_filter( 'render_block', function ( string $html, array $block, WP_Block $ins
 		esc_html( $formatted )
 	);
 }, 10, 3 );
+
+/**
+ * Shared renderer: output the post_author_ref byline (People) for a post.
+ */
+function msw_render_author_ref_column( $post_id ) {
+	$people = get_field( 'post_author_ref', $post_id );
+
+	if ( empty( $people ) ) {
+		echo '<span aria-hidden="true">—</span><span class="screen-reader-text">' .
+			esc_html__( 'No byline set', 'momentive' ) . '</span>';
+		return;
+	}
+
+	// Relationship field returns an array (of IDs, per our pinned return format).
+	$links = array();
+	foreach ( (array) $people as $person ) {
+		$pid = is_object( $person ) ? $person->ID : (int) $person;
+		if ( ! $pid ) {
+			continue;
+		}
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( get_edit_post_link( $pid ) ),
+			esc_html( get_the_title( $pid ) )
+		);
+	}
+
+	echo $links ? wp_kses_post( implode( ', ', $links ) ) : '—';
+}
+
+/**
+ * Column header swap: remove native Author, add People byline in its place.
+ * Applied to both 'post' and 'press-article'.
+ */
+function msw_swap_author_column( $columns ) {
+	$new = array();
+	foreach ( $columns as $key => $label ) {
+		if ( 'author' === $key ) {
+			// Replace the native author column position with ours.
+			$new['author_ref'] = __( 'Byline', 'momentive' );
+			continue;
+		}
+		$new[ $key ] = $label;
+	}
+	// If there was no native author column, append ours.
+	if ( ! isset( $new['author_ref'] ) ) {
+		$new['author_ref'] = __( 'Byline', 'momentive' );
+	}
+	return $new;
+}
+
+add_filter( 'manage_posts_columns', function ( $columns, $post_type ) {
+	if ( in_array( $post_type, array( 'post', 'press-article' ), true ) ) {
+		return msw_swap_author_column( $columns );
+	}
+	return $columns;
+}, 10, 2 );
+
+add_action( 'manage_posts_custom_column', function ( $column, $post_id ) {
+	if ( 'author_ref' === $column ) {
+		msw_render_author_ref_column( $post_id );
+	}
+}, 10, 2 );

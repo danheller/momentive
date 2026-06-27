@@ -154,7 +154,6 @@ add_action( 'acf/include_fields', function() {
 		'show_in_rest' => 0,
 	) );
 
-
 	acf_add_local_field_group( array(
 		'key' => 'group_6a3eabe56be4a',
 		'title' => 'Person Settings',
@@ -236,28 +235,6 @@ add_action( 'acf/include_fields', function() {
 				'default_value' => '',
 				'placeholder' => '',
 			),
-			array(
-				'key' => 'field_6a3eac8176c10',
-				'label' => 'Linked User',
-				'name' => 'linked_user',
-				'aria-label' => '',
-				'type' => 'user',
-				'instructions' => '',
-				'required' => 0,
-				'conditional_logic' => 0,
-				'wrapper' => array(
-					'width' => '',
-					'class' => '',
-					'id' => '',
-				),
-				'role' => '',
-				'return_format' => 'id',
-				'multiple' => 0,
-				'allow_null' => 1,
-				'bidirectional' => 0,
-				'bidirectional_target' => array(
-				),
-			),
 		),
 		'location' => array(
 			array(
@@ -280,6 +257,60 @@ add_action( 'acf/include_fields', function() {
 	) );
 
 	acf_add_local_field_group( array(
+		'key' => 'group_6a401ab3ab688',
+		'title' => 'User Settings',
+		'fields' => array(
+			array(
+				'key' => 'field_6a401ab4bead3',
+				'label' => 'Linked Person',
+				'name' => 'linked_person',
+				'aria-label' => '',
+				'type' => 'post_object',
+				'instructions' => '',
+				'required' => 0,
+				'conditional_logic' => 0,
+				'wrapper' => array(
+					'width' => '',
+					'class' => '',
+					'id' => '',
+				),
+				'post_type' => array(
+					0 => 'people',
+				),
+				'post_status' => '',
+				'taxonomy' => array(
+					0 => 'person_role:author',
+				),
+				'return_format' => 'id',
+				'multiple' => 0,
+				'allow_null' => 0,
+				'bidirectional' => 0,
+				'ui' => 1,
+				'bidirectional_target' => array(
+				),
+			),
+		),
+		'location' => array(
+			array(
+				array(
+					'param' => 'user_form',
+					'operator' => '==',
+					'value' => 'all',
+				),
+			),
+		),
+		'menu_order' => 0,
+		'position' => 'normal',
+		'style' => 'default',
+		'label_placement' => 'top',
+		'instruction_placement' => 'label',
+		'hide_on_screen' => '',
+		'active' => true,
+		'description' => '',
+		'show_in_rest' => 0,
+	) );
+
+	acf_add_local_field_group( array(
 		'key' => 'group_6a0dbbc36e898',
 		'title' => 'Post Settings',
 		'fields' => array(
@@ -289,7 +320,7 @@ add_action( 'acf/include_fields', function() {
 				'name' => 'breadcrumb_title',
 				'aria-label' => '',
 				'type' => 'text',
-				'instructions' => 'Optional. Shortens the post title in breadcrumbs. Leave blank to use the full post title.',
+				'instructions' => 'Optional. Shortens the post title in breadcrumbs. Leave blank to use the full post title',
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
@@ -325,7 +356,7 @@ add_action( 'acf/include_fields', function() {
 				'name' => 'post_author_ref',
 				'aria-label' => '',
 				'type' => 'post_object',
-				'instructions' => '',
+				'instructions' => 'Defaults to your linked profile; change it if you\'re posting on behalf of someone else',
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
@@ -334,11 +365,12 @@ add_action( 'acf/include_fields', function() {
 					'id' => '',
 				),
 				'post_type' => array(
-					0 => 'authors',
-					1 => 'people',
+					0 => 'people',
 				),
 				'post_status' => '',
-				'taxonomy' => '',
+				'taxonomy' => array(
+					0 => 'person_role:author',
+				),
 				'return_format' => 'id',
 				'multiple' => 0,
 				'allow_null' => 0,
@@ -759,7 +791,7 @@ add_action( 'acf/include_fields', function() {
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
-					'width' => '25',
+					'width' => '50',
 					'class' => '',
 					'id' => '',
 				),
@@ -784,7 +816,7 @@ add_action( 'acf/include_fields', function() {
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
-					'width' => '25',
+					'width' => '50',
 					'class' => '',
 					'id' => '',
 				),
@@ -809,7 +841,7 @@ add_action( 'acf/include_fields', function() {
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
-					'width' => '25',
+					'width' => '50',
 					'class' => '',
 					'id' => '',
 				),
@@ -834,7 +866,7 @@ add_action( 'acf/include_fields', function() {
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array(
-					'width' => '25',
+					'width' => '50',
 					'class' => '',
 					'id' => '',
 				),

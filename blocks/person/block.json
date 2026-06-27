@@ -1,0 +1,16 @@
+{
+	"name": "momentive/person",
+	"apiVersion": 3,
+	"title": "Person",
+	"category": "momentive",
+	"icon": "id-alt",
+	"description": "A person's headshot, name, and position, linked to their profile. The profile opens in a lightbox; the card also links to the person's permalink.",
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"acf": {
+		"mode": "edit",
+		"renderTemplate": false
+	}
+}

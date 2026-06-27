@@ -301,6 +301,7 @@ require get_template_directory() . '/blocks/webinar-cta/block.php';
 require get_template_directory() . '/blocks/webinar-schedule/block.php';
 require get_template_directory() . '/blocks/webinar-status/block.php';
 require get_template_directory() . '/blocks/recording/block.php';
+require get_template_directory() . '/blocks/person/block.php';
 
 
 /*==============================================================================
@@ -314,10 +315,7 @@ require get_template_directory() . '/inc/solutions.php';
 // Press articles — includes shared body class with blog posts (.single-article)
 // and the render_block filter that injects related posts below the post layout columns.
 require get_template_directory() . '/inc/newsroom.php';
-
-require get_template_directory() . '/inc/authors.php';
 require get_template_directory() . '/inc/people.php';
-
 require get_template_directory() . '/inc/testimonials.php';
 require get_template_directory() . '/inc/faq.php';
 require get_template_directory() . '/inc/products.php';

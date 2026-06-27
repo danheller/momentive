@@ -39,6 +39,20 @@
 	z-index: 1;
 }
 
+.svg-icon.inline-block {
+	width: 1.5rem;
+	height: 1.5rem;
+	display: inline-block;
+	svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+}
+
+.svg-icon.inline-block + p {
+	display: inline-block;
+	vertical-align: top;
+}
 
 /* ── Shape backgrounds ─────────────────────────────────────────────────────
    Shapes are rendered as ::before pseudo-elements so the SVG can sit above.

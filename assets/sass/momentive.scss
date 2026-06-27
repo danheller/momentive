@@ -115,7 +115,7 @@
 	// Navigation / menus
 	--menu-border-color:           rgb(219 225 243);
 	--menu-title-text-color:       var(--dark-color);
-	--menu-title-text-color-hover: color-mix(in srgb, var(--secondary-color), black 20%); //rgb(19 40 112);
+	--menu-title-text-color-hover: rgb(19 40 112);
 
 	// Alert / dark band (announcement bar, dark cards)
 	--alert-background:  var(--dark-brand-color);
@@ -196,10 +196,12 @@ h1 {
 	font-size: var(--wp--preset--font-size--regular); // undo any default
 }
 
-h2, h3, .h2, .h3 {
+.h1, h2, h3, .h2, .h3 {
 	font-weight: 600;
 	line-height: 1.25;
 }
+
+.h1 { line-height: 1.1; }
 
 h2, .h2 { font-size: clamp( 2rem, 3vw, 3rem ); }
 h3, .h3 { font-size: clamp( 1.5rem, 2vw, 2rem ); }
@@ -811,8 +813,8 @@ figure {
 	box-shadow: var(--wp--preset--shadow--diffuse);
 	background:
 		linear-gradient(to right,
-			var(--light-color) calc(50% + (var(--wp--style--global--content-size) * 0.1666)),
-			#f8f8f8 calc(50% + (var(--wp--style--global--content-size) * 0.1666))
+			var(--light-color) calc(50% + (var(--wp--style--global--content-size) * 0.2)),
+			#f8f8f8 calc(50% + (var(--wp--style--global--content-size) * 0.2))
 		);
 	transition: height .25s ease;
 	overflow: hidden;
@@ -825,7 +827,7 @@ figure {
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity .3s ease;
-	padding: 1.5rem 0;
+	padding: 1.5rem 0 0;
 	&.is-open {
 		opacity: 1;
 		pointer-events: auto;
@@ -837,6 +839,7 @@ figure {
 	.wp-block-columns {
 		width: var(--wp--style--global--content-size);
 		max-width: 100%;
+		gap: 1rem;
 	}
 	.wp-block-group {
 		margin: 0;	
@@ -2634,14 +2637,16 @@ body.home {
 		font-size: 1rem;
 		line-height: 1.5;
 		margin-bottom: 1rem;
-		&.top-label { // label pill — absolute-positioned over the featured image.
-			position: absolute;
-			top: .75rem;
-			left: .75rem;
-			margin: 0;
+		&.top-label {
 			font-size: .875rem;
+			line-height: 1;
+			margin: 0;
 		}
-		
+	}
+	.top-label { // label pill — absolute-positioned over the featured image.
+		position: absolute;
+		top: .75rem;
+		left: .75rem;
 	}
 
 	.wp-block-post-date {

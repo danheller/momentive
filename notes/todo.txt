@@ -1,10 +1,12 @@
 To do:
 
 	Next up
-	- People (presenters, authors, leadership team)
 	- Case Studies (to connect to testimonials)
 	- Megamenu revision
 	- Continue with CPTs
+
+	Webinars
+	- Maybe try using Claude.ai to do field mapping; old webinar_presenter serialized data is now a post object/relationship called "presenters"
 
 	Blog/newsroom
 	- Migrate author assignments: "One thing to be aware of when migrating authors: the ACF author field will need to be populated per post. If the posts already have a PublishPress author term assigned, you can write a one-time migration script that reads each post's _ppma_author term, looks up the matching authors CPT post by title, and saves the ACF field value — rather than doing it manually for every post. Worth doing if there are more than a handful of posts with named authors." (Note: there are still other migration tasks to be done on blog posts besides this, but a migration script might serve this purpose.)
@@ -45,7 +47,6 @@ Custom post types still to be migrated
 	- Integrations
 	- Industries (turn into pages?)
 	- Donation Examples (?)
-	- Team (planning to fold into People)
 	- Clients
 	- Reviews
 	- Award Recipients
