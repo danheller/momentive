@@ -49,7 +49,10 @@ function momentive_testimonial_render( array $attributes, string $content, WP_Bl
 
 	// ── Field values ──────────────────────────────────────────────────────────
 
-	$quote        = wpautop( wp_kses_post( $post->post_content ) );
+	$raw = $post->post_content;
+	$quote = has_blocks( $raw )
+		? do_blocks( $raw )
+		: wpautop( wp_kses_post( $raw ) );
 	$author_name  = get_field( 'testimonial_author_name', $testimonial_id );
 	$author_desc  = get_field( 'testimonial_author_description', $testimonial_id );
 	$author_photo = get_field( 'testimonial_author_photo', $testimonial_id ); // ACF image array

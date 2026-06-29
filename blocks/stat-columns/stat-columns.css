@@ -1,0 +1,67 @@
+/**
+ * momentive/stat-columns
+ *
+ * A responsive row of stats. Mirrors the ECS case-study ".statistics" layout:
+ * centered value + description, equal columns, border rule top/bottom handled
+ * by the host context if desired.
+ *
+ * Spacing/typography use theme.json preset variables (same convention as
+ * case-study.scss and linked-products.css). No hardcoded dimensions where a
+ * preset exists.
+ *
+ * Layout: flex with equal-basis items so 1–4 stats distribute evenly and wrap
+ * on narrow viewports. The --count-N class is available if a context wants to
+ * force a specific column treatment.
+ */
+
+.stat-columns {
+	display: flex;
+	flex-wrap: wrap;
+	border-top: 1px solid var(--menu-border-color);
+	border-bottom: 1px solid var(--menu-border-color);
+	margin: var(--wp--preset--spacing--small) 0;
+	padding: var(--wp--preset--spacing--x-small) 0;
+	gap: 1.5rem;
+}
+
+.stat-columns__item {
+	flex: 1 1 0;
+	min-width: 8rem; /* allow wrap before squishing on mobile */
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.stat-columns__value {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--xx-large, 2.5rem);
+	font-weight: 600;
+	line-height: 1.1;
+	color: var(--wp--preset--color--secondary, currentColor);
+}
+
+.stat-columns__description {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--regular, 1rem);
+	line-height: 1.4;
+}
+
+/* Single stat shouldn't stretch full width awkwardly; cap it. */
+.stat-columns--count-1 .stat-columns__item {
+	flex: 0 1 auto;
+	margin-inline: auto;
+}
+
+/* Editor placeholder when no stats are entered yet. */
+.stat-columns.is-placeholder {
+	padding: var(--wp--preset--spacing--x-small, 1rem);
+	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
+	border-radius: 0.5rem;
+	color: var(--wp--preset--color--contrast, #555);
+	text-align: center;
+}
+
+.post-content.wp-block-column .stat-columns p {
+	margin: 0;
+}

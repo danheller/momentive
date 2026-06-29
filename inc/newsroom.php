@@ -197,8 +197,6 @@ add_filter( 'render_block', function( $block_content, $block ) {
 
 add_filter( 'query_loop_block_query_vars', function( $query, $block, $page ) {
     $class_list = $block->attributes['className'] ?? '';
-    error_log( 'Query vars filter fired. classList: ' . $class_list );
-
     if ( strpos( $class_list, 'order-by-modified' ) !== false ) {
         $query['orderby'] = 'modified';
         $query['order']   = $query['order'] ?? 'DESC';

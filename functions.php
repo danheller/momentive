@@ -291,10 +291,12 @@ require get_template_directory() . '/blocks/post-byline/block.php';
 require get_template_directory() . '/blocks/post-cta-button/block.php';
 require get_template_directory() . '/blocks/related-posts/block.php';
 require get_template_directory() . '/blocks/impact-stat/block.php';
+require get_template_directory() . '/blocks/stat-columns/block.php';
 require get_template_directory() . '/blocks/testimonial/block.php';
 require get_template_directory() . '/blocks/accordion/block.php';
 require get_template_directory() . '/blocks/hubspot-form/block.php';
 require get_template_directory() . '/blocks/megamenu-panel/block.php';
+require get_template_directory() . '/blocks/solution-slide/block.php';
 require get_template_directory() . '/blocks/product-marquee/block.php';
 require get_template_directory() . '/blocks/product-solution-tabs/block.php';
 require get_template_directory() . '/blocks/webinar-cta/block.php';
@@ -302,6 +304,9 @@ require get_template_directory() . '/blocks/webinar-schedule/block.php';
 require get_template_directory() . '/blocks/webinar-status/block.php';
 require get_template_directory() . '/blocks/recording/block.php';
 require get_template_directory() . '/blocks/person/block.php';
+require get_template_directory() . '/blocks/person-metadata/block.php';
+require get_template_directory() . '/blocks/linked-products/block.php';
+require get_template_directory() . '/blocks/icon-list/block.php';
 
 
 /*==============================================================================
@@ -321,7 +326,7 @@ require get_template_directory() . '/inc/faq.php';
 require get_template_directory() . '/inc/products.php';
 require get_template_directory() . '/inc/webinars.php';
 require get_template_directory() . '/inc/recordings.php'; // not a post type, but a passthrough to what were formerly "assets"
-
+require get_template_directory() . '/inc/case-studies.php';
 
 /*==============================================================================
   5.0 - Query & Content Filters

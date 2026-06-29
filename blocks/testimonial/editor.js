@@ -52,7 +52,7 @@
 			// Populate combobox with all testimonial posts (title = author name).
 			useEffect( function () {
 				apiFetch( {
-					path: '/wp/v2/testimonials?per_page=100&orderby=title&order=asc&_fields=id,title',
+					path: '/wp/v2/testimonials?per_page=-1&orderby=title&order=asc&_fields=id,title',
 				} ).then( function ( posts ) {
 					setOptions( posts.map( function ( p ) {
 						return { value: p.id, label: p.title.rendered };

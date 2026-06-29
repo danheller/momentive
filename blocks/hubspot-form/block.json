@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/hubspot-form",
+	"title": "HubSpot Form",
+	"description": "Embeds a HubSpot form via embed code.",
+	"category": "embed",
+	"icon": "feedback",
+	"keywords": [ "hubspot", "form", "demo" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "hubspot-form.php"
+	}
+}

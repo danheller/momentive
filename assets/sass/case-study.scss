@@ -1,0 +1,153 @@
+@use 'config' as *;
+
+/*--------------------------------------------------------------
+ * Case study styles
+--------------------------------------------------------------*/
+.single-case-study {
+	.small-logo {
+		display: flex;
+		justify-content: center;
+		margin: 0;
+		img {
+			object-fit: contain;
+			max-height: 5rem;
+			max-width: 16rem;
+			width: auto;
+		}
+	}
+	
+	h1.has-text-align-center {
+		text-wrap: balance;
+	}
+	
+	.hero-background {
+		padding: 0;
+	}
+	
+	.hero {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+	
+	.wp-block-post-featured-image + .wp-block-buttons {
+		margin-top: -5rem;
+		margin-bottom: 3rem;
+	}
+	
+	.wp-block-button {
+		&.download {
+			a {
+				@include has-after;
+				padding-right: 2.75rem;
+				&:after {
+					top: .875rem;
+					content: '\2193';
+					line-height: 1;
+					font-weight: 300;
+					font-size: 1.25rem;
+					transition: transform .3s ease;
+					margin-left: .5rem;
+				}
+			}
+		}
+	}
+	
+	.solutions-block {
+		@include round;
+		width: 100%;
+		background-color: var(--wp--preset--color--neutral);
+		padding: var(--wp--preset--spacing--x-small);
+		.wp-block-heading {
+			margin: .5rem 0;
+		}
+		figure {
+			margin: 0 0 .5rem;
+		}
+		img {
+			height: 2.5rem;
+			width: auto;
+			max-width: 100%;
+		}
+		hr {
+			border-color: var(--menu-border-color);
+			margin: 1rem 0;
+		}
+		.wp-block-buttons {
+			margin: 1rem 0 0;
+			.wp-block-button {
+				width: 100%;
+			}
+		}
+	}
+	
+	.testimonial {
+		margin-bottom: var(--wp--preset--spacing--small);
+		blockquote p {
+			&:before {
+				content: '“';
+			}	
+			&:after {
+				content: '”';
+			}
+		}
+		.attribution {
+			gap: 0 1rem;
+			align-items: space-around;
+			&:has(figure) {
+				display: grid;
+				grid-template-columns: 3.5rem 1fr;
+				grid-template-areas: "Image Name"
+				"Image Organization";			
+			}
+			figure {
+				grid-area: Image;
+				border-radius: 50%;
+				width: 3.5rem;
+				height: 3.5rem;
+				overflow: hidden;
+				margin: 0;
+				img {
+					width: 100%;
+					height: auto;
+				}
+			}
+			p.name {
+				margin: auto 0 0;
+				grid-area: Name;
+				align-self: flex-end;
+			}
+			p.organization {
+				margin: 0 0 auto;
+				grid-area: Organization;
+				align-self: flex-start;
+			}
+		}
+	}
+	
+	.wp-block-columns .wp-block-column .testimonial-quote p {
+		font-size: var(--wp--preset--font-size--large);
+		font-weight: 600;
+		margin-top: 0;
+	}
+	
+	h3.wp-block-heading {
+		font-size: var(--wp--preset--font-size--xx-large);
+	}
+	
+	.about-organization {
+		@include round;
+		overflow: hidden;
+		padding: var(--wp--preset--spacing--x-small);
+		background-color: var(--wp--preset--color--neutral);
+		p.is-style-eyebrow {
+			margin: .5rem 0 0;
+		}
+		p.has-x-large-font-size {
+			line-height: 1.125;
+		}
+	}
+	
+	.post-content > *:first-child {
+		margin-top: 0;
+	}
+}

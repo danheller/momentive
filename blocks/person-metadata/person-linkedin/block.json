@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/person-linkedin",
+	"title": "Person LinkedIn",
+	"description": "A LinkedIn icon link for the current person (linkedin_url field).",
+	"category": "theme",
+	"icon": "linkedin",
+	"keywords": [ "person", "linkedin", "social" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderCallback": "momentive_render_person_linkedin"
+	}
+}

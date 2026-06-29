@@ -1,20 +1,6 @@
 <?php
-add_action( 'acf/init', function() {
-	acf_register_block_type( [
-		'name'            => 'hubspot-form',
-		'title'           => 'HubSpot Form',
-		'description'     => 'Embeds a HubSpot form via embed code.',
-		'render_template' => get_template_directory() . '/blocks/hubspot-form/hubspot-form.php',
-		'category'        => 'embed',
-		'icon'            => 'feedback',
-		'keywords'        => [ 'hubspot', 'form', 'demo' ],
-		'mode'            => 'preview',
-		'supports'        => [
-			'align' => false,
-			'mode'  => false,
-			'jsx'   => false,
-		],
-	] );
+add_action( 'init', function() {
+	register_block_type( get_template_directory() . '/blocks/hubspot-form' );
 } );
 
 add_action( 'enqueue_block_assets', function() {

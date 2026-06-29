@@ -16,24 +16,35 @@
 
 	function openDialog( dialog, opener ) {
 		if ( ! dialog || typeof dialog.showModal !== 'function' ) {
-			return false; // No <dialog> support — let the link navigate.
+			return false;
 		}
-		// Remember who opened it so focus can return on close.
 		dialog._opener = opener || document.activeElement;
 		dialog.showModal();
-		// Move focus to the close button for immediate keyboard access.
+	
+		// Reflect the open profile in the URL (no history entry, no scroll jump),
+		// so the address bar is shareable. The opener card's id is `person-{slug}`.
+		if ( opener && opener.id ) {
+			history.replaceState( null, '', '#' + opener.id );
+		}
+	
 		var closeBtn = dialog.querySelector( '.momentive-person__close' );
 		if ( closeBtn ) {
 			closeBtn.focus();
 		}
 		return true;
 	}
-
+	
 	function closeDialog( dialog ) {
 		if ( ! dialog || ! dialog.open ) {
 			return;
 		}
 		dialog.close();
+	
+		// Clear the hash on close so the URL returns to the clean page. Guard so we
+		// only strip a person hash we set, not some unrelated hash on the page.
+		if ( window.location.hash.indexOf( '#person-' ) === 0 ) {
+			history.replaceState( null, '', window.location.pathname + window.location.search );
+		}
 	}
 
 	function wireCard( card ) {

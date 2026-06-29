@@ -11,6 +11,7 @@ To do:
 	Blog/newsroom
 	- Migrate author assignments: "One thing to be aware of when migrating authors: the ACF author field will need to be populated per post. If the posts already have a PublishPress author term assigned, you can write a one-time migration script that reads each post's _ppma_author term, looks up the matching authors CPT post by title, and saves the ACF field value — rather than doing it manually for every post. Worth doing if there are more than a handful of posts with named authors." (Note: there are still other migration tasks to be done on blog posts besides this, but a migration script might serve this purpose.)
 	- Find/migrate elementor mystery blocks - search for "elementor-template" in posts, e.g. https://unmomento.wpenginepowered.com/blog/disaster-fundraising/, and identify what those blocks are meant to be.
+	- There are some core/accordion blocks in blog posts (e.g. /blog/membership-marketing-strategy-channels-campaign-best-practices/) that should be converted to the custom block
 
 	Megamenus
 	- Need to adjust the design for usability and to accommodate more stuff
@@ -49,7 +50,7 @@ Custom post types still to be migrated
 	- Donation Examples (?)
 	- Clients
 	- Reviews
-	- Award Recipients
+	- Award Recipients (this is a post type with four posts that was built for one page: https://momentivesoftware.com/bring-on-better-awards/ - fold and use patterns)
 
 Other things from the current dashboard menu that haven't been migrated
 	- Site Configuration

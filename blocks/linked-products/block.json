@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/linked-products",
+	"title": "Linked Products",
+	"category": "momentive",
+	"icon": "screenoptions",
+	"description": "A list of related products, each shown as a logo linking to the product page. Pulls logos and URLs from the selected Product posts so they stay in sync. Reusable anywhere a curated product list is needed (case study sidebars, solution pages, etc.).",
+	"keywords": [ "products", "linked", "related", "logos", "solutions" ],
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "block.php"
+	},
+	"supports": {
+		"anchor": true,
+		"align": false,
+		"html": false,
+		"jsx": false
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"data": {
+				"is_preview": true
+			}
+		}
+	}
+}

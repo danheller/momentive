@@ -50,7 +50,7 @@ momentive/
 │   ├── testimonials.php        Testimonials CPT
 │   ├── faq.php                 FAQ CPT
 │   ├── newsroom.php            Press Articles CPT + related posts injection
-│   ├── authors.php             Authors CPT
+│   ├── people.php              People CPT + person_role taxonomy + byline architecture (replaces authors.php)
 │   ├── icons.php               Icon system (discovery, sprite output, helpers)
 │   ├── check-content-for-block.php  momentive_content_has_block() helper
 │   ├── patterns.php            Pattern registration helpers
@@ -201,12 +201,25 @@ Defined in `:root` inside `momentive.scss` and mirrored in `theme.json`:
 ### `post` (Blog)
 
 - Renamed to "Blog" in admin via `inc/rename-posts-to-blog.php`
-- ACF fields: `breadcrumb_title`, `cta_button` (link field), `post_author_ref` (Post Object → `authors` CPT)
+- ACF fields: `breadcrumb_title`, `cta_button` (link field), `post_author_ref` (Post Object → `people` CPT, restricted to the `author` role)
 
-### `authors` CPT
+### `people` CPT (`inc/people.php`)
 
-- Post title = display name; featured image = photo
-- Linked to blog posts via `post_author_ref` ACF field
+Unified profile type for leadership, blog authors, and webinar presenters — replaces the former separate `team` CPT, `authors` CPT, and the webinar `presenter` repeater field. One human = one People post, even when they hold several roles (a leader who also authors and presents is a single profile).
+
+- URL: `/people/{slug}/` — `public => true`, so every profile has a real permalink (SEO-visible, shareable). `has_archive => false` (no native listing; the Our Team page is hand-built from blocks).
+- Supports: title, editor, excerpt, thumbnail, revisions
+- Post title = display name; featured image = headshot; `post_content` = bio (migrated leaders also have a "Did You Know" group block appended)
+- Taxonomy: `person_role` (flat, **non-exclusive** — templates must not assume one role per person)
+- ACF fields (Person Settings group): `job_position`, `linkedin_url`, `first_name`, `last_name`, `linked_user` (see byline architecture below). No `display_order` field — team ordering is handled by hand-picking/ordering Person blocks in the editor, not a meta field.
+
+**`person_role` is a fixed, locked vocabulary.** Three seeded terms (`leader`, `author`, `presenter`), inserted once via `momentive_seed_person_roles()` (priority 20, after taxonomy registration). The taxonomy's `manage_terms`/`edit_terms`/`delete_terms` caps are set to `do_not_allow` via a `register_taxonomy_args` filter, which turns the editor meta box into a fixed checklist and hides the Roles admin submenu. **Adding a fourth role is a one-line code change** in the `$roles` array — intentionally not an editor task. (Note: `do_not_allow` also hides the screen from admins; switch to `manage_options` if admins should manage terms.)
+
+### `team` CPT and `authors` CPT (retired)
+
+Both consolidated into `people`. Migrations preserved in `migrations/` (see below). The `team` CPT registration and the `authors` CPT registration should be removed once the migration is confirmed on production.
+
+> **Operational note:** `/people/{slug}/` returns 404 until rewrite rules are flushed (the CPT's rewrite is registered but WP only compiles rules on flush). After any change to the `people` rewrite slug, re-save **Settings → Permalinks** once, or rely on the version-stamped one-time `flush_rewrite_rules()` in `people.php` (bump the stamp to re-trigger). Don't flush on every `init` — it's expensive.
 
 ### Solution ↔ category term relationship
 
@@ -220,6 +233,31 @@ get_solutions_with_products()            // solution IDs that have linked terms
 ```
 
 All cached statically per-request.
+
+---
+
+## Byline architecture (People ↔ Users)
+
+The blog byline is **not** `post_author`. On this site `post_author` is frequently a developer who imported or added the post on someone else's behalf, so it's treated purely as provenance ("who touched the row in WP"). The canonical byline is the `post_author_ref` ACF field (Post Object → `people`, restricted to the `author` role) on each post.
+
+**Link direction: `linked_person` on the user, not `linked_user` on the person.** A "User Settings" ACF field group (`location: user_form == all`) gives each WP user an optional `linked_person` Post Object field pointing at a People profile. This direction is deliberate and was reversed from an earlier `linked_user`-on-person design:
+
+- The dominant write path is a small team of ~4 developers publishing under a shared "Momentive Software" byline. Many users → one person is exactly what's needed, and the user-side field models it natively (each user points to one person; multiple users may point to the same person).
+- The reverse (`linked_user` on the person) made that shared-byline case impossible without a multi-value field, which reintroduced an ambiguous-lookup problem. The user-side field has no such collision.
+- Set the field's return format to **Post Object** (single value), which enforces one-person-per-user at the field level. `msw_resolve_linked_person()` normalizes ID / object / array shapes defensively regardless.
+
+**Seeding `post_author_ref`** (both in `inc/people.php`):
+
+- `acf/load_value/name=post_author_ref` — **prefill on new posts.** When a linked user opens a new post (status `auto-draft`), the byline field is pre-populated with their linked person so the default is *visible* in the editor. Gated to empty values + auto-draft status only, so it never overrides a deliberately-set or deliberately-cleared byline on existing posts.
+- `acf/save_post` (priority 20) — **save-time backstop.** If a post is saved with an empty byline, default it to the current user's linked person. Catches contexts where `load_value` didn't run (programmatic creation, etc.).
+- A user with no `linked_person` gets no default (empty byline they fill manually) — the intended behavior for unlinked accounts.
+
+**Admin columns** (both in `inc/people.php`):
+
+- People list table → "Linked Accounts" column: lists every user whose `linked_person` points at that profile (one query primed per screen, grouped in PHP — a serialized relationship value won't match a bare-ID `meta_value` query, so don't per-row query it).
+- Users list table → "Linked Person" column: the inverse view; flags a stale link (person deleted / not a `people` post) in red.
+
+**Role filter:** the People list table has a "Filter by role" dropdown (`restrict_manage_posts` + `parse_query`), filtering by `person_role` slug.
 
 ---
 
@@ -242,6 +280,9 @@ All cached statically per-request.
 | `momentive/product-solution-tabs` | Tabbed grid of products grouped by Solution. Tabs derived automatically from `get_solutions_with_products()` — no manual curation per instance. Deep-linkable via URL hash. Mobile dropdown with "All" option. Enqueuing checks both `momentive_content_has_block()` and `is_post_type_archive('product')`. |
 | `momentive/hubspot-form` | ACF block. Two modes: standard embed (paste embed code), and two-step (email capture inline → full form in modal). Modal appended to `document.body` to avoid stacking context issues with sticky nav. |
 | `momentive/megamenu-panel` | InnerBlocks-based panel. Allowed children: `core/columns`, `core/group`. Paired with flat WordPress nav and separate FSE template parts per panel (`parts/megamenu-*.html`). |
+| `momentive/person` | ACF block. Single-person card (headshot + name + position) for the Our Team page; native blocks (columns/grid) handle the layout and ordering of multiple instances. Person chosen via an ACF Post Object field (`person`, restricted to `people`, intentionally **not** role-restricted so it's reusable for presenters/bylines later). The card is a real `<a>` to the person's permalink; `view.js` intercepts the click to open the profile in a native `<dialog>` lightbox (progressive enhancement — no JS just navigates to the profile page). Deep-linkable: `/our-team/#person-{slug}` auto-opens that profile, and opening a profile writes the hash via `replaceState`. Backdrop tinted from `--wp--preset--color--superlight-accent` via `color-mix` to match the site. |
+| `momentive/person-position` | ACF block. Renders the current queried person's `job_position`. Used in the `single-people` template hero (fills the `.person-position` slot). Resolves the person via `get_the_ID()`; placeholder shown on the editor canvas. |
+| `momentive/person-linkedin` | ACF block. Renders a LinkedIn icon link for the current queried person (`linkedin_url`). Used in the `single-people` template hero. Same `get_the_ID()` resolution pattern as `person-position`. |
 
 ### ACF blocks (PHP render template)
 
@@ -250,6 +291,8 @@ All cached statically per-request.
 | `acf/solution-slide` | Single solution card for use inside a Query Loop / Splide slider. |
 | `acf/hubspot-form` | See above. |
 | `acf/product-solution-tabs` | See above. |
+| `acf/person` | See `momentive/person` above. |
+| `acf/person-position`, `acf/person-linkedin` | Field blocks for the `single-people` template hero. See above. |
 
 ### JSX build block
 
@@ -333,6 +376,7 @@ Key patterns:
 | `templates/home.html` | Homepage |
 | `templates/page.html` | Pages |
 | `templates/single.html` | Blog post singles |
+| `templates/single-people.html` | Person profile pages (`/people/{slug}/`). Hero with eyebrow + `post-title` + `acf/person-position` + `acf/person-linkedin`, then two-column `post-content` / `post-featured-image`. The same profile content also appears in the Person block lightbox, but the page and lightbox deliberately differ in structure (the page has hero framing the modal shouldn't), so they are **not** rendered from a shared function. |
 | `templates/404.html` | 404 |
 | `parts/header.html` | Sitewide header (sticky; offset by `--announcement-bar-height`) |
 | `parts/footer.html` | Sitewide footer |
@@ -390,7 +434,9 @@ All field groups use `acf_add_local_field_group()` — no JSON export needed.
 |---|---|---|
 | Category Settings | `taxonomy == category` | `related_solution` (post_object → solutions) |
 | HubSpot Form | `block == acf/hubspot-form` | `hubspot_embed_code` (textarea), `two_step` (true/false) |
-| Post Settings | `post_type == post` | `breadcrumb_title`, `cta_button` (link), `post_author_ref` (post_object → authors), `hero_image` |
+| Post Settings | `post_type == post` | `breadcrumb_title`, `cta_button` (link), `post_author_ref` (post_object → `people`, restricted to `author` role), `hero_image` |
+| Person Settings | `post_type == people` | `job_position`, `linkedin_url`, `first_name`, `last_name`, `linked_user` (legacy/unused after byline reversal — confirm before removing) |
+| User Settings | `user_form == all` | `linked_person` (post_object → `people`, restricted to `author` role; **return format: Post Object**) |
 | Testimonial Settings | `post_type == testimonial` | `solution_family` (taxonomy), `author_name`, `author_description`, `author_photo`, `testimonial_type` (select), `related_case_study` |
 | FAQ Settings | `post_type == faq` | `solution_family` |
 | Product Settings | `post_type == product` | `solution_family`, `summary`, `breadcrumb_title`, `product_order`, `background_image`, `page_accent_color` (hex), `logos` (repeater), `product_icon` (select), `accent_color` (hex), `product_logo_*` (image — endorsed/unendorsed × color/white) |
@@ -429,6 +475,28 @@ All field groups use `acf_add_local_field_group()` — no JSON export needed.
 
 **`core/accordion` triple-unregistration.** WordPress's native accordion blocks can't be removed via the standard `allowed_block_types_all` filter alone — they re-register themselves via `__unstableBlockDefinitions`. A three-pronged approach (`allowed_block_types_all` + `block_editor_settings_all` filter + JS `unregisterBlockType` on `wp.domReady`) is required.
 
+**Unified People CPT over separate team/author/presenter types.** One human can hold multiple roles (leader who authors, author who presents). Separate types guaranteed duplicate records and divergent data for the same person. A single `people` CPT with a non-exclusive `person_role` taxonomy models reality; presenters/leaders who are external (and shouldn't have WP accounts) are handled as profiles without a `linked_person`, which a users-table-based approach couldn't represent cleanly.
+
+**Byline link lives on the user (`linked_person`), not the person.** Driven by the actual write pattern: a few developers publishing under a shared "Momentive Software" byline (many users → one person). See "Byline architecture" above for the full rationale. The earlier `linked_user`-on-person design was reversed because it couldn't represent the shared byline without reintroducing an ambiguous lookup.
+
+**Profile permalink + lightbox, not lightbox-only.** The old site's team profiles existed only inside a JS modal — no permalink, no anchor, not crawlable. Because `people` is a public CPT, every profile already has a real server-rendered page; the Person block links to it and progressively enhances to a lightbox. Fixes SEO and deep-linking while keeping the lightbox UX. Whether leader profiles should be indexed is still an open editorial/SEO-team question, but the architecture supports either answer (a one-line `noindex` later if not).
+
+**Person block and profile page are NOT a shared renderer.** They legitimately differ in structure (the page has hero framing — eyebrow, ellipse background, display title — that the modal shouldn't). Forcing both through one function would add branching that defeats the purpose. Instead, the page is native blocks + two tiny field blocks (`person-position`, `person-linkedin`); the lightbox keeps its own self-contained markup in the Person block.
+
+---
+
+## Migrations (`migrations/`)
+
+One-off WP-CLI scripts (`wp eval-file`). The People consolidation ran in three passes; **order matters** (presenters before leaders, so the shared-name merges resolve correctly):
+
+1. **Authors → People** (`role: author`). In-place `set_post_type()` on the already-imported `authors` posts (preserves IDs, thumbnails, byline relationships).
+2. **Presenters → People** (`role: presenter`). Parsed from the webinar `webinar_presenter` serialized repeater; deduped by name; description (`job_position`) resolved to the most-recently-published webinar's value; name+credential pairs merged keeping the credential (e.g. "Tirrah Switzer, CAE"). Photos sideloaded from the live site, deduped by `_msw_source_url` attachment meta.
+3. **Team → People** (`role: leader`). Bio → `post_content`; "Did You Know" field appended as a `superlight-accent` group block (Word-paste `<span>` wrappers stripped). Merges (e.g. Dustin Radtke, already author + presenter) **overwrite** content with the richer team bio; fill ACF fields only if empty.
+
+Scripts are idempotent; merges are append-only on roles; photos dedupe by source URL across passes. A name-matching guard (`msw_clean()`) strips stray CDATA so re-runs don't create duplicates.
+
+**Still pending:** webinar → presenter *relationship* field (which person presented which webinar) — needed for the "presenter's past webinars" page Colleen requested. The raw pairing data exists in the same webinar export; this is a follow-up script once the relationship field is defined on the webinars CPT.
+
 ---
 
 ## Known limitations / to-do
@@ -441,3 +509,9 @@ All field groups use `acf_add_local_field_group()` — no JSON export needed.
 - Reading progress bar: currently `is_singular('post')` only; extend to `press-article` in `functions.php` if needed
 - `swoop-double` SVG path uses two `M` commands in one `d` string — verify cross-browser
 - Product accent color field naming is confusing (`page_accent_color` for the hero tint, `accent_color` for the icon; consider renaming)
+- People: webinar → presenter relationship field not yet built (blocks Colleen's "presenter's past webinars" page) — see Migrations
+- People: retired `team` and `authors` CPT registrations should be removed once migration is confirmed on production
+- People: `linked_user` field on Person Settings is legacy after the byline-link reversal to `linked_person` on users — confirm nothing reads it, then remove
+- People: decide whether the shared "Momentive Software" byline should render or show no byline at all (editorial; architecture supports either)
+- People: decide whether leader/People profiles should be indexed (`noindex` on the CPT if not) — SEO-team question
+- Person block: deep-link hash (`/our-team/#person-{slug}`) only works on pages that include that person's block; the canonical share URL is the permalink. Possible enhancement: make the permalink itself open the lightbox when arriving via internal link

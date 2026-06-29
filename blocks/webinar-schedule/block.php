@@ -1,20 +1,6 @@
 <?php
-add_action( 'acf/init', function() {
-	acf_register_block_type( [
-		'name'            => 'webinar-schedule',
-		'title'           => 'Webinar Schedule',
-		'description'     => 'Shows the webinar date, time, and timezone. Hidden automatically once the webinar is on-demand.',
-		'render_template' => get_template_directory() . '/blocks/webinar-schedule/webinar-schedule.php',
-		'category'        => 'theme',
-		'icon'            => 'calendar-alt',
-		'keywords'        => [ 'webinar', 'schedule', 'date', 'time' ],
-		'mode'            => 'preview',
-		'supports'        => [
-			'align' => false,
-			'mode'  => false,
-			'jsx'   => false,
-		],
-	] );
+add_action( 'init', function() {
+	register_block_type( get_template_directory() . '/blocks/webinar-schedule' );
 } );
 
 add_action( 'enqueue_block_assets', function() {

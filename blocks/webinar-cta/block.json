@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/webinar-cta",
+	"title": "Webinar CTA Link",
+	"description": "Shows a \"Register now\" or \"Watch now\" link based on the webinar's status.",
+	"category": "theme",
+	"icon": "external",
+	"keywords": [ "webinar", "cta", "register", "watch", "link" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "webinar-cta.php"
+	}
+}

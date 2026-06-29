@@ -1,0 +1,17 @@
+{
+	"name": "momentive/icon-list",
+	"apiVersion": 3,
+	"title": "Icon List",
+	"category": "momentive",
+	"icon": "list-view",
+	"description": "A list of items, each with an icon and a short description. Replaces the hand-built features section.",
+	"supports": {
+		"html": false,
+		"anchor": true
+	},
+	"attributes": {
+		"heading":     { "type": "string",  "default": "Key Features" },
+		"showHeading": { "type": "boolean", "default": true },
+		"items":       { "type": "array",   "default": [] }
+	}
+}

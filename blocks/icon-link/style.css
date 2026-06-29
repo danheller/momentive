@@ -27,7 +27,7 @@
 }
 
 /* Size variants — controls the icon wrapper dimensions */
-.icon-link--small .icon-link__icon {
+.icon-link__icon {
 	width: 1.5rem;
 	height: 1.5rem;
 	flex: 0 0 1.5rem;
@@ -116,9 +116,11 @@
 	color: var(--icon-link-accent);
 }
 
+/* don't use accent colors, because some of the colors are too light for accessibility */
 .icon-link:hover .icon-link__title,
 .icon-link:focus-visible .icon-link__title {
-	color: var(--icon-link-accent);
+	color: var(--dark-color);
 }
+
 
 /* Tagline stays muted on hover — only title and icon pick up the accent. */

@@ -1,7 +1,8 @@
 .toc-block {
-	background: #F7F7F7; // var(--superlight-accent-color, #eff9fd);
+	width: 100%;
+	background-color: var(--wp--preset--color--neutral);
 	border-radius: 1rem;
-	padding: 1.875rem 1.25rem;
+	padding: var(--wp--preset--spacing--x-small);
 	font-size: 1rem;
 }
 

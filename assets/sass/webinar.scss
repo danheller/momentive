@@ -11,6 +11,13 @@ h1 {
 
 .post-layout {
 	padding: 3rem 0;
+
+}
+.single-webinar {
+	.post-content.wp-block-column {
+		width: 50%;
+		flex-basis: 0;
+	}
 }
 
 .wp-block-column.post-sidebar {

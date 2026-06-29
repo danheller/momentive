@@ -356,29 +356,6 @@ add_action( 'init', function() {
 	$cpt->template_lock = false;
 }, 30 );
 
-/*
- * Slider card block
- */
- 
-add_action( 'init', function() {
-	if ( ! function_exists( 'acf_register_block_type' ) ) return;
-		
-	acf_register_block_type([
-		'name'              => 'solution-slide',
-		'title'             => 'Solution Slide',
-		'description'       => 'A single solution card for use in the query loop.',
-		'render_template'   => get_template_directory() . '/blocks/solution-slide/solution-slide.php',
-		'category'          => 'theme',
-		'icon'              => 'cover-image',
-		'keywords'          => ['solution', 'slide', 'card'],
-		'mode'              => 'preview',
-		'supports'          => [
-			'align'  => false,
-			'mode'   => false,
-			'jsx'    => false,
-		],
-	]);
-});
 
 /*
  * Enqueue solutions CSS conditionally

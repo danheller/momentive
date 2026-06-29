@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/solution-slide",
+	"title": "Solution Slide",
+	"description": "A single solution card for use in the query loop.",
+	"category": "theme",
+	"icon": "cover-image",
+	"keywords": [ "solution", "slide", "card" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "solution-slide.php"
+	}
+}

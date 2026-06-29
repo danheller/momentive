@@ -21,6 +21,20 @@ add_action( 'init', function () {
 	);
 } );
 
+add_action( 'enqueue_block_assets', function () {
+	if ( ! momentive_content_has_block( 'momentive/post-byline' ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'momentive-byline',
+		get_template_directory_uri() . '/assets/css/byline.css',
+		[],
+		wp_get_theme()->get( 'Version' )
+	);
+} );
+
+
 /**
  * Post Byline block — render callback.
  *

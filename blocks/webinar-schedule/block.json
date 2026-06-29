@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/webinar-schedule",
+	"title": "Webinar Schedule",
+	"description": "Shows the webinar date, time, and timezone. Hidden automatically once the webinar is on-demand.",
+	"category": "theme",
+	"icon": "calendar-alt",
+	"keywords": [ "webinar", "schedule", "date", "time" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "webinar-schedule.php"
+	}
+}

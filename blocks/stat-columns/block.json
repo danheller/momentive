@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/stat-columns",
+	"title": "Stat Columns",
+	"category": "momentive",
+	"icon": "chart-bar",
+	"description": "A row of statistics, each a large value with a description below. Renders the value verbatim as text (no count-up animation), so any format works — \"2,000\", \"43%\", \"$1.2M\", \">1 million\", \"24-fold\", or a word. For animated single stats with prefix/number/suffix, use momentive/impact-stat instead.",
+	"keywords": [ "stats", "statistics", "columns", "metrics", "numbers" ],
+	"textdomain": "momentive",
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "block.php"
+	},
+	"supports": {
+		"anchor": true,
+		"align": false,
+		"html": false,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"data": {
+				"is_preview": true
+			}
+		}
+	}
+}

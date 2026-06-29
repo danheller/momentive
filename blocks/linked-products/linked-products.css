@@ -1,0 +1,58 @@
+/**
+ * momentive/linked-products
+ *
+ * Logos in a vertical list, each linking to its product page. Mirrors the
+ * spacing/structure of the original ECS sidebar "Solutions" block, but driven
+ * by the block instead of hand-placed image blocks.
+ *
+ * Spacing uses theme.json preset variables so it tracks the global scale —
+ * same convention as case-study.scss. No hardcoded dimensions where a preset
+ * exists.
+ */
+
+.linked-products {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--x-small, 1rem);
+}
+
+.linked-products__heading {
+	margin: 0;
+}
+
+.linked-products__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.linked-products__item {
+	margin: 0;
+}
+
+.linked-products__link {
+	display: block;
+	line-height: 0; /* prevent inline-image whitespace under logos */
+}
+
+.linked-products__logo {
+	max-width: 100%;
+	height: auto;
+}
+
+.linked-products__name {
+	line-height: normal;
+	font-weight: 600;
+}
+
+/* Editor placeholder shown when no products are selected yet. */
+.linked-products.is-placeholder {
+	padding: var(--wp--preset--spacing--x-small, 1rem);
+	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
+	border-radius: 0.5rem;
+	color: var(--wp--preset--color--contrast, #555);
+	text-align: center;
+}

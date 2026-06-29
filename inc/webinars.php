@@ -120,6 +120,21 @@ function momentive_webinar_status( int $post_id ): string {
 	return (string) get_field( 'webinar_type', $post_id ) ?: 'on-demand';
 }
 
+/**
+ * Whether a webinar is a multi-session series.
+ *
+ * "Series" is a descriptive *kind*, orthogonal to the upcoming/on-demand
+ * *status*. A series follows the same lifecycle as any webinar (it flips to
+ * on-demand when its end date — or start date, if no end date — passes); the
+ * plan is to split a finished series into individual on-demand posts manually.
+ * This flag only affects display (status label, schedule), never the lifecycle.
+ *
+ * @param int $post_id
+ * @return bool
+ */
+function momentive_webinar_is_series( int $post_id ): bool {
+	return (bool) get_field( 'is_series', $post_id );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Post type registration

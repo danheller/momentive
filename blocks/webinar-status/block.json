@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "acf/webinar-status",
+  "title": "Webinar Status Label",
+  "description": "Shows an \"Upcoming\" or \"On-Demand\" label based on the webinar's status.",
+  "category": "theme",
+  "icon": "tag",
+  "keywords": ["webinar", "status", "label", "upcoming", "on-demand"],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "webinar-status.php"
+  },
+  "supports": {
+    "align": false,
+    "mode": false,
+    "jsx": false
+  }
+}

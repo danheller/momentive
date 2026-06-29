@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "acf/recording",
+	"title": "Recording Video",
+	"description": "Renders the recording video embed (Wistia, Vimeo, or YouTube) from the post's Recording fields.",
+	"category": "theme",
+	"icon": "video-alt3",
+	"keywords": [ "recording", "video", "embed", "webinar" ],
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "recording.php"
+	}
+}

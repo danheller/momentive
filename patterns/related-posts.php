@@ -8,6 +8,7 @@
  * as is_singular('webinar') because of the custom rewrite.
  */
 
+
 // Resolve the contextual post ID without relying on is_singular(), so this
 // works on the recording rewrite route as well as standard singular views.
 $post_id = get_queried_object_id();
@@ -24,7 +25,7 @@ if ( ! in_array( $post_type, [ 'post', 'press-article', 'webinar' ], true ) ) {
 }
 
 $categories = get_the_category( $post_id );
-if ( empty( $categories ) ) {
+if ( empty( $categories ) && ! in_array( $post_type, [ 'webinar' ], true ) ) {
 	return;
 }
 
@@ -35,18 +36,21 @@ if ( 'webinar' === $post_type ) {
 	$rel_head = 'Recommended for you';
 }
 
-$category_id = $categories[0]->term_id;
-
-$related = new WP_Query( [
+$related_args = [
 	'post_type'           => $post_type,
 	'posts_per_page'      => 3,
 	'post__not_in'        => [ $post_id ],
-	'cat'                 => $category_id,
 	'orderby'             => 'date',
 	'order'               => 'DESC',
 	'no_found_rows'       => true,
 	'ignore_sticky_posts' => true,
-] );
+];
+
+if( isset( $categories[0]->term_id ) ) {
+	$related_args['cat'] = $categories[0]->term_id;
+}
+
+$related = new WP_Query( $related_args );
 
 if ( ! $related->have_posts() ) {
 	return;
