@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "acf/webinar-presenters",
+	"title": "Webinar Presenters",
+	"description": "Lists all presenters assigned to this webinar. Reads from the Webinar Settings \"Presenters\" field — no per-block selection needed. Heading auto-pluralizes; hides itself when no presenters are assigned.",
+	"category": "momentive",
+	"icon": "groups",
+	"keywords": [ "presenters", "speakers", "people", "webinar" ],
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"align": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "webinar-presenters.php"
+	}
+}

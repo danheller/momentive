@@ -70,8 +70,11 @@
 // Pulls an element to the full viewport edge on smaller screens,
 // overriding the standard page padding.
 @mixin to-edge {
-	margin-left: calc( -1 * var(--wp--style--root--padding-left) ) !important;
-	margin-right: calc( -1 * var(--wp--style--root--padding-right) ) !important;
+/*	margin-left: calc( -1 * var(--wp--style--root--padding-left) ) !important;
+	margin-right: calc( -1 * var(--wp--style--root--padding-right) ) !important;*/
+	margin-left:  calc(50% - 50vw) !important;
+	margin-right: calc(50% - 50vw) !important;
+
 }
 
 @mixin round {

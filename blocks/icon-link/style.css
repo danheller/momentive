@@ -18,12 +18,14 @@
 */
 
 .icon-link {
+	position: relative;
+	overflow: hidden;
 	display: inline-flex;
 	align-items: flex-start;
 	gap: var(--icon-link-gap, 0.5rem);
 	text-decoration: none;
 	color: inherit;
-	transition: background-color 0.2s ease;
+	transition: background-color 0.5s ease;
 }
 
 /* Size variants — controls the icon wrapper dimensions */
@@ -108,7 +110,7 @@
 
 .icon-link:hover,
 .icon-link:focus-visible {
-	background-color: color-mix(in oklab, var(--icon-link-accent) 10%, white);
+	background-color: color-mix(in oklab, var(--icon-link-accent) 20%, white);
 }
 
 .icon-link:hover .icon-link__icon svg,
@@ -122,5 +124,26 @@
 	color: var(--dark-color);
 }
 
+/* -----------------------------------------------------------------------
+   Hover corner arc
+   ----------------------------------------------------------------------- */
+
+.icon-link::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='80' viewBox='0 0 128 80' fill='none'%3E%3Ccircle cx='64' cy='16' r='64' fill='url(%23p)' fill-opacity='0.5'/%3E%3Cdefs%3E%3ClinearGradient id='p' x1='143.056' y1='-48' x2='9.059' y2='-34.58' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='white'/%3E%3Cstop offset='1' stop-color='white' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
+	background-position: center right;
+	background-repeat: no-repeat;
+	background-size: contain;
+	pointer-events: none;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+	.icon-link::after {
+		transition: none;
+	}
+}
 
 /* Tagline stays muted on hover — only title and icon pick up the accent. */

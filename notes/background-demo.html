@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Momentive — Block Backgrounds &amp; Accent Colors</title>
+<style>
+  :root {
+    --page-accent-color: #0078ff;
+    --page-accent-color-bg:      color-mix(in oklch, var(--page-accent-color) 24%, white);
+    --page-accent-color-bg-soft: color-mix(in oklch, var(--page-accent-color) 7%,  white);
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #e2e5ea;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 3rem 1.5rem 5rem;
+    background: #fafbfc;
+    color: var(--ink);
+    font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    margin: 0 0 .5rem;
+  }
+  header .lede {
+    max-width: 640px;
+    color: var(--muted);
+    margin: 0 0 .5rem;
+  }
+  header .lede.small {
+    font-size: .9rem;
+  }
+
+  /* ---------------------------------------------------------------
+     Demo chrome (controls, swatches, code panel) — NOT part of the
+     reusable pattern. Skip past this if you're just here to copy CSS.
+  --------------------------------------------------------------- */
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-start;
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .control-label {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .control-label strong {
+    color: var(--ink);
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: .85rem;
+  }
+
+  .segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    background: #f1f2f4;
+    padding: .25rem;
+    border-radius: .65rem;
+  }
+  .seg-btn {
+    border: none;
+    background: transparent;
+    padding: .45rem .9rem;
+    border-radius: .5rem;
+    font-size: .85rem;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .seg-btn.is-active {
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    font-weight: 600;
+  }
+
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .swatch {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    outline: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  .swatch.is-active {
+    outline-color: var(--ink);
+  }
+
+  .stage {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .demo-block {
+    position: relative;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--page-accent-color-bg-soft);
+  }
+  .demo-label {
+    text-align: center;
+    background: rgba(255,255,255,.8);
+    padding: .85rem 1.5rem;
+    border-radius: .85rem;
+  }
+  .demo-class {
+    display: block;
+    font: 600 1rem/1.3 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  .demo-source {
+    display: block;
+    margin-top: .3rem;
+    font-size: .78rem;
+    color: var(--muted);
+  }
+
+  .code-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .code-tabs {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab-btn {
+    border: none;
+    background: transparent;
+    padding: .4rem .9rem;
+    border-radius: .5rem;
+    font-size: .85rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .tab-btn.is-active {
+    background: #f1f2f4;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .copy-btn {
+    margin-left: auto;
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: .4rem .9rem;
+    border-radius: .5rem;
+    font-size: .85rem;
+    cursor: pointer;
+  }
+  #code-output {
+    display: block;
+    width: 100%;
+    min-height: 360px;
+    border: none;
+    padding: 1.25rem 1.5rem;
+    font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: #1a1a1a;
+    background: #fbfbfc;
+    resize: vertical;
+  }
+
+  footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .9rem;
+    max-width: 720px;
+  }
+  footer code {
+    background: #f1f2f4;
+    padding: .1rem .35rem;
+    border-radius: .3rem;
+    font-size: .85em;
+  }
+
+  /* ===================================================================
+     Reusable pattern CSS — this is the part shown in the code panel.
+     Everything above this line is demo-page scaffolding only.
+  =================================================================== */
+
+  .is-style-bg-dots {
+    position: relative;
+  }
+  .is-style-bg-dots::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      radial-gradient(circle, var(--page-accent-color) 2.5px, transparent 2.5px),
+      radial-gradient(circle, var(--page-accent-color) 1px, transparent 1px);
+    background-size: 12.5rem 12.5rem, 2.5rem 2.5rem;
+    background-position: center top, center top;
+    opacity: .4;
+    pointer-events: none;
+  }
+
+  .is-style-ellipse-bottom {
+    position: relative;
+  }
+  .is-style-ellipse-bottom::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgdmlld0JveD0iMCAwIDE2NDAgNjM4Ij48ZGVmcz48c3R5bGU+LnN0MHtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTtmaWxsLW9wYWNpdHk6LjI7fTwvc3R5bGU+PGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSIxMjE1LjMiIHkxPSI0ODciIHgyPSI2MTUuNCIgeTI9Ii01MjUuMiIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgwIDY0MCkgc2NhbGUoMSAtMSkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkMWQxZDEiPjwvc3RvcD48c3RvcCBvZmZzZXQ9Ii40IiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9Ii4zIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9IjAiPjwvc3RvcD48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGNsYXNzPSJzdDAiIGN4PSI4MjAiIGN5PSI4MjAiIHI9IjgyMCI+PC9jaXJjbGU+PC9zdmc+");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgdmlld0JveD0iMCAwIDE2NDAgNjM4Ij48ZGVmcz48c3R5bGU+LnN0MHtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTtmaWxsLW9wYWNpdHk6LjI7fTwvc3R5bGU+PGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSIxMjE1LjMiIHkxPSI0ODciIHgyPSI2MTUuNCIgeTI9Ii01MjUuMiIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgwIDY0MCkgc2NhbGUoMSAtMSkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkMWQxZDEiPjwvc3RvcD48c3RvcCBvZmZzZXQ9Ii40IiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9Ii4zIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9IjAiPjwvc3RvcD48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGNsYXNzPSJzdDAiIGN4PSI4MjAiIGN5PSI4MjAiIHI9IjgyMCI+PC9jaXJjbGU+PC9zdmc+");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    background-color: var(--page-accent-color-bg);
+    pointer-events: none;
+  }
+  .is-style-ellipse-bottom::after {
+    -webkit-mask-position: right bottom;
+    mask-position: right bottom;
+    -webkit-mask-size: 88vw auto;
+    mask-size: 88vw auto;
+  }
+
+  /* Combo: dots + ellipse on one element. A mask on ::after clips
+     everything painted on that box, including a background-image, so
+     dots can't share ::after with the ellipse mask — it moves to
+     ::before instead. Proposed pattern; not yet in momentive.scss. */
+  .is-style-bg-dots.is-style-ellipse-bottom::after {
+    background-image: none;
+    opacity: 1;
+  }
+  .is-style-bg-dots.is-style-ellipse-bottom::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      radial-gradient(circle, var(--page-accent-color) 2.5px, transparent 2.5px),
+      radial-gradient(circle, var(--page-accent-color) 1px, transparent 1px);
+    background-size: 12.5rem 12.5rem, 2.5rem 2.5rem;
+    background-position: center top, center top;
+    opacity: .4;
+    pointer-events: none;
+  }
+
+  .is-style-bg-dots > *,
+  .is-style-ellipse-bottom > * {
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Block backgrounds &amp; accent colors</h1>
+    <p class="lede">Two independent systems, meant to be combined: style classes decide <em>which shape</em> renders (dots, ellipse mask, or both), and the <code>--page-accent-color</code> variable decides <em>what color</em> it renders in. Set the color once per page and every block below it can reference it — no per-block wiring.</p>
+    <p class="lede small">Simplified for this demo: each block below is just a labeled rounded rectangle. Swap the label content for real headings/paragraphs/images in production.</p>
+  </header>
+
+  <section class="controls">
+    <div class="control-group">
+      <span class="control-label">View</span>
+      <div class="segmented" id="view-mode">
+        <button class="seg-btn is-active" data-view="all">Show all 3</button>
+        <button class="seg-btn" data-view="dots">Dots</button>
+        <button class="seg-btn" data-view="ellipse-bottom">Ellipse</button>
+        <button class="seg-btn" data-view="combo">Ellipse + dots</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Accent color <strong id="color-readout">MomentiveIQ · #0078FF</strong></span>
+      <div class="swatches" id="swatches"></div>
+    </div>
+  </section>
+
+  <section class="stage" id="stage">
+    <div class="demo-block is-style-bg-dots" data-block="dots">
+      <div class="demo-label">
+        <span class="demo-class">is-style-bg-dots</span>
+      </div>
+    </div>
+    <div class="demo-block is-style-ellipse-bottom" data-block="ellipse-bottom">
+      <div class="demo-label">
+        <span class="demo-class">is-style-ellipse-bottom</span>
+      </div>
+    </div>
+    <div class="demo-block is-style-bg-dots is-style-ellipse-bottom" data-block="combo">
+      <div class="demo-label">
+        <span class="demo-class">is-style-bg-dots + is-style-ellipse-bottom</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="code-panel">
+    <div class="code-tabs">
+      <button class="tab-btn is-active" data-tab="css">CSS</button>
+      <button class="tab-btn" data-tab="html">HTML</button>
+      <button class="copy-btn" id="copy-btn" type="button">Copy</button>
+    </div>
+    <textarea id="code-output" readonly spellcheck="false"></textarea>
+  </section>
+
+  <footer>
+    <p>On solution/product pages, <code>--page-accent-color</code> is set once on <code>&lt;body&gt;</code> from the post's ACF accent-color field. <code>--page-accent-color-bg</code> and <code>--page-accent-color-bg-soft</code> are derived from it with <code>color-mix()</code>, so re-theming a page is a one-variable change — nothing per-block. The ellipse mask SVG (<code>assets/images/Ellipse-Base-Gray.svg</code>) is inlined above as a data URI so this file has no external dependencies; swap it for a <code>url()</code> path if you'd rather ship the file alongside your CSS.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var MASK = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgdmlld0JveD0iMCAwIDE2NDAgNjM4Ij48ZGVmcz48c3R5bGU+LnN0MHtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTtmaWxsLW9wYWNpdHk6LjI7fTwvc3R5bGU+PGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSIxMjE1LjMiIHkxPSI0ODciIHgyPSI2MTUuNCIgeTI9Ii01MjUuMiIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgwIDY0MCkgc2NhbGUoMSAtMSkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkMWQxZDEiPjwvc3RvcD48c3RvcCBvZmZzZXQ9Ii40IiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9Ii4zIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZDFkMWQxIiBzdG9wLW9wYWNpdHk9IjAiPjwvc3RvcD48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGNsYXNzPSJzdDAiIGN4PSI4MjAiIGN5PSI4MjAiIHI9IjgyMCI+PC9jaXJjbGU+PC9zdmc+';
+
+  var ACCENTS = [
+    ['MomentiveIQ', '#0078ff'],
+    ['Association Management Software', '#0e87c5'],
+    ['Fundraising', '#6a4ed8'],
+    ['Event Management', '#e7633a'],
+    ['Career Centers', '#d73f5d'],
+    ['Learning Management', '#43afbc'],
+    ['Accounting', '#3ba3d8'],
+    ['Certification Management', '#5281ba'],
+    ['Volunteer Management Software', '#0cbca0'],
+    ['Donor Management Software', '#9b59b6']
+  ];
+
+  var CSS = {
+    dots:
+      '.is-style-bg-dots {\n' +
+      '  position: relative;\n' +
+      '}\n' +
+      '.is-style-bg-dots::after {\n' +
+      '  content: \'\';\n' +
+      '  position: absolute;\n' +
+      '  inset: 0;\n' +
+      '  z-index: 0;\n' +
+      '  background-image:\n' +
+      '    radial-gradient(circle, var(--page-accent-color) 2.5px, transparent 2.5px),\n' +
+      '    radial-gradient(circle, var(--page-accent-color) 1px, transparent 1px);\n' +
+      '  background-size: 12.5rem 12.5rem, 2.5rem 2.5rem;\n' +
+      '  background-position: center top, center top;\n' +
+      '  opacity: .4;\n' +
+      '  pointer-events: none;\n' +
+      '}\n' +
+      '.is-style-bg-dots > * {\n' +
+      '  position: relative;\n' +
+      '  z-index: 1;\n' +
+      '}',
+
+    'ellipse-bottom':
+      '.is-style-ellipse-bottom {\n' +
+      '  position: relative;\n' +
+      '}\n' +
+      '.is-style-ellipse-bottom::after {\n' +
+      '  content: \'\';\n' +
+      '  position: absolute;\n' +
+      '  inset: 0;\n' +
+      '  z-index: 0;\n' +
+      '  -webkit-mask-image: url("' + MASK + '");\n' +
+      '  mask-image: url("' + MASK + '");\n' +
+      '  -webkit-mask-repeat: no-repeat;\n' +
+      '  mask-repeat: no-repeat;\n' +
+      '  -webkit-mask-position: right bottom;\n' +
+      '  mask-position: right bottom;\n' +
+      '  -webkit-mask-size: 68vw auto;\n' +
+      '  mask-size: 68vw auto;\n' +
+      '  background-color: var(--page-accent-color-bg);\n' +
+      '  pointer-events: none;\n' +
+      '}\n' +
+      '.is-style-ellipse-bottom > * {\n' +
+      '  position: relative;\n' +
+      '  z-index: 1;\n' +
+      '}\n' +
+      '/* Source file: assets/images/Ellipse-Base-Gray.svg in this theme —\n' +
+      '   inlined above as a data URI so the rule is drop-in portable. */',
+
+    combo:
+      '.is-style-bg-dots.is-style-ellipse-bottom {\n' +
+      '  position: relative;\n' +
+      '}\n' +
+      '/* A mask on ::after clips everything painted on that box, including\n' +
+      '   a background-image, so dots can\'t share ::after with the ellipse\n' +
+      '   mask. Dots moves to ::before; the mask keeps ::after to itself. */\n' +
+      '.is-style-bg-dots.is-style-ellipse-bottom::after {\n' +
+      '  content: \'\';\n' +
+      '  position: absolute;\n' +
+      '  inset: 0;\n' +
+      '  z-index: 0;\n' +
+      '  -webkit-mask-image: url("' + MASK + '");\n' +
+      '  mask-image: url("' + MASK + '");\n' +
+      '  -webkit-mask-repeat: no-repeat;\n' +
+      '  mask-repeat: no-repeat;\n' +
+      '  -webkit-mask-position: bottom right;\n' +
+      '  mask-position: bottom right;\n' +
+      '  -webkit-mask-size: 88vw auto;\n' +
+      '  mask-size: 88vw auto;\n' +
+      '  background-color: var(--page-accent-color-bg);\n' +
+      '  pointer-events: none;\n' +
+      '}\n' +
+      '.is-style-bg-dots.is-style-ellipse-bottom::before {\n' +
+      '  content: \'\';\n' +
+      '  position: absolute;\n' +
+      '  inset: 0;\n' +
+      '  z-index: 0;\n' +
+      '  background-image:\n' +
+      '    radial-gradient(circle, var(--page-accent-color) 2.5px, transparent 2.5px),\n' +
+      '    radial-gradient(circle, var(--page-accent-color) 1px, transparent 1px);\n' +
+      '  background-size: 12.5rem 12.5rem, 2.5rem 2.5rem;\n' +
+      '  background-position: center top, center top;\n' +
+      '  opacity: .4;\n' +
+      '  pointer-events: none;\n' +
+      '}\n' +
+      '.is-style-bg-dots.is-style-ellipse-bottom > * {\n' +
+      '  position: relative;\n' +
+      '  z-index: 1;\n' +
+      '}\n'
+  };
+
+  var HTML = {
+    dots:
+      '<div class="wp-block-group is-style-bg-dots">\n' +
+      '  <h2>Your heading</h2>\n' +
+      '  <p>Your content…</p>\n' +
+      '</div>',
+    'ellipse-bottom':
+      '<div class="wp-block-group is-style-ellipse-bottom">\n' +
+      '  <h2>Your heading</h2>\n' +
+      '  <p>Your content…</p>\n' +
+      '</div>',
+    combo:
+      '<div class="wp-block-group is-style-bg-dots is-style-ellipse-bottom">\n' +
+      '  <h2>Your heading</h2>\n' +
+      '  <p>Your content…</p>\n' +
+      '</div>'
+  };
+
+  var state = { view: 'all', colorIdx: 0 };
+  var activeTab = 'css';
+
+  var stage = document.getElementById('stage');
+  var swatchesEl = document.getElementById('swatches');
+  var readout = document.getElementById('color-readout');
+  var codeOutput = document.getElementById('code-output');
+  var copyBtn = document.getElementById('copy-btn');
+  var viewMode = document.getElementById('view-mode');
+  var codeTabs = document.querySelector('.code-tabs');
+
+  ACCENTS.forEach(function (entry, i) {
+    var name = entry[0], hex = entry[1];
+    var btn = document.createElement('button');
+    btn.className = 'swatch' + (i === 0 ? ' is-active' : '');
+    btn.style.background = hex;
+    btn.title = name + ' — ' + hex;
+    btn.setAttribute('aria-label', name);
+    btn.type = 'button';
+    btn.addEventListener('click', function () { setColor(i); });
+    swatchesEl.appendChild(btn);
+  });
+
+  function setColor(i) {
+    state.colorIdx = i;
+    var name = ACCENTS[i][0], hex = ACCENTS[i][1];
+    document.documentElement.style.setProperty('--page-accent-color', hex);
+    readout.textContent = name + ' · ' + hex.toUpperCase();
+    Array.prototype.forEach.call(swatchesEl.children, function (el, idx) {
+      el.classList.toggle('is-active', idx === i);
+    });
+    renderCode();
+  }
+
+  viewMode.addEventListener('click', function (e) {
+    var btn = e.target.closest('.seg-btn');
+    if (!btn) return;
+    state.view = btn.dataset.view;
+    Array.prototype.forEach.call(viewMode.children, function (b) {
+      b.classList.toggle('is-active', b === btn);
+    });
+    applyVisibility();
+    renderCode();
+  });
+
+  codeTabs.addEventListener('click', function (e) {
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    activeTab = btn.dataset.tab;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) {
+      b.classList.toggle('is-active', b === btn);
+    });
+    renderCode();
+  });
+
+  function applyVisibility() {
+    Array.prototype.forEach.call(stage.children, function (el) {
+      var show = state.view === 'all' || el.dataset.block === state.view;
+      el.style.display = show ? '' : 'none';
+    });
+  }
+
+  function visibleBlocks() {
+    return state.view === 'all' ? ['dots', 'ellipse-bottom', 'combo'] : [state.view];
+  }
+
+  function renderCode() {
+    var blocks = visibleBlocks();
+    var name = ACCENTS[state.colorIdx][0], hex = ACCENTS[state.colorIdx][1];
+    var out = '';
+    if (activeTab === 'css') {
+      out += ':root {\n' +
+        '  --page-accent-color: ' + hex + '; /* ' + name + ' */\n' +
+        '  --page-accent-color-bg:      color-mix(in oklch, var(--page-accent-color) 24%, white);\n' +
+        '  --page-accent-color-bg-soft: color-mix(in oklch, var(--page-accent-color) 7%,  white);\n' +
+        '}\n\n';
+      out += blocks.map(function (b) { return CSS[b]; }).join('\n\n');
+    } else {
+      out += blocks.map(function (b) { return HTML[b]; }).join('\n\n');
+    }
+    codeOutput.value = out;
+  }
+
+  copyBtn.addEventListener('click', function () {
+    var text = codeOutput.value;
+    function done() {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1200);
+    }
+    function fallbackCopy() {
+      codeOutput.focus();
+      codeOutput.select();
+      try { document.execCommand('copy'); done(); } catch (e) {}
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  });
+
+  setColor(0);
+  applyVisibility();
+  renderCode();
+})();
+</script>
+</body>
+</html>

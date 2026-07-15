@@ -1,0 +1,231 @@
+<!-- wp:group {"className":"breadcrumb-bar","layout":{"type":"constrained"}} -->
+<div class="wp-block-group breadcrumb-bar"><!-- wp:momentive/breadcrumbs /--></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"hero-background","style":{"color":{"gradient":"linear-gradient(0deg,rgb(255,255,255) 0%,rgb(239,249,253) 100%)"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group hero-background has-background" style="background:linear-gradient(0deg,rgb(255,255,255) 0%,rgb(239,249,253) 100%)"><!-- wp:group {"metadata":{"categories":[33],"name":"Two-column hero"},"align":"full","className":"hero","layout":{"type":"constrained","wideSize":"","contentSize":""}} -->
+<div class="wp-block-group alignfull hero"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center"} -->
+<div class="wp-block-column is-vertically-aligned-center"><!-- wp:heading {"level":1,"style":{"typography":{"textAlign":"left"}}} -->
+<h1 class="wp-block-heading has-text-align-left">Member Management Software</h1>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"className":"wp-block-heading is-style-has-swoop","fontSize":"display"} -->
+<h2 class="wp-block-heading is-style-has-swoop has-display-font-size">One solution. <strong>Every</strong> member touchpoint.</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"style":{"typography":{"textAlign":"left"}}} -->
+<p class="has-text-align-left">From recruitment to renewals, Momentive member management software helps you oversee every stage of the membership journey with flexible tools that put your members first.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"style":{"spacing":{"blockGap":"10px"}},"layout":{"type":"flex","justifyContent":"left"}} -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#form">Get Started</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"verticalAlignment":"center"} -->
+<div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"id":6316,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="http://momentive.local/wp-content/uploads/Member-management-hero-img.png" alt="" class="wp-image-6316"/></figure>
+<!-- /wp:image --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+<p class="is-style-eyebrow">Benefits</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"h2","style":{"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|xx-small"}}},"fontSize":"xxx-large"} -->
+<p class="h2 has-xxx-large-font-size" style="margin-top:0;margin-bottom:var(--wp--preset--spacing--xx-small)">Why choose our association member management software?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Momentive association member management software is designed to simplify operations, enhance engagement, and deliver personalized experiences—so your team can focus on what matters most.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/accordion {"style":"icon","openFirst":true,"items":[{"_key":"krmjl37","question":"Save staff time. Focus on what matters.","answer":"\u003cp\u003eFree your team from repetitive tasks with smart automation that works behind the scenes. From onboarding new members to sending renewal reminders or updating member records, the system automates routine processes so your team can focus on meaningful engagement. With customizable triggers and notifications, every action happens at the right time, ensuring a seamless experience for both your staff and your members.\u003c/p\u003e","iconSlug":"bx-clock-5","category":""},{"_key":"qdesel5","question":"Turn member data into member growth","answer":"\u003cp\u003eUse real-time insights to drive smarter strategies and boost engagement. Tracking member activity across events, certifications, and committees reveals patterns that drive smarter engagement strategies. Staff can identify which programs add the most value and where members are at risk of disengaging.\u003c/p\u003e","iconSlug":"bx-line-chart","category":""},{"_key":"tnrt7nl","question":"Put members in control. Watch engagement grow.","answer":"\u003cp\u003eGive members 24/7 access to manage their experience and give time back to your staff. Empowering members with self-service portals makes it easy to update profiles, pay dues, or register for events without staff intervention.\u003c/p\u003e","iconSlug":"bx-user-check","category":""},{"_key":"gjalkvc","question":"Deliver the right experience at the right time","answer":"\u003cp\u003eUse behavior insights to tailor every touchpoint and deepen member value.\u003c/p\u003e","iconSlug":"bx-timer","category":""}]} /--></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"to-edge","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background"><!-- wp:group {"metadata":{"categories":[38],"patternName":"core/block/11696","name":"Two-column media + text block"},"className":"to-edge","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background"><!-- wp:group {"className":"slim","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|small"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group slim" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--small)"><!-- wp:paragraph {"className":"is-style-eyebrow","style":{"typography":{"textAlign":"center"}}} -->
+<p class="has-text-align-center is-style-eyebrow">Features</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"balance","style":{"typography":{"textAlign":"center"},"spacing":{"margin":{"bottom":"var:preset|spacing|x-small"}}}} -->
+<h2 class="wp-block-heading has-text-align-center balance" style="margin-bottom:var(--wp--preset--spacing--x-small)">Modern member management features for associations</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"className":"balance","style":{"typography":{"textAlign":"center"}},"fontSize":"medium"} -->
+<p class="has-text-align-center balance has-medium-font-size">Our association member management software offers robust tools to streamline staff operations and elevate the member experience.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:media-text {"mediaId":6315,"mediaLink":"http://momentive.local/member-management-f1/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text is-stacked-on-mobile" style="padding-bottom:var(--wp--preset--spacing--medium)"><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F1.png" alt="" class="wp-image-6315 size-full"/></figure><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">Self-service that actually serves</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Let members manage their own profiles, payments, and registrations—anytime, anywhere. Portals also encourage members to engage more frequently with your association, improving satisfaction while reducing staff effort.</p>
+<!-- /wp:paragraph --></div></div>
+<!-- /wp:media-text --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:media-text {"mediaPosition":"right","mediaId":6314,"mediaLink":"http://momentive.local/member-management-f2/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text has-media-on-the-right is-stacked-on-mobile" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">One source of truth for every member</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Keep all your member data organized, accurate, and accessible in one secure place. With one central hub, collaboration across teams becomes more efficient and staff can easily segment members for campaigns, reports, or outreach.</p>
+<!-- /wp:paragraph --></div><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F2.png" alt="" class="wp-image-6314 size-full"/></figure></div>
+<!-- /wp:media-text -->
+
+<!-- wp:group {"metadata":{"categories":[38],"name":"Two-column media + text block"},"className":"to-edge","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background"><!-- wp:media-text {"mediaId":6309,"mediaLink":"http://momentive.local/member-management-f3/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium","top":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text is-stacked-on-mobile" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F3.png" alt="" class="wp-image-6309 size-full"/></figure><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">Less admin. More impact.</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Automate renewals, payments, and reminders so your team can focus on growth. Automated billing and renewal tools streamline one of the most critical processes for associations. Staff spend less time chasing renewals, while members enjoy a frictionless experience, boosting retention and reducing administrative load.</p>
+<!-- /wp:paragraph --></div></div>
+<!-- /wp:media-text --></div>
+<!-- /wp:group -->
+
+<!-- wp:media-text {"mediaPosition":"right","mediaId":6313,"mediaLink":"http://momentive.local/member-management-f4/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text has-media-on-the-right is-stacked-on-mobile" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">Flexible membership models and join processes</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Support every type of member with configurable membership tiers, applications, and approval workflows. Whether you offer individual, corporate, or chapter-based memberships, our platform adapts to your structure—making it easy for prospects to join and for staff to manage each step of the process.</p>
+<!-- /wp:paragraph --></div><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F4.png" alt="" class="wp-image-6313 size-full"/></figure></div>
+<!-- /wp:media-text -->
+
+<!-- wp:group {"metadata":{"categories":[38],"name":"Two-column media + text block"},"className":"to-edge","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background"><!-- wp:media-text {"mediaId":6310,"mediaLink":"http://momentive.local/member-management-f6/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium","top":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text is-stacked-on-mobile" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F6.png" alt="" class="wp-image-6310 size-full"/></figure><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">Chapter and component management made simple</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Empower your chapters or regional groups with tools to manage local memberships, events, and communications while maintaining centralized oversight. Chapter management functionality ensures consistency across your entire organization and empowers local leaders to have autonomy where it matters.</p>
+<!-- /wp:paragraph --></div></div>
+<!-- /wp:media-text --></div>
+<!-- /wp:group -->
+
+<!-- wp:media-text {"mediaPosition":"right","mediaId":6311,"mediaLink":"http://momentive.local/member-management-f7/","linkDestination":"none","mediaType":"image","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}}} -->
+<div class="wp-block-media-text has-media-on-the-right is-stacked-on-mobile" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><div class="wp-block-media-text__content"><!-- wp:heading {"level":3,"fontSize":"xx-large"} -->
+<h3 class="wp-block-heading has-xx-large-font-size">Built-in data security and compliance</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Safeguard member data with enterprise-grade security features designed to secure both your organization and your members. With multi-factor authentication (MFA) and compliance support like GDPR, you can trust your member information is protected.</p>
+<!-- /wp:paragraph --></div><figure class="wp-block-media-text__media"><img src="http://momentive.local/wp-content/uploads/Member-management-F7.png" alt="" class="wp-image-6311 size-full"/></figure></div>
+<!-- /wp:media-text -->
+
+<!-- wp:group {"className":"to-edge","style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|medium"}}},"backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background" style="padding-top:0;padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:group {"metadata":{"categories":[38],"name":"Two-column media + text block"},"className":"to-edge","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge has-neutral-background-color has-background"><!-- wp:group {"className":"slim","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|small"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group slim" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--small)"><!-- wp:paragraph {"className":"is-style-eyebrow","style":{"typography":{"textAlign":"center"}}} -->
+<p class="has-text-align-center is-style-eyebrow">Features Overview</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"balance","style":{"typography":{"textAlign":"center"},"spacing":{"margin":{"bottom":"var:preset|spacing|x-small"}}}} -->
+<h2 class="wp-block-heading has-text-align-center balance" style="margin-bottom:var(--wp--preset--spacing--x-small)">Get more from your association member management software</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:list {"className":"is-style-column-checks three-columns"} -->
+<ul class="wp-block-list is-style-column-checks three-columns"><!-- wp:list-item -->
+<li>Simplified member onboarding</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Integrated email and SMS tools</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Member segmentation and targeting</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Event registration and tracking</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Automated renewals and reminders</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Secure payment processing</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Custom reporting and analytics</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"demo-form is-style-ellipse-bottom","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium","top":"var:preset|spacing|medium"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group demo-form is-style-ellipse-bottom" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+<p class="is-style-eyebrow">Request a Demo</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Take your member management software to the next level</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Engage members and drive growth with Momentive’s association management software. Our experts are here to help you find the perfect fit for your organization’s needs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":6047,"sizeSlug":"large","linkDestination":"none","className":"is-style-rounder"} -->
+<figure class="wp-block-image size-large is-style-rounder"><img src="http://momentive.local/wp-content/uploads/AMS-request-a-demo-1024x889.jpg" alt="colleagues smiling" class="wp-image-6047"/></figure>
+<!-- /wp:image --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:acf/hubspot-form {"name":"acf/hubspot-form","data":{"hubspot_embed_code":"\u003cscript charset=\u0022utf-8\u0022 type=\u0022text/javascript\u0022 src=\u0022//js.hsforms.net/forms/embed/v2.js\u0022\u003e\u003c/script\u003e\r\n \u003cscript\u003e\r\n  hbspt.forms.create({\r\n    portalId: \u002246621835\u0022,\r\n    formId: \u002223e3a79d-34ca-4c20-a1d8-df632f7536a7\u0022,\r\n    region: \u0022na1\u0022,\r\n    sfdcCampaignId: \u0022701Ph00000t8GT2IAM\u0022\r\n  });\r\n\u003c/script\u003e","_hubspot_embed_code":"field_6a2873ba3bf87","two_step":"0","_two_step":"field_6a35626f3a11b"},"mode":"preview"} /--></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","className":"solutions-wrapper","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"backgroundColor":"superlight-accent","layout":{"inherit":true,"type":"constrained"}} -->
+<div class="wp-block-group alignfull solutions-wrapper has-superlight-accent-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:heading {"style":{"spacing":{"padding":{"top":"var:preset|spacing|small","bottom":"var:preset|spacing|small"}}},"fontSize":"xxx-large"} -->
+<h2 class="wp-block-heading has-xxx-large-font-size" style="padding-top:var(--wp--preset--spacing--small);padding-bottom:var(--wp--preset--spacing--small)">Explore more AMS features</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","className":"solutions-slider left-offset is-style-light is-style-boxed","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull solutions-slider left-offset is-style-light is-style-boxed"><!-- wp:query {"queryId":0,"query":{"perPage":10,"postType":"solutions","order":"asc","orderBy":"menu_order","inherit":false,"taxQuery":{"include":{"solution_tag":[58]}}}} -->
+<div class="wp-block-query"><!-- wp:post-template -->
+<!-- wp:acf/solution-slide {"name":"acf/solution-slide","mode":"preview"} /-->
+<!-- /wp:post-template --></div>
+<!-- /wp:query --></div>
+<!-- /wp:group -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/solutions/">View All</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:group -->

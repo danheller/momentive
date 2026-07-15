@@ -14,17 +14,51 @@
 	}
 	form {
 		label {
-			color: var(--light-text-color);
+			color: var(--text-color);
 			margin-bottom: .5rem;
 			display: block;
+			span {
+				font-weight: 600;
+			}
 		}
-		input, textarea {
-			border-radius: 1rem;
+		input, textarea, select {
+			border-radius: .5rem;
 			border: 1px solid var(--menu-border-color);
 			background: var(--light-color);
 			color: var(--light-text-color);
 			padding: .75rem;
 			width: 100% !important;
+		}
+		select {
+		    appearance: none;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			padding: .75rem 2.5rem .75rem .75rem;
+		}
+		input[type=checkbox] {
+			width: .875rem !important;
+			height: .875rem;
+			padding: 0;
+			border-color: #333;
+			border-radius: .125rem;
+			box-shadow: none;
+		}
+		.hs-fieldtype-select .input {
+			position: relative;
+		}
+		.hs-fieldtype-select .input:after {
+			content: '';
+			border-right:  .0625rem solid #000;
+			border-bottom: .0625rem solid #000;
+			width:  .5rem;
+			height: .5rem;
+			transition: transform .3s ease, border-color .3s;
+			transform: rotate(45deg);
+			transform-origin: 50% 50%;
+			position: absolute;
+			right: 1.5rem;
+			top: calc(50% + -0.25rem);
+			pointer-events: none;
 		}
 		.hs-form-required, .hs-error-msg {
 			color: #C53030;
@@ -53,10 +87,25 @@
 			padding: .75rem 1.5rem;
 			transition: background .3s ease;
 			font-weight: 600;
-			font-size: 1rem;
+			font-size: var(--wp--preset--font-size--regular);
 		}
 		.hs-button:hover {
 				background: color-mix(in srgb, var(--button-background), black 20%);
+		}
+		ul {
+			list-style: none;
+			margin: 1rem 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			gap: .25rem;
+			.hs-form-checkbox label, .hs-form-booleancheckbox label {
+				display: grid;
+				grid-template-columns: 1.75rem 1fr;
+				span {
+					font-weight: initial;
+				}
+			}
 		}
 	}
 }

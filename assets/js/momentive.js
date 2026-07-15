@@ -97,6 +97,8 @@
 		document.querySelectorAll( '.is-style-has-swoop' ).forEach( heading => {
 			initSwoop( heading );
 		} );
+
+		moveBlogPrefooter();
 	} );
 
 	// ── Megamenu ──────────────────────────────────────────────────────────────
@@ -220,7 +222,30 @@
 		}
 	} );
 
-	// ── Prefooter gradient ────────────────────────────────────────────────────
+	// ── Prefooter gradient + blog-post relocation ────────────────────────────
+	//
+	// On non-blog pages the .prefooter block is already adjacent to .site-footer
+	// in the template HTML; updateFooterGradient() just sizes the CSS gradient.
+	//
+	// On single blog posts the block lives inside .wp-block-post-content (it's
+	// the last block in post_content). moveBlogPrefooter() lifts it out and
+	// inserts it immediately before .site-footer, producing the same visual
+	// result as non-blog pages. CSS hides it while it's still in the wrong
+	// position (see momentive.scss — .wp-block-post-content .prefooter).
+
+	function moveBlogPrefooter() {
+		const prefooter = document.querySelector( '.wp-block-post-content .prefooter' );
+		if ( ! prefooter ) return;
+		const footer = document.querySelector( '.site-footer' );
+		if ( ! footer ) return;
+
+		footer.parentNode.insertBefore( prefooter, footer );
+
+		// Remove the hide rule now that the element is in the right place,
+		// then recalculate the gradient with the correct height.
+		prefooter.style.removeProperty( 'display' );
+		updateFooterGradient();
+	}
 
 	function updateFooterGradient() {
 		const prefooter = document.querySelector( '.prefooter' );
@@ -232,5 +257,6 @@
 
 	updateFooterGradient();
 	window.addEventListener( 'resize', updateFooterGradient );
+
 
 } () );

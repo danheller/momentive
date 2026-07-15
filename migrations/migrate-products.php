@@ -21,7 +21,7 @@
  *   - product_icon       : your rebuilt field is a SPRITE SLUG (e.g. "a2z"),
  *                          not an image. CCT only has icon image URLs, which
  *                          don't map to a slug. Left for manual entry.
- *   - accent_color / page_accent_color : CCT has no per-product hex that maps
+ *   - accent_color / tint_color : CCT has no per-product hex that maps
  *                          cleanly; the legacy color lived on Solution Settings
  *                          (primary_color) per family, not per product. A
  *                          family-color fallback is available but OFF by
@@ -164,7 +164,7 @@ $field_keys = array(
 	'product_logo_endorsed'         => 'field_6a32169eecf52',
 	'white_product_logo_endorsed'   => 'field_6a3216b8ecf53',
 	'accent_color'                  => 'field_6a315103d2413',
-	'page_accent_color'             => 'field_6a371ffc1c6c6',
+	'tint_color'                    => 'field_6a371ffc1c6c6',
 );
 
 // CCT column => rebuilt logo field name
@@ -345,7 +345,7 @@ WP_CLI::success( sprintf(
 WP_CLI::log( '' );
 WP_CLI::log( 'Not handled by this script (do manually / decide):' );
 WP_CLI::log( '  • product_icon  — sprite slug, set per product (CCT only had image URLs).' );
-WP_CLI::log( '  • accent_color / page_accent_color — unless --apply-family-accent was used,' );
+WP_CLI::log( '  • accent_color / tint_color — unless --apply-family-accent was used,' );
 WP_CLI::log( '    these are per-product design choices with no clean legacy source.' );
 WP_CLI::log( '  • background_image, breadcrumb_title, product_order — no source field.' );
 WP_CLI::log( '  • 12 CCT products have no rebuilt post yet — create the post, add a slug' );

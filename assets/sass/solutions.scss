@@ -3,32 +3,14 @@
 .solutions-wrapper {
 	padding: 0 2rem 3.5rem;
 	overflow: hidden;
-	background-image: linear-gradient(var(--light-color), #64C1EE22);
 	@media #{$largish-up} {
 		padding: 0 0 3.5rem;
 	}
 }
 
-.solutions-intro {
-	@include has-after;
-	overflow: visible;
-	padding-right: 25%;
-	h2 { text-wrap: balance; }
-	p  { font-size:	var(--wp--preset--font-size--medium); }
-	&:after {
-		top: 0;
-		right: 0;
-		width: 100%;
-		height: 100%;
-		background: url(../images/our-approach-graphic.svg);
-		background-position: right bottom;
-		background-size: 30%;
-		background-repeat: no-repeat;
-		pointer-events: none;
-	}
-}
-
 .solutions-slider {
+	--slides:    1;
+    --slide-gap: 1.5rem;
 	margin: 0 !important;
 	@media #{$largish-below} {
 		&.alignfull {
@@ -80,7 +62,7 @@
 	@include rounder;
 	width: 75vw;
 	padding: 40% 1.5rem 1.5rem;
-	margin-right: 1.5rem;
+	margin-right: var(--slide-gap);
 	background: linear-gradient(
 		color-mix(in oklab, var(--solution) 70%, white),
 		var(--solution)
@@ -94,14 +76,16 @@
 	text-align: left;
 
 	@media #{$small-up} {
-		width: calc( ( 100vw - 5.5rem ) / 2 );
+		--slides: 2;
+		width: calc( ( 100vw - 4rem - var(--slide-gap) ) / var(--slides) );
 	}
 	@media #{$medium-up} {
-		width: calc( ( var(--wp--style--global--content-size) - 6rem ) / 3 );
+		--slides: 3;
+		width: calc( ( var(--wp--style--global--content-size) - ( var(--slide-gap) * ( var(--slides) - 1 ) ) ) / var(--slides) );
 	}
 
 	@media #{$largish-up} {
-		width: calc( ( var(--wp--style--global--content-size) - 4.5rem ) / 4 );
+		--slides: 4;
 	}
 
 	// Gradient layer — sits above bg image, softens the bottom edge
@@ -197,7 +181,7 @@
 		justify-content: start;
 		gap: 1rem;
 		@media #{$largish-up} {
-			width: calc( ( var(--wp--style--global--content-size) - 3rem ) / 3 );
+			--slides: 3;
 		}
 
 
@@ -224,9 +208,9 @@
 		.solution-icon {
 			// Push icon down if label is present — 
 			// or handle this with :has() if you want it conditional
-			top: 1rem;
+			top: 1.25rem;
 			left: 1rem;
-			svg { color: var(--solution); width: 1.75rem; height: 1.75rem; }
+			svg { color: var(--solution); width: 1.5rem; height: 1.5rem; }
 		}
 
 		.solution-body {
@@ -273,7 +257,40 @@
 	li.splide__slide:first-child .solution {
 		.solution-icon {
 			svg {
-				width: 2rem;
+				width: 1.75rem;
+			}
+		}
+	}
+}
+
+.is-style-boxed {
+	.solution {
+		--slide-gap: var(--wp--preset--spacing--small);
+		.solution-body {
+			background: none;
+			padding: 0;
+			margin: var(--wp--preset--spacing--x-small);
+		}
+		.solution-title {
+			font-size: var(--wp--preset--font-size--x-large);
+			margin-top: var(--wp--preset--spacing--xx-small);
+		}
+		p.solution-excerpt {
+			color: var(--light-text-color);
+		}
+	}
+	li.splide__slide, li.splide__slide:first-child {
+		.solution .solution-icon svg {
+			width: 3rem;
+			height: 3rem;
+		}
+	}
+	li.splide__slide {
+		.solution .solution-icon {
+			left: var(--wp--preset--spacing--x-small);
+			top: var(--wp--preset--spacing--x-small);
+			svg {
+				color: var(--secondary-color);
 			}
 		}
 	}

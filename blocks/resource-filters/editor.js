@@ -32,19 +32,28 @@
             .join( '\n' );
     }
 
-    var POST_TYPE_OPTIONS = [
-        { label: 'Blog posts (post)',              value: 'post'           },
-        { label: 'Newsroom (press-article)',       value: 'press-article'  },
-        { label: 'Case Studies',                   value: 'case_studies'   },
-        { label: 'Events',                         value: 'events'         },
-        { label: 'FAQ',                            value: 'faq'            },
-        { label: 'Guides',                         value: 'guides'         },
-        { label: 'Webinars',                       value: 'webinars'       },
-        { label: 'Videos',                         value: 'videos'         },
-        { label: 'Whitepapers',                    value: 'whitepapers'    },
-        { label: 'Infographics',                   value: 'infographics'   },
-        { label: 'Toolkits',                       value: 'toolkits'       },
-    ];
+    // Post-type options are data-driven from the PHP-localized map
+    // (window.momentiveResourceFilters.postTypes), so the picker reflects the
+    // actually-registered post types and their labels (including custom singular
+    // names like "post" → "Blog"). Read INSIDE the component at render time, not
+    // at module-parse time — the localized global may be printed after this
+    // script, so reading it eagerly here would miss it and leave the select with
+    // only the fallback option. Falls back to a minimal hardcoded list only if
+    // the data is genuinely unavailable.
+    function getPostTypeOptions() {
+        var localized = ( window.momentiveResourceFilters && window.momentiveResourceFilters.postTypes ) || null;
+        if ( localized ) {
+            return Object.keys( localized ).map( function ( slug ) {
+                var pt = localized[ slug ];
+                return { label: pt.label + ' (' + slug + ')', value: slug };
+            } );
+        }
+        return [
+            { label: 'Blog posts (post)',        value: 'post'          },
+            { label: 'Newsroom (press-article)', value: 'press-article' },
+            { label: 'Case Studies (case-study)', value: 'case-study'   },
+        ];
+    }
 
     registerBlockType( 'momentive/resource-filters', {
         title:       __( 'Resource Filters', 'momentive' ),
@@ -88,7 +97,9 @@
                 },
             } );
 
-            var activeLabel = POST_TYPE_OPTIONS.find( function ( o ) {
+            var postTypeOptions = getPostTypeOptions();
+
+            var activeLabel = postTypeOptions.find( function ( o ) {
                 return o.value === attributes.defaultPostType;
             } );
 
@@ -112,7 +123,7 @@
                             label:   __( 'Post type', 'momentive' ),
                             help:    __( 'Sets the default CPT for queries and filters categories to those used by that post type.', 'momentive' ),
                             value:   attributes.defaultPostType,
-                            options: POST_TYPE_OPTIONS,
+                            options: postTypeOptions,
                             onChange: function ( val ) {
                                 setAttributes( { defaultPostType: val } );
                             },

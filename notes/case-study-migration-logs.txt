@@ -1,0 +1,162 @@
+====================================================
+  Case Study migration
+  MODE: *** LIVE — WRITING POSTS ***
+  (pass no token, or "dry-run", to preview without writing)
+====================================================
+Product CSV: using ID column "_ID" (#0) and name column "product_name" (#1).
+Product CSV: mapped 31 CCT IDs to names.
+Attachment map: 387 legacy IDs resolved to URLs.
+Testimonial corpus: 161 posts indexed.
+Legacy WXR: 156 case_studies items parsed.
+
+[1743] The Electrochemical Society (ECS)
+    testimonial: matched existing #6297
+    product unresolved: CCT 6 -> "Crowd Wisdom" (no Product post)
+    wrote case-study #12725
+
+[2083] American Therapeutic Recreation Association (ATRA)
+    testimonial: matched existing #11161
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+sh: gs: command not found
+sh: gs: command not found
+    wrote case-study #12925
+
+[2087] United States and Canadian Academy of Pathology (USCAP)
+    testimonial: matched existing #3221
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+sh: gs: command not found
+sh: gs: command not found
+    wrote case-study #12930
+
+[2091] American College of Osteopathic Family Physicians (ACOFP)
+    testimonial: matched existing #11167
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+sh: gs: command not found
+sh: gs: command not found
+    wrote case-study #12935
+
+[2427] Veterinary Emergency and Critical Care Society (VECCS): Momentive Event Management Success Story
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-11-VECCS-1.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12940
+
+[2435] The American Council on the Teaching of Foreign Languages (ACTFL): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/07/ACTFL-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-11-ACTFL-AI.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12944
+
+[2451] The United States and Canadian Academy of Pathology (USCAP): Momentive Event Management Success Story
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-12-USCAP-MEMBERMAX.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12947
+
+[2461] American Water Works Association (AWWA): Momentive Event Management Success Story
+    wrote case-study #12951
+
+[2514] Offshore Technology Conference: Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/SPE-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12954
+
+[2521] The Society of Tribologists and Lubrication Engineers (STLE): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/07/STLE-logo-color.svg (Sorry, you are not allowed to upload SVG files.)
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-09-STLE.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12957
+
+[2525] The Academy of Managed Care Pharmacy (AMCP): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/AMCP-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-08-AMCP-iMIS.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12960
+
+[2528] The Consumer Attorneys Association of Los Angeles Society (CAALA): Momentive Event Management Success Story
+    wrote case-study #12822
+
+[2531] National Shooting Sports Foundation (NSSF): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/07/CONVEXX.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12968
+
+[2632] The Association of Performing Arts Presenters (APAP): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/07/APAP-logo-color-1.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12971
+
+[2669] California Sharing Science Solutions (CASSS): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/07/CASSS-logo-color.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12975
+
+[2706] National Association of Pediatric Nurse Practitioners (NAPNP): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/NAPNP-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12979
+
+[2710] Association of American Law Schools (AALS): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/AALS-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12983
+
+[2720] The National Society of Black Engineers (NSBE): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/NSBE.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12987
+
+[2732] The Independent Insurance Agents of Houston (IIAH): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/IIAH-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12991
+
+[2736] Comic Con: Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/San_Diego_Comic-Con_International.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #12994
+
+[2869] The Hematology/Oncology Pharmacy Association: Momentive Event Management Software Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/HOPA-LOGO.svg (Sorry, you are not allowed to upload SVG files.)
+Warning:     media fetch FAILED: https://go.tripbuildermedia.com/hubfs/10-TripBuilder%20Media/TBM-Case%20Study/CST-TBM-2017-09-HOPA-PERSONIFY-1.pdf (cURL error 35: LibreSSL/3.3.6: error:1404B410:SSL routines:ST_CONNECT:sslv3 alert handshake failure)
+    wrote case-study #12997
+
+[2873] National Association of Nurse Practitioners in Women’s Health
+    testimonial: matched existing #11168
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/npwh-logo-colored.svg (Sorry, you are not allowed to upload SVG files.)
+sh: gs: command not found
+sh: gs: command not found
+    wrote case-study #13000
+
+[2965] The American Society of Neuroradiology (ASNR): Momentive Event Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/ASNR-logo-color.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13005
+
+[3109] Geoconvention: A Momentive Event Management Software Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/08/geoconvention-logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13009
+
+[3737] The Network of Vertafore Users (NetVU): Path LMS Success Story
+    testimonial: matched existing #11162
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/NetVU-Logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13012
+
+[3745] American Industrial Hygiene Association (AIHA): A Path LMS Success Story
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+    wrote case-study #13016
+
+[3749] Virginia Land Title Association (VLTA): A Path LMS Success Story
+    testimonial: matched existing #10161
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/VLTA-Logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13020
+
+[3754] Institute of Food Technologists (IFT): A Path LMS Success Story
+    testimonial: matched existing #11163
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/IFT-Logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13023
+
+[3758] Decorative Plumbing + Hardware Association (DPHA): A Path LMS Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/DPHA-Logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13027
+
+[3764] AMC Institute (AMCI): Momentive Learning Management Success Story
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/AMCI-logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13031
+
+[3769] National Association of Enrolled Agents (NAEA): A Path LMS Success Story
+    testimonial: matched existing #10160
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/NAEA-logo.svg (Sorry, you are not allowed to upload SVG files.)
+    wrote case-study #13034
+
+[3773] NAFSA: Association of International Educators: Momentive Learning Management Success Story
+    product unresolved: CCT 22 -> "Path LMS" (no Product post)
+Warning:     media import FAILED: https://momentivesoftware.com/wp-content/uploads/2025/09/nafsa_logo_main.svg (Sorry, you are not allowed to upload SVG files.)
+^C

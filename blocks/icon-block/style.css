@@ -32,6 +32,11 @@
 	position: relative;
 }
 
+.svg-icon.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .svg-icon svg {
 	width: 3rem;
 	height: 3rem;

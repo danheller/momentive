@@ -1,0 +1,231 @@
+<!-- wp:group {"className":"breadcrumb-bar","layout":{"type":"constrained"}} -->
+<div class="wp-block-group breadcrumb-bar"><!-- wp:momentive/breadcrumbs /--></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"hero-background","style":{"color":{"gradient":"linear-gradient(0deg,rgb(255,255,255) 0%,rgb(239,249,253) 100%)"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group hero-background has-background" style="background:linear-gradient(0deg,rgb(255,255,255) 0%,rgb(239,249,253) 100%)"><!-- wp:group {"metadata":{"categories":[33],"name":"Two-column hero"},"align":"full","className":"hero","layout":{"type":"constrained","wideSize":"","contentSize":""}} -->
+<div class="wp-block-group alignfull hero"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center"} -->
+<div class="wp-block-column is-vertically-aligned-center"><!-- wp:heading {"level":1,"style":{"typography":{"textAlign":"left"}}} -->
+<h1 class="wp-block-heading has-text-align-left">Association Event Management</h1>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"className":"wp-block-heading is-style-has-swoop","fontSize":"display"} -->
+<h2 class="wp-block-heading is-style-has-swoop has-display-font-size"><strong>Empower</strong>&nbsp;your association with event management&nbsp;tools</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"style":{"typography":{"textAlign":"left"}}} -->
+<p class="has-text-align-left">Seamlessly create and manage events that elevate engagement and revenue right within your AMS.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"style":{"spacing":{"blockGap":"10px"}},"layout":{"type":"flex","justifyContent":"left"}} -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#form">Get Started</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"verticalAlignment":"center"} -->
+<div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"id":6296,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="http://momentive.local/wp-content/uploads/AMS-event-management-hero-img.png" alt="" class="wp-image-6296"/></figure>
+<!-- /wp:image --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+<p class="is-style-eyebrow">Benefits</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"h2","fontSize":"xxx-large"} -->
+<p class="h2 has-xxx-large-font-size">Easy and manageable association meetings and events, with an engaging experience</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">With association event management capabilities built directly into your AMS, you can plan and deliver seamless events that engage members and create lasting value. From small meetings to large annual conferences, you’ll centralize details, simplify staff workflows, and provide an exceptional experience for every attendee.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/accordion {"style":"icon","openFirst":true,"items":[{"_key":"krmjl37","question":"Unified Event Experience","answer":"\u003cp\u003ePlan, promote, and manage every aspect of your event including registrations, sessions, check-in, and communications, all from one integrated system. Simplify operations and deliver a seamless experience for both staff and attendees.\u003c/p\u003e","iconSlug":"bx-like","category":""},{"_key":"qdesel5","question":"Personalized attendee journeys","answer":"\u003cp\u003ePersonalize every step of registration with dynamic paths, pricing, and messaging that adapt automatically for members, speakers, sponsors, and more—simplifying setup while enhancing the attendee experience.\u003c/p\u003e","iconSlug":"bx-happy","category":""},{"_key":"tnrt7nl","question":"Efficient staff workflows","answer":"\u003cp\u003eAutomate confirmations, reminders, and updates while integrating with event tech like onsite check-in, badging, and mobile apps—streamlining communications and delivering a connected experience from registration to arrival.\u003c/p\u003e","iconSlug":"bx-bar-chart-alt-2","category":""},{"_key":"gjalkvc","question":"Better insight and control","answer":"\u003cp\u003eTrack registrations, attendance, and engagement to understand what resonates with your audience. Easily manage CE credits and generate detailed reports for leadership and committees. Use attendee insights and historical data to improve programming, pricing, and engagement for future events.\u003c/p\u003e","iconSlug":"bx-doughnut-chart","category":""}]} /--></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"to-edge is-style-motion-blur top","backgroundColor":"neutral","layout":{"type":"constrained"}} -->
+<div class="wp-block-group to-edge is-style-motion-blur top has-neutral-background-color has-background"><!-- wp:group {"className":"narrow","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|small"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group narrow" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--small)"><!-- wp:paragraph {"className":"is-style-eyebrow","style":{"typography":{"textAlign":"center"}}} -->
+<p class="has-text-align-center is-style-eyebrow">Features Overview</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"balance","style":{"typography":{"textAlign":"center"}}} -->
+<h2 class="wp-block-heading has-text-align-center balance">Association event management software tools</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:columns {"className":"is-style-boxed"} -->
+<div class="wp-block-columns is-style-boxed"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-calculator"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/solutions-association-management-software-member-management/" data-type="solutions" data-id="6308">Personalized registration</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Personalized registration flows depending on registration or attendee type.&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-envelope"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/solutions-association-management-software-member-portal-and-e-commerce/" data-type="solutions" data-id="6339">Automated emails</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Send email confirmation, receipt, reminders.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-wrench"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/reporting-and-analytics/" data-type="solutions" data-id="3421">Tracks &amp; categories</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Create tracks and categories for sessions&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns -->
+
+<!-- wp:columns {"className":"is-style-boxed"} -->
+<div class="wp-block-columns is-style-boxed"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-calendar"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/event-management-software/" data-type="solutions" data-id="267">Events Calendar</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Easily generate an online event calendar with event details.&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-book"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/solutions/association-management-software/accounting-financial/" data-type="solutions" data-id="263">Continuing education</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Configure number of continuing education for event/session/course.&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-certification"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/solutions-association-management-software-crm/" data-type="solutions" data-id="6357">Certificates &amp; CE credits</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tie events and sessions to credits and mark them complete after attending.&nbsp;&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns -->
+
+<!-- wp:columns {"className":"is-style-boxed","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|large"}}}} -->
+<div class="wp-block-columns is-style-boxed" style="padding-bottom:var(--wp--preset--spacing--large)"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-calendar-exclamation"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/solutions/association-management-software/ai-automation/">Event waitlist</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Receive email communication when a spot opens up.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-copy-alt"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/solutions-association-management-software-member-engagement/" data-type="solutions" data-id="6348">Clone &amp; Replicate</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Easily clone events, meetings, sessions, and courses – saving time in event set up.&nbsp;&nbsp;</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:momentive/icon-block {"iconId":"bx-dollar"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="http://momentive.local/solutions/solutions-association-management-software-professional-services/" data-type="solutions" data-id="6369">Pricing Structures</a></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Support pricing structures for different membership types, member/non-member, and to support group registrant registration rates/discounts.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"demo-form is-style-ellipse-bottom","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium","top":"var:preset|spacing|medium"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group demo-form is-style-ellipse-bottom" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column -->
+<div class="wp-block-column"><!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+<p class="is-style-eyebrow">Request a Demo</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">AMS for easy to manage, engaging, and<br>revenue-driven events.</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Our AMS solutions take the complexity out of event setup and management, freeing your team to focus on creating revenue-generating experiences with stronger ROI.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":6047,"sizeSlug":"large","linkDestination":"none","className":"is-style-rounder"} -->
+<figure class="wp-block-image size-large is-style-rounder"><img src="http://momentive.local/wp-content/uploads/AMS-request-a-demo-1024x889.jpg" alt="colleagues smiling" class="wp-image-6047"/></figure>
+<!-- /wp:image --></div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column"><!-- wp:acf/hubspot-form {"name":"acf/hubspot-form","data":{"hubspot_embed_code":"\u003cscript charset=\u0022utf-8\u0022 type=\u0022text/javascript\u0022 src=\u0022//js.hsforms.net/forms/embed/v2.js\u0022\u003e\u003c/script\u003e\r\n \u003cscript\u003e\r\n  hbspt.forms.create({\r\n    portalId: \u002246621835\u0022,\r\n    formId: \u002223e3a79d-34ca-4c20-a1d8-df632f7536a7\u0022,\r\n    region: \u0022na1\u0022,\r\n    sfdcCampaignId: \u0022701Ph00000t8GT2IAM\u0022\r\n  });\r\n\u003c/script\u003e","_hubspot_embed_code":"field_6a2873ba3bf87","two_step":"0","_two_step":"field_6a35626f3a11b"},"mode":"preview"} /--></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","className":"solutions-wrapper","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"backgroundColor":"superlight-accent","layout":{"inherit":true,"type":"constrained"}} -->
+<div class="wp-block-group alignfull solutions-wrapper has-superlight-accent-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:heading {"style":{"spacing":{"padding":{"top":"var:preset|spacing|small","bottom":"var:preset|spacing|small"}}},"fontSize":"xxx-large"} -->
+<h2 class="wp-block-heading has-xxx-large-font-size" style="padding-top:var(--wp--preset--spacing--small);padding-bottom:var(--wp--preset--spacing--small)">Explore more AMS features</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","className":"solutions-slider left-offset is-style-light is-style-boxed","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull solutions-slider left-offset is-style-light is-style-boxed"><!-- wp:query {"queryId":0,"query":{"perPage":10,"postType":"solutions","order":"asc","orderBy":"menu_order","inherit":false,"taxQuery":{"include":{"solution_tag":[58]}}}} -->
+<div class="wp-block-query"><!-- wp:post-template -->
+<!-- wp:acf/solution-slide {"name":"acf/solution-slide","mode":"preview"} /-->
+<!-- /wp:post-template --></div>
+<!-- /wp:query --></div>
+<!-- /wp:group -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/solutions/">View All</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:group -->

@@ -1,0 +1,73 @@
+{
+    "key": "group_6a3ae5d0913be",
+    "title": "Recording Settings",
+    "fields": [
+        {
+            "key": "field_6a3a33ebba784",
+            "label": "Video Embed Code",
+            "name": "video_embed_code",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Please add a video embed code (e.g. Wistia, Vimeo, or YouTube)",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": "",
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_6a3a33d7ba783",
+            "label": "Recording URL",
+            "name": "recording_url",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Use this field only if the recording is hosted elsewhere. The default is \/recordings\/{slug}.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "webinar"
+            },
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "product"
+            }
+        ]
+    ],
+    "menu_order": 2,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "left",
+    "instruction_placement": "field",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1784013634
+}

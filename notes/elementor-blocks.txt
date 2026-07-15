@@ -1,0 +1,136 @@
++-------+---------------------------------------------------------------------+-------------+
+| ID    | post_title                                                          | post_status |
++-------+---------------------------------------------------------------------+-------------+
+| 10774 | Product Archive                                                     | publish     |
+| 10534 | Series Bottom Menu                                                  | publish     |
+| 10369 | [Product] Active Product Single Page                                | publish     |
+| 10076 | [Section] Testimonials (New, Solution Background)                   | publish     |
+| 10000 | [Module] Vertical Solution Slider                                   | publish     |
+| 9791  | FAQ Based on Category                                               | publish     |
+| 9531  | [Resource] Toolkit (Buyer's Guide)                                  | publish     |
+| 9468  | [Resource] Events (Physical)                                        | publish     |
+| 9434  | [Section] Series v1                                                 | publish     |
+| 9012  | [Who We Serve] - Single Page Template                               | publish     |
+| 8984  | [SCM] Checklist 1                                                   | publish     |
+| 8851  | Header Alert Bar                                                    | draft       |
+| 8796  | Header v2                                                           | publish     |
+| 8385  | [SCM] Popup Form Button 1                                           | publish     |
+| 8334  | [Section Component] Tabbed Post List (AI Content Guides & Research) | publish     |
+| 8333  | [Section Component] Tabbed Post List (AI Content Webinars)          | publish     |
+| 8317  | [Section Component] Tabbed Post List (AI Content Blogs)             | publish     |
+| 8306  | Testimonial Template                                                | publish     |
+| 8254  | Statistics Temporary                                                | publish     |
+| 8190  | Demo Page (new)                                                     | publish     |
+| 8118  | [Container] Dark Info Box                                           | publish     |
+| 7956  | [Asset] Anchor Links                                                | publish     |
+| 7863  | [Resource] Asset - Event Assets Hub                                 | publish     |
+| 7861  | Session Listings (Assets)                                           | publish     |
+| 7548  | [FAQ - Accordion] - FAQ Answer                                      | publish     |
+| 7268  | Tile Categories                                                     | publish     |
+| 7233  | Momentive Roadmap Summit                                            | publish     |
+| 7191  | Request a demo (new)                                                | publish     |
+| 7130  | [Section Component] Tabbed Session List 7                           | publish     |
+| 7129  | [Section Component] Tabbed Session List 6                           | publish     |
+| 7128  | [Section Component] Tabbed Session List 5                           | publish     |
+| 7127  | [Section Component] Tabbed Session List 4                           | publish     |
+| 7126  | [Section Component] Tabbed Session List 3                           | publish     |
+| 7125  | [Section Component] Tabbed Session List 2                           | publish     |
+| 7114  | [Section Component] Tabbed Session List 1                           | publish     |
+| 7046  | [Page] MIP System Page Template                                     | publish     |
+| 6704  | Bring on Better Awards Page - Main                                  | publish     |
+| 6649  | FAQs to export                                                      | publish     |
+| 6239  | Ultimate Resource                                                   | publish     |
+| 6110  | [Page] Support Page Template                                        | publish     |
+| 6058  | Stats                                                               | publish     |
+| 6056  | MIP Accounting Resources                                            | publish     |
+| 5595  | MIP The Best Accounting Software                                    | publish     |
+| 5566  | MIP The Right Fit for Growing Nonprofit Organizations Pillar        | publish     |
+| 5559  | Fundraising Thermometer                                             | publish     |
+| 5522  | Mission Driven Page                                                 | publish     |
+| 5513  | Meet MIP                                                            | publish     |
+| 5502  | [Solutions Child] Single Page                                       | publish     |
+| 5501  | [Solutions][Certification Management] - Single Page Template        | draft       |
+| 5155  | [Competitor] (LP) Momentive Product Column                          | publish     |
+| 5027  | Landing Page Template                                               | publish     |
+| 4677  | FAQ                                                                 | publish     |
+| 4675  | FAQ                                                                 | publish     |
+| 4368  | FAQ Question                                                        | publish     |
+| 4367  | FAQ Answer                                                          | publish     |
+| 4044  | [Single] FAQ Question                                               | publish     |
+| 3813  | Simplified                                                          | publish     |
+| 3600  | [Landing Page] Cross-sell/Upsell Page                               | publish     |
+| 3551  | [Accordion Content] Solutions Sub &gt; Features Accordion           | publish     |
+| 3234  | [Section] Image + Text 2 Cols                                       | publish     |
+| 2865  | Giving                                                              | publish     |
+| 2851  | [Branded Products] Legacy Orphan Template                           | publish     |
+| 2580  | [Resource] Interactive Tool                                         | publish     |
+| 2570  | Simplified Footer                                                   | publish     |
+| 2546  | Landing Page Header                                                 | publish     |
+| 2482  | [Accordion Content] Solutions Sub > Extra Accordion                 | publish     |
+| 2390  | [Section] Whitepaper                                                | publish     |
+| 2388  | [Section] Case Study Testimonials                                   | publish     |
+| 2383  | [Section] Request a Demo                                            | publish     |
+| 2382  | [Section] Our Solutions                                             | publish     |
+| 2263  | [Post] Single News Series Item Template                             | publish     |
+| 2100  | Quote Box (Gray)                                                    | publish     |
+| 2037  | Science Event Success Hub                                           | publish     |
+| 1974  | [Section] Tabbed Content                                            | publish     |
+| 1965  | [Section Component] Tabbed Post List 1                              | publish     |
+| 1943  | [Section Component] Tabbed Post List 3                              | publish     |
+| 1944  | [Section Component] Tabbed Post List 4                              | publish     |
+| 1945  | [Section Component] Tabbed Post List 5                              | publish     |
+| 1946  | [Section Component] Tabbed Post List 6                              | publish     |
+| 1942  | [Section Component] Tabbed Post List 2                              | publish     |
+| 1892  | [Extra Module] Single Content Feature                               | publish     |
+| 1887  | [Extra Module] Tab - Testimonials with Case Study                   | publish     |
+| 1885  | [Extra Module] Testimonials with Case Study                         | publish     |
+| 1875  | [Extra Module] Features Overview                                    | publish     |
+| 1832  | Conference & Event Success Hub: Education                           | publish     |
+| 1788  | [Resource] Full Research Study                                      | publish     |
+| 1629  | [Resource] Asset - On-Demand Webinar Video                          | publish     |
+| 1610  | [Resource] Asset - Toolkit Asset Hub                                | publish     |
+| 1527  | [SCM] - CTA with Image Section 2                                    | publish     |
+| 1526  | [SCM] - CTA Section 2                                               | publish     |
+| 1476  | [Section] Testimonials (for Posts)                                  | publish     |
+| 1475  | [SCM] - Tip 6 Section                                               | publish     |
+| 1474  | [SCM] - Tip 5 Section                                               | publish     |
+| 1473  | [SCM] - Tip 4 Section                                               | publish     |
+| 1471  | [SCM] - Tip 3 Section                                               | publish     |
+| 1468  | [SCM] - Tip 2 Section                                               | publish     |
+| 1467  | [SCM] - Tip 1 Section                                               | publish     |
+| 1464  | [SCM] - CTA with Image Section                                      | publish     |
+| 1458  | [SCM] - CTA Section                                                 | publish     |
+| 1448  | Resources Archive                                                   | publish     |
+| 1408  | [Post] Video Detail Page                                            | publish     |
+| 1381  | [Resource] Case Study Detail Page                                   | publish     |
+| 1359  | [Resource] Webinar Detail Page                                      | publish     |
+| 1331  | [Post] Article Detail Page                                          | publish     |
+| 1167  | Maintenance Single                                                  | publish     |
+| 731   | [Section] Integration (Single)                                      | publish     |
+| 705   | [Accordion Content] Approach                                        | publish     |
+| 634   | Single Solution Template                                            | publish     |
+| 633   | [Section] FAQ                                                       | publish     |
+| 631   | [Section] Our Products                                              | publish     |
+| 630   | [Section] Integrations                                              | publish     |
+| 629   | [Section] Our Approach & Impact                                     | publish     |
+| 624   | [Section] Benefits                                                  | publish     |
+| 572   | [Section] Clientele - Static                                        | publish     |
+| 571   | [Section] Hero - Simple                                             | publish     |
+| 546   | [Section] Testimonials                                              | publish     |
+| 543   | [Section] Features                                                  | publish     |
+| 537   | [Section] CTA Block                                                 | publish     |
+| 494   | Category Archive                                                    | publish     |
+| 493   | Blog Filter Popup                                                   | publish     |
+| 461   | [Section] Statistics                                                | publish     |
+| 455   | [Section] Clientele - Carousel                                      | publish     |
+| 406   | Podcasts Archive                                                    | publish     |
+| 404   | News Archive                                                        | publish     |
+| 329   | [Post] Single News Template                                         | publish     |
+| 296   | Solutions                                                           | publish     |
+| 225   | Maintenance Single                                                  | publish     |
+| 131   | [Page] System Page Template                                         | publish     |
+| 126   | Elementor Error 404                                                 | publish     |
+| 20    | Footer                                                              | publish     |
+| 15    | Header                                                              | publish     |
+| 8     | Default Kit                                                         | publish     |
++-------+---------------------------------------------------------------------+-------------+

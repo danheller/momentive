@@ -207,8 +207,6 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 			options.padding   = { left: leftOffset, right: 0 };
 			options.start     = 0;
 			options.focus     = 0;
-			// left-offset sliders always autoplay on enter
-			which.classList.add( 'autoplay-on-enter' );
 		}
 
 		if ( which.classList.contains( 'single-slide' ) ) {
@@ -223,15 +221,29 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 			options.drag       = false;
 			options.breakpoints = {};   // ← clear breakpoints so slide-mode overrides don't interfere
 			// single-slide blocks autoplay on enter
-			which.classList.add( 'autoplay-on-enter' );
+			// which.classList.add( 'autoplay-on-enter' );
 		}
 
 		if ( which.classList.contains( 'has-pagination' ) ) {
 			options.pagination = true;
 		}
 
+		if ( which.classList.contains( 'draggable-image-slider' ) ) {
+			options.perPage    = 1;
+			options.perMove    = 1;
+			options.type       = 'slide';
+//			options.drag       = 'free';
+			options.arrows     = true;
+			options.pagination = true;
+			options.flickPower = 300;
+			options.flickMaxPages = 3;
+			options.gap        = '1.5rem';
+			options.autoWidth  = true;
+		}
+
 		which.id = 'spl-' + splid;
 		const sp = splide[ splid ] = new Splide( '#spl-' + splid, options );
+		
 
 		if ( which.classList.contains( 'autoplay-on-enter' ) ) {
 		
@@ -265,73 +277,53 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 				if ( newIndex <= 0 )           direction = 1;
 			} );
 
-			if ( which.classList.contains( 'left-offset' ) ) {
 
-				sp.on( 'move', newIndex => {
-					const lastAllowed = getLastAllowedIndex( sp );
-					const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
-			
-					if ( newIndex >= lastAllowed && nextBtn ) {
-						setTimeout( () => { nextBtn.disabled = true; }, 0 );
-					}
-					if ( newIndex > lastAllowed ) {
-						setTimeout( () => sp.go( lastAllowed ), 0 );
-					}
-				} );
-			
-				sp.on( 'moved', newIndex => {
-					const lastAllowed = getLastAllowedIndex( sp );
-					const prevBtn     = sp.root.querySelector( '.splide__arrow--prev' );
-					const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
-			
-					// Arrow state and padding management for offset sliders
-					if ( newIndex >= lastAllowed ) {
-						if ( nextBtn ) nextBtn.disabled = true;
-						if ( prevBtn ) prevBtn.disabled = false;
-					} else if ( newIndex === 0 ) {
-						sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
-						if ( prevBtn ) prevBtn.disabled = true;
-						if ( nextBtn ) nextBtn.disabled = false;
-					} else {
-						sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
-						if ( prevBtn ) prevBtn.disabled = false;
-						if ( nextBtn ) nextBtn.disabled = false;
-					}
-				} );
-			
-				sp.on( 'mounted', () => {
-					const prevBtn = sp.root.querySelector( '.splide__arrow--prev' );
-					const nextBtn = sp.root.querySelector( '.splide__arrow--next' );
-			
-					if ( prevBtn ) prevBtn.disabled = true;
-			
-					if ( nextBtn ) {
-						nextBtn.addEventListener( 'mousedown', () => {
-							const lastAllowed = getLastAllowedIndex( sp );
-							if ( sp.index + 1 >= lastAllowed ) {
-								setTimeout( () => { nextBtn.disabled = true; }, 0 );
-							}
-						} );
-					}
-
-					sp.Components.Slides.get().forEach( slide => {
-						console.log( slide.index, slide.slide.style.transform, slide.slide.style.opacity );
-					} );
-				} );
-			
-				window.addEventListener( 'resize', () => {
-					sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
-					const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
-					const lastAllowed = getLastAllowedIndex( sp );
-			
-					if ( nextBtn && sp.index >= lastAllowed ) {
-						nextBtn.disabled = true;
-					}
-				} );
-
-			} // end left-offset
 		} // end autoplay-on-enter
 
+		if ( which.classList.contains( 'left-offset' ) ) {
+			sp.on( 'move', newIndex => {
+				const lastAllowed = getLastAllowedIndex( sp );
+				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
+				if ( newIndex >= lastAllowed && nextBtn ) {
+					setTimeout( () => { nextBtn.disabled = true; }, 0 );
+				}
+				if ( newIndex > lastAllowed ) {
+					setTimeout( () => sp.go( lastAllowed ), 0 );
+				}
+			} );
+		
+			sp.on( 'moved', newIndex => {
+				const lastAllowed = getLastAllowedIndex( sp );
+				const prevBtn     = sp.root.querySelector( '.splide__arrow--prev' );
+				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
+				if ( newIndex >= lastAllowed ) {
+					if ( nextBtn ) nextBtn.disabled = true;
+					if ( prevBtn ) prevBtn.disabled = false;
+				} else if ( newIndex === 0 ) {
+					sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
+					if ( prevBtn ) prevBtn.disabled = true;
+					if ( nextBtn ) nextBtn.disabled = false;
+				} else {
+					sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
+					if ( prevBtn ) prevBtn.disabled = false;
+					if ( nextBtn ) nextBtn.disabled = false;
+				}
+			} );
+		
+			sp.on( 'mounted', () => {
+				const prevBtn = sp.root.querySelector( '.splide__arrow--prev' );
+				if ( prevBtn ) prevBtn.disabled = true;
+			} );
+		
+			window.addEventListener( 'resize', () => {
+				sp.options = { padding: { left: getContentLeftOffset(), right: 0 } };
+				const nextBtn     = sp.root.querySelector( '.splide__arrow--next' );
+				const lastAllowed = getLastAllowedIndex( sp );
+				if ( nextBtn && sp.index >= lastAllowed ) {
+					nextBtn.disabled = true;
+				}
+			} );
+		}
 		sp.mount( { Intersection: window.splide.Extensions.Intersection } );
 	}
 
@@ -346,13 +338,8 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 		buildSliderFromChildren( el, '.solution', splidenumber++ );
 	} );
 
-//	document.querySelectorAll( '.testimonials-slider' ).forEach( el => {
-//		buildSliderFromChildren( el, '.testimonial', splidenumber++ );
-//	} );
-
 	document.querySelectorAll( '.testimonials-slider' ).forEach( el => {
 		// Query-loop testimonials have WP's structure already; wire it up directly.
-		// Static/legacy testimonials use buildSliderFromChildren to wrap .testimonial divs.
 		const existingTrack = el.querySelector( '.wp-block-query' );
 	
 		if ( existingTrack ) {
@@ -387,6 +374,10 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 		}
 
 		setupslider( el, splidenumber++ );
+	} );
+
+	document.querySelectorAll( '.draggable-image-slider' ).forEach( el => {
+		buildSliderFromChildren( el, '.wp-block-image', splidenumber++ );
 	} );
 
 } () );

@@ -1,0 +1,97 @@
+/*--------------------------------------------------------------
+ * Webinar Presenters block
+ *
+ * Renders a heading ("Presenter" / "Presenters") and a responsive
+ * grid of presenter cards. Two layout variants:
+ *   .layout-two-columns  – two cards per row (default)
+ *   .layout-one-column   – full-width single column
+--------------------------------------------------------------*/
+
+.momentive-webinar-presenters {
+	max-width: var(--wp--custom--narrow-size);
+	margin-bottom: var(--wp--preset--spacing--large);
+}
+
+.momentive-webinar-presenters__heading {
+	text-align: center;
+	margin-bottom: var(--wp--preset--spacing--small);
+}
+
+.momentive-webinar-presenters__grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--medium);
+	justify-content: center;
+}
+
+/* ── Cards ─────────────────────────────────────────────────── */
+
+.momentive-webinar-presenters__card {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	/* Two-column default: each card takes ~half the row minus the gap. */
+	flex: 1 1 calc(50% - var(--wp--preset--spacing--medium));
+	min-width: 240px;
+	/* Reset link styles — the card is optionally an <a>. */
+	text-decoration: none;
+	color: inherit;
+}
+
+.momentive-webinar-presenters__card.is-linked:hover
+.momentive-webinar-presenters__name {
+	text-decoration: underline;
+}
+
+/* ── Photo ─────────────────────────────────────────────────── */
+
+.momentive-webinar-presenters__photo {
+	flex-shrink: 0;
+}
+
+.momentive-webinar-presenters__photo img {
+	width: 6.5rem;
+	height: 6.5rem;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+/* ── Text ──────────────────────────────────────────────────── */
+
+.momentive-webinar-presenters__info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.momentive-webinar-presenters__name {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.3;
+}
+
+.momentive-webinar-presenters__title {
+	font-size: var(--wp--preset--font-size--regular);
+	line-height: 1.4;
+}
+
+/* ── One-column layout override ────────────────────────────── */
+
+.momentive-webinar-presenters.layout-one-column
+.momentive-webinar-presenters__card {
+	flex: 1 1 100%;
+}
+
+.momentive-webinar-presenters.layout-one-column
+.momentive-webinar-presenters__grid {
+	width: fit-content;
+	margin: 0 auto;
+}
+/* ── Narrow screens: always single column ──────────────────── */
+
+@media (max-width: 600px) {
+	.momentive-webinar-presenters__card {
+		flex: 1 1 100%;
+	}
+}

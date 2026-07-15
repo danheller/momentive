@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "acf/back-link",
+	"title": "Back Link",
+	"description": "A ← back navigation link. URL and label are set via ACF fields.",
+	"category": "momentive",
+	"icon": "arrow-left-alt",
+	"keywords": [ "back", "link", "navigation", "return", "archive" ],
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "back-link.php"
+	},
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	}
+}

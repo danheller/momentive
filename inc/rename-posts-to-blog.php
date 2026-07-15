@@ -22,7 +22,7 @@ function momentive_change_post_object() {
 	$post_type = get_post_type_object( 'post' );
 	$labels = $post_type->labels;
 	$labels->name               = 'Blog';
-	$labels->singular_name      = 'Blog Post';
+	$labels->singular_name      = 'Blog';
 	$labels->add_new            = 'Add Blog Post';
 	$labels->add_new_item       = 'Add Blog Post';
 	$labels->edit_item          = 'Edit Blog Post';

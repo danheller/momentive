@@ -63,9 +63,26 @@ $heading      = ( $heading === null || $heading === false || $heading === '' ) ?
 $show_heading = ( $show_heading === null ) ? true : (bool) $show_heading;
 
 // Block-level override first; fall back to the post's products.
+//
+// IMPORTANT: use the $post_id that ACF passes into the renderTemplate, NOT
+// get_the_ID(). On the front end inside an FSE template, blocks render outside
+// the main query loop, so get_the_ID() does not reliably return the host post —
+// which made the post-level fallback return nothing and the block render blank
+// on the front end while still working in the editor preview (where ACF's
+// preview context happens to make get_the_ID() resolve). ACF provides the
+// correct host post ID as $post_id; ACF blocks in a query loop also expose it
+// via $block['data'] context. Resolve defensively.
+$host_id = 0;
+if ( isset( $post_id ) && $post_id ) {
+	$host_id = is_numeric( $post_id ) ? (int) $post_id : 0;
+}
+if ( ! $host_id ) {
+	$host_id = get_the_ID() ?: 0;
+}
+
 $products = get_field( 'linked_products' ); // block instance field (override)
-if ( empty( $products ) ) {
-    $products = get_field( 'linked_products', get_the_ID() ); // post-level default
+if ( empty( $products ) && $host_id ) {
+	$products = get_field( 'linked_products', $host_id ); // post-level default
 }
 
 // In the editor preview with nothing selected yet, show a friendly placeholder.

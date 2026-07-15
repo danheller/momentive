@@ -157,9 +157,9 @@ add_action( 'wp_head', function() {
 	$post_id = get_the_ID();
 
 	/* Note: Product accent colors are divided into a tinted color used in the hero 
-	 * background (page_accent_color) and a color used for the product icon (accent_color).
+	 * background (tint_color) and a color used for the product icon (accent_color).
 	 * It might be worth renaming these later. */
-	$accent_color = get_field( 'page_accent_color', $post_id );
+	$accent_color = get_field( 'tint_color', $post_id );
 	$icon_color = get_field( 'accent_color', $post_id );
 
 	$props = '';
@@ -213,26 +213,46 @@ add_filter( 'manage_product_posts_columns', function( array $columns ): array {
 		$new[ $key ] = $label;
 		if ( $key === 'title' ) {
 			$new['product_type'] = __( 'Type', 'momentive' );
+			$new['accent_color'] = __( 'Brand Color', 'momentive' );
+			$new['tint_color']   = __( 'Tint Color', 'momentive' );
 		}
 	}
 	return $new;
 } );
 
 add_action( 'manage_product_posts_custom_column', function( string $column, int $post_id ): void {
-	if ( $column !== 'product_type' ) return;
+	if ( $column === 'product_type' ) {
+		$terms = get_the_terms( $post_id, 'product_type' );
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			echo '<span style="color:#999">—</span>';
+			return;
+		}
 
-	$terms = get_the_terms( $post_id, 'product_type' );
-	if ( empty( $terms ) || is_wp_error( $terms ) ) {
-		echo '<span style="color:#999">—</span>';
+		foreach ( $terms as $term ) {
+			$color = $term->slug === 'active-product' ? '#00a32a' : '#787c82';
+			printf(
+				'<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:%s;color:#fff;">%s</span>',
+				esc_attr( $color ),
+				esc_html( $term->name )
+			);
+		}
 		return;
 	}
 
-	foreach ( $terms as $term ) {
-		$color = $term->slug === 'active-product' ? '#00a32a' : '#787c82';
+	if ( $column === 'accent_color' || $column === 'tint_color' ) {
+		$color = get_field( $column, $post_id );
+		if ( ! $color ) {
+			echo '<span style="color:#999">—</span>';
+			return;
+		}
+
 		printf(
-			'<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:%s;color:#fff;">%s</span>',
+			'<span style="display:inline-flex;align-items:center;gap:6px;">
+				<span style="display:inline-block;width:16px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,0.15);background:%s;"></span>
+				<code>%s</code>
+			</span>',
 			esc_attr( $color ),
-			esc_html( $term->name )
+			esc_html( $color )
 		);
 	}
 }, 10, 2 );

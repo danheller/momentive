@@ -79,6 +79,10 @@
 	line-height: 1.35;
 }
 
+.post-layout ol li.toc-item, .post-layout ul li.toc-item {
+	margin: 0;
+}
+
 .toc-item--h3 {
 	padding-left: 1rem;
 	font-size: 0.875rem;

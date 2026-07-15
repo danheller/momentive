@@ -1,13 +1,27 @@
 <?php
 $is_preview = $is_preview ?? false;
 
-$source = get_field( 'form_source' ) ?: 'block'; // 'block' | 'post'
+// Resolution order (linked-products pattern):
+//   1. Block-level embed code — explicit override, used as-is.
+//   2. Post-level form fields — form_upcoming / form_ondemand resolved by
+//      momentive_webinar_status(), so the correct form surfaces automatically
+//      when the webinar transitions from upcoming to on-demand.
+// The legacy form_source select field is no longer consulted; it remains in
+// the UI as a no-op for blocks that have it stored in their serialized data.
+$embed_code = (string) get_field( 'hubspot_embed_code' );
 
-if ( 'post' === $source ) {
-	$post_id    = get_the_ID();
-	$embed_code = $post_id ? momentive_resolve_webinar_form( $post_id ) : '';
-} else {
-	$embed_code = get_field( 'hubspot_embed_code' );
+if ( ! $embed_code ) {
+	$post_id    = $post_id ?? get_the_ID();
+	$embed_code = $post_id ? (string) momentive_resolve_webinar_form( $post_id ) : '';
+}
+
+// Auto-inject the HubSpot loader script when the embed code contains only
+// the hbspt.forms.create() call and the library <script> tag was omitted
+// (a common copy-paste gap in HubSpot's own UI).
+if ( $embed_code
+	&& str_contains( $embed_code, 'hbspt.forms.create' )
+	&& ! str_contains( $embed_code, 'js.hsforms.net' ) ) {
+	$embed_code = '<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>' . "\n" . $embed_code;
 }
 
 $two_step   = get_field( 'two_step' );

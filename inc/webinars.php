@@ -146,12 +146,22 @@ add_action( 'init', 'momentive_webinars_setup' );
 // Registered always, enqueued only on singular webinar posts.
 add_action( 'wp_enqueue_scripts', function() {
 	wp_register_style(
+		'momentive-gate',
+		get_template_directory_uri() . '/assets/css/gate.css',
+		[],
+		wp_get_theme()->get( 'Version' )
+	);
+
+	wp_register_style(
 		'momentive-webinar',
 		get_template_directory_uri() . '/assets/css/webinar.css',
 		[],
 		wp_get_theme()->get( 'Version' )
 	);
 
+	if ( is_singular( 'webinar' ) ) {
+		wp_enqueue_style( 'momentive-gate' );	
+	}
 	if ( is_singular( 'webinar' ) || is_archive('webinar') ) {
 		wp_enqueue_style( 'momentive-webinar' );
 	}
@@ -222,7 +232,7 @@ function momentive_webinars_setup(): void {
 		],
 		'hierarchical'       => false,
 		'show_ui'            => true,
-		'show_admin_column'  => true,
+		'show_admin_column'  => false,  // Redundant with the custom Status column; series shown there via is_series.
 		'show_in_rest'       => true,
 		'publicly_queryable' => false,   // No front-end taxonomy archive.
 		'public'             => false,
@@ -424,21 +434,40 @@ add_filter( 'manage_webinar_posts_columns', function( array $columns ): array {
 
 add_action( 'manage_webinar_posts_custom_column', function( string $column, int $post_id ): void {
 	if ( $column === 'webinar_status' ) {
-		$status = momentive_webinar_status( $post_id );
-		$color  = $status === 'upcoming' ? '#00a32a' : '#787c82';
-		$label  = $status === 'upcoming' ? 'Upcoming' : 'On-Demand';
+		$status    = momentive_webinar_status( $post_id );
+		$is_series = momentive_webinar_is_series( $post_id );
+		$color     = $status === 'upcoming' ? '#00a32a' : '#787c82';
+		$label     = $status === 'upcoming' ? 'Upcoming' : 'On-Demand';
 		printf(
 			'<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:%s;color:#fff;">%s</span>',
 			esc_attr( $color ),
 			esc_html( $label )
 		);
+		if ( $is_series ) {
+			echo ' <span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:#6b4f8a;color:#fff;">Series</span>';
+		}
 	}
 
 	if ( $column === 'webinar_date_col' ) {
-		$raw = get_field( 'webinar_date', $post_id );
-		$dt  = $raw ? DateTime::createFromFormat( 'Ymd', $raw ) : false;
+		$raw     = get_field( 'webinar_date', $post_id );
+		$end_raw = get_field( 'webinar_end_date', $post_id );
+		$dt      = $raw     ? DateTime::createFromFormat( 'Ymd', $raw )     : false;
+		$end_dt  = $end_raw ? DateTime::createFromFormat( 'Ymd', $end_raw ) : false;
+
 		if ( $dt ) {
-			echo esc_html( $dt->format( 'M j, Y' ) );
+			if ( $end_dt && $end_dt->format( 'Ymd' ) !== $dt->format( 'Ymd' ) ) {
+				// Multi-day: collapse same-month ranges ("Jul 21–23, 2026").
+				if ( $dt->format( 'Y-m' ) === $end_dt->format( 'Y-m' ) ) {
+					echo esc_html( $dt->format( 'M j' ) . '–' . $end_dt->format( 'j, Y' ) );
+				} elseif ( $dt->format( 'Y' ) === $end_dt->format( 'Y' ) ) {
+					echo esc_html( $dt->format( 'M j' ) . ' – ' . $end_dt->format( 'M j, Y' ) );
+				} else {
+					echo esc_html( $dt->format( 'M j, Y' ) . ' – ' . $end_dt->format( 'M j, Y' ) );
+				}
+			} else {
+				echo esc_html( $dt->format( 'M j, Y' ) );
+			}
+
 			$time = get_field( 'webinar_time_start', $post_id );
 			$tz   = get_field( 'webinar_timezone', $post_id );
 			if ( $time ) {

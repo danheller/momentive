@@ -33,11 +33,6 @@
 					"slug": "contrast"
 				},
 				{
-					"color": "rgb(34, 34, 34)",
-					"name": "Text",
-					"slug": "text"
-				},
-				{
 					"color": "rgb(245, 245, 247)",
 					"name": "Neutral",
 					"slug": "neutral"
@@ -190,6 +185,11 @@
 			"defaultSpacingSizes": false,
 			"spacingSizes": [
 				{
+					"name": "XX Small",
+					"size": ".5rem",
+					"slug": "xx-small"
+				},
+				{
 					"name": "X Small",
 					"size": "1.5rem",
 					"slug": "x-small"
@@ -278,7 +278,7 @@
 				{
 					"name": "Large",
 					"slug": "large",
-					"size": "clamp(1.25rem, 1rem + 1vw, 1.5rem)"
+					"size": "clamp(1.25rem, 1rem + 0.4vw, 1.5rem)"
 				},
 				{
 					"name": "XL",

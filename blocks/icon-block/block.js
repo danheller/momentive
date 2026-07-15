@@ -57,10 +57,10 @@
 		category: 'common',
 
 		attributes: {
-			iconId:          { type: 'string', default: ''         },
-			shape:           { type: 'string', default: 'circle'   },
-			backgroundColor: { type: 'string', default: 'light'    },
-			iconColor:       { type: 'string', default: 'accent'   },
+			iconId:          { type: 'string', default: ''          },
+			shape:           { type: 'string', default: 'none'      },
+			backgroundColor: { type: 'string', default: 'none'      },
+			iconColor:       { type: 'string', default: 'secondary' },
 		},
 
 		edit( { attributes, setAttributes } ) {

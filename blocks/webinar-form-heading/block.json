@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "acf/webinar-form-heading",
+	"title": "Webinar Form Heading",
+	"description": "Shows \"Save your spot\" or \"Fill out the form to watch this webinar\" based on webinar status. Optional override field for custom text.",
+	"category": "momentive",
+	"icon": "editor-bold",
+	"keywords": [ "webinar", "form", "heading", "register", "watch" ],
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "webinar-form-heading.php"
+	},
+	"supports": {
+		"align": false,
+		"mode": false,
+		"jsx": false
+	}
+}

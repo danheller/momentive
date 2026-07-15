@@ -62,7 +62,7 @@ function momentive_toc_inject_heading_ids( string $content ): string {
 	static $h3_index = 0;
 
 	$content = preg_replace_callback(
-		'/<h2(?![^>]*\bid=)[^>]*>(.*?)<\/h2>/is',
+		'/<h2(?![^>]*\bid=)(?![^>]*\bno-toc\b)[^>]*>(.*?)<\/h2>/is',
 		function ( $m ) use ( &$h2_index ) {
 			$id = momentive_toc_anchor( wp_strip_all_tags( $m[1] ), $h2_index++ );
 			return str_replace( '<h2', '<h2 id="' . esc_attr( $id ) . '"', $m[0] );
@@ -71,7 +71,7 @@ function momentive_toc_inject_heading_ids( string $content ): string {
 	);
 
 	$content = preg_replace_callback(
-		'/<h3(?![^>]*\bid=)[^>]*>(.*?)<\/h3>/is',
+		'/<h3(?![^>]*\bid=)(?![^>]*\bno-toc\b)[^>]*>(.*?)<\/h3>/is',
 		function ( $m ) use ( &$h3_index ) {
 			$id = momentive_toc_anchor( wp_strip_all_tags( $m[1] ), $h3_index++ );
 			return str_replace( '<h3', '<h3 id="' . esc_attr( $id ) . '"', $m[0] );
@@ -114,6 +114,11 @@ function momentive_toc_extract_headings( string $content, int $max_level ): arra
 	foreach ( $matches as $match ) {
 		$level = (int) $match[1];
 		if ( $level > $max_level ) continue;
+
+		// Skip headings explicitly marked as excluded from the TOC.
+		// Editors apply this via the block's Advanced → Additional CSS class field.
+		// The migration script adds it automatically to prefooter headings.
+		if ( preg_match( '/\bno-toc\b/', $match[0] ) ) continue;
 
 		$text = wp_strip_all_tags( $match[2] );
 		if ( $text === '' ) continue;

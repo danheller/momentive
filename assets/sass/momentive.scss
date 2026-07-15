@@ -24,7 +24,7 @@
 	4.1  Eyebrow & Uppercase (.is-style-eyebrow, .is-style-uppercase)
 	4.2  Heading Size Classes (.h2, .h3)
 	4.3  Quote Style (.is-style-quote)
-	4.4  Read More nad Back Links (.read-more, .back-link)
+	4.4  Read More and Back Links (.read-more, .back-link)
 	4.5  Animated Swoop Underline (.is-style-has-swoop)
 	4.6  List Styles
 	4.7  Media-Text Blocks
@@ -40,11 +40,10 @@
 	6.0  Homepage
 	6.1  Hero (.hero)
 	6.2  Trust / Logo Ticker (.trust)
-	6.3  Highlights (.highlights)
-	6.4  Constellation / Icon Grid (.constellation)
-	6.5  Product Suite (.product-suite)
-	6.6  Featured Item
-	6.7  Pre-footer CTA (.prefooter)
+	6.3  Constellation / Icon Grid (.constellation)
+	6.4  Product Suite (.product-suite)
+	6.5  Featured Item
+	6.6  Pre-footer CTA (.prefooter)
 
 	7.0  News / Blog
 	7.1  Story Card (.story-card)
@@ -58,6 +57,7 @@
 	8.1  Parallax (.parallax-upward)
 	
 	9.0  Block Backgrounds
+	9.1  Intro blocks
 
 */
 
@@ -89,6 +89,7 @@
 	--extralight-accent-color:    rgb(224 243 251);
 	--superlight-accent-color:    rgb(239 249 253);
 	--aqua-color:                 #daf7fb;
+	--navy-color:                 #172459;
 	--secondary-color:            #f26522; // orange
 	--midtone-color:              rgb(100 107 133);
 
@@ -211,9 +212,22 @@ p {
 }
 
 .is-layout-constrained, .is-layout-flow {
-	> p {
+	> p, > ul, > ol {
 		margin-top: 0;
 		margin-bottom: 1.5em;
+	}
+	> p.is-style-eyebrow {
+		margin-bottom: .5rem;
+	}
+}
+
+table {
+	td, th {
+		vertical-align: top;
+		line-height: 1.5;
+	}
+	tbody>tr:nth-child(odd)>td, tbody>tr:nth-child(odd)>th {
+		background-color: hsla(0, 0%, 50%, .071);
 	}
 }
 
@@ -563,6 +577,34 @@ figure {
 		@include rounder;
 		border: 1px solid var(--menu-border-color);
 	}
+
+	&.is-style-medium {
+		flex-wrap: wrap !important;
+		justify-content: center;
+
+		@media #{$large-up} {
+			flex-wrap: nowrap !important; // Three columns, single row
+		}
+
+		.wp-block-column {
+			// Mid: two per row + orphan centered
+			width: 22rem;
+			flex-basis: 22rem !important;
+			flex-grow: 0;
+	
+			@media #{$large-up} {
+				// Let columns share space equally
+				flex: 1 1 0;
+				width: auto !important;
+				flex-basis: auto !important;
+			}
+	
+			@media #{$medium-below} {
+				// Single centered column
+				width: 100%;
+			}
+		}
+	}
 }
 
 
@@ -864,6 +906,16 @@ figure {
 		border-radius: .5rem;
 		padding: .5rem;
 	}
+	&[data-menu=products] {
+		.wp-block-column {
+			position: relative;
+		}
+		.read-more {
+			position: absolute;
+			top: 1rem;
+			right: 1.25rem;
+		}
+	}
 }
 
 .mega-feature {
@@ -914,6 +966,7 @@ figure {
 /*==============================================================
   4.0 - Text Styles
 ==============================================================*/
+
 
 /*--------------------------------------------------------------
   4.1 - Eyebrow & Uppercase
@@ -1004,16 +1057,6 @@ figure {
 }
 
 .has-arrow {
-	&.wp-block-button {
-		a {
-			position: relative;
-			padding-right: 2rem;
-			&:after {
-				position: absolute;
-				top: .75rem;
-			}
-		}
-	}
 	a {
 		&:after {
 			content: '\2192';
@@ -1031,7 +1074,6 @@ figure {
 			}
 		}
 	}
-/*
 	&.upward a {
 		color: var(--secondary-color);
 		&:after {
@@ -1043,7 +1085,20 @@ figure {
 			transform: rotate(-45deg) translateX(.25rem);
 		}
 	}
-*/
+	&.wp-block-button {
+		a {
+			position: relative;
+			padding-right: 2.5rem;
+			&:after {
+				position: absolute;
+				right: 1.5rem;
+				top: calc(50% - .75rem);//.75rem;
+			}
+		}
+		&.upward a {
+			color: var(--light-color);
+		}
+	}
 }
 
 a.read-more {
@@ -1065,6 +1120,7 @@ a.read-more {
 }
 
 .back-link {
+	margin-bottom: var(--wp--preset--spacing--small);
 	a {
 		@include has-before;
 		color: var(--text-color);
@@ -1169,16 +1225,22 @@ a.read-more {
   4.6 - List Styles
 --------------------------------------------------------------*/
 
-ul.is-style-column-checks {
+ul.is-style-column-checks, ul.is-style-circle-checks, ul.is-style-checkboxes {
 	list-style: none;
 	display: flex;
+	li {
+		@include has-before;	
+	}
+}
+
+ul.is-style-column-checks {
 	gap: 4rem;
+	padding-left: 0;
 	@media #{$largish-below} {
 		flex-wrap: wrap;
 		gap: 2rem;
 	}	
 	li {
-		@include has-before;
 		padding-left: 1.5rem;
 		font-size: var(--wp--preset--font-size--medium);
 		font-weight: 600;
@@ -1197,18 +1259,43 @@ ul.is-style-column-checks {
 			border-right: .2rem solid var(--secondary-color);
 			transform: rotate( 45deg );
 		}
+		&:has(strong) {
+			font-weight: initial;
+			font-size: var(--wp--preset--font-size--regular);
+			strong {
+				line-height: 1.25;
+				margin: .25rem 0;
+				display: inline-block;
+				font-size: var(--wp--preset--font-size--medium);
+			}
+		}
+	}
+	&.two-columns, &.three-columns {
+		@media #{$medium-up} {
+			display: grid;
+		}
+		li {
+			width: 100%;
+		}
+	}
+	&.two-columns {
+		@media #{$medium-up} {
+			grid-template-columns: repeat( 2, 1fr );
+		}
+	}
+	&.three-columns {
+		@media #{$medium-up} {
+			grid-template-columns: repeat( 3, 1fr );
+		}
 	}
 }
 
 ul.is-style-circle-checks {
-	list-style: none;
 	margin: 0;
 	padding: 0;
-	display: flex;
 	flex-direction: column;
 	gap: 1rem;
 	li {
-		@include has-before;
 		@include has-after;
 		padding-left: 2rem;
 		
@@ -1232,6 +1319,35 @@ ul.is-style-circle-checks {
 			z-index: 0;
 		}
 	}
+}
+
+.wp-block-list.is-style-checkboxes {
+	@include round;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    border: 1px solid var(--menu-border-color);
+	background-color: var(--wp--preset--color--neutral);
+    li {
+    	margin: 0;
+        position: relative;
+        padding: .625rem 1rem .625rem 2.75rem;
+        border-bottom: 1px solid var(--menu-border-color);
+        &:last-child { border-bottom: none; }
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: .75rem;
+            top: .75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: .125rem solid var(--dark-color);
+            background: var(--light-color);
+            border-radius: .25rem;
+        }
+    }
 }
 
 
@@ -1373,7 +1489,7 @@ ul.is-style-circle-checks {
 		margin: 0 !important;
 	}
 	figure {
-		&:nth-of-type(1) {
+		&.horizontal {
 			@include rounder;
 			width: 100%;
 			img {
@@ -1384,7 +1500,7 @@ ul.is-style-circle-checks {
 				display: block;
 			}
 		}
-		&:nth-of-type(2), &:nth-of-type(3) {
+		&.circle {
 			position: absolute;
 			border-radius: 50%;
 			overflow: hidden;
@@ -1393,7 +1509,7 @@ ul.is-style-circle-checks {
 				object-fit: cover;
 			}		
 		}
-		&:nth-of-type(2) {
+		&.circle-left {
 		
 			width: clamp(12rem, 18vw, 18rem);
 			aspect-ratio: 1;
@@ -1407,7 +1523,7 @@ ul.is-style-circle-checks {
 			}
 		
 		}
-		&:nth-of-type(3) {
+		&.circle-right {
 		
 			width: clamp(8rem, 12vw, 12rem);
 			aspect-ratio: 1;
@@ -1726,7 +1842,10 @@ body.admin-bar {
 }
 
 main.site-content {
-	margin-top: 0;
+	margin-top: -0.375rem; //0;
+	.breadcrumb-bar {
+		padding-top: .75rem;
+	}
 }
 
 /*--------------------------------------------------------------
@@ -2116,6 +2235,23 @@ body.home {
 		padding-left: var(--wp--style--root--padding-left);
 		padding-right: var(--wp--style--root--padding-right);
 	}
+
+	// Always give the direct child (.hero) its own stacking context,
+	// regardless of which background style (if any) is applied to this
+	// group. The swoop underline (.is-style-has-swoop .swoop-svg) uses
+	// z-index:-1 on an SVG nested inside a heading further down; since its
+	// positioned parent (<strong>) never sets its own z-index, that -1
+	// resolves against the nearest ancestor stacking context. Without this
+	// rule, that context previously only existed as a side effect of the
+	// is-style-bg-dots / is-style-bg-rings / is-style-ellipse-* rule below
+	// — so a hero using a plain custom background (block "Background"
+	// color/gradient support, no is-style-bg-* class) had no stacking
+	// context here, and the swoop SVG sank behind this group's own
+	// background instead of rendering above it.
+	> * {
+		position: relative;
+		z-index: 1;
+	}
 }
 
 .wp-block-column.is-style-hero-background-image-on-right {
@@ -2192,64 +2328,9 @@ body.home {
 }
 
 
-/*--------------------------------------------------------------
-  6.3 - Highlights
---------------------------------------------------------------*/
-
-// Three-up stat or feature callout section with a dot-pattern background.
-.highlights {
-	padding: 6rem 0 3rem;
-	text-wrap: balance;
-
-	.wp-block-columns {
-		// Override WP's flex defaults to allow wrapping
-		flex-wrap: wrap !important;
-		justify-content: center;
-
-		@media #{$large-up} {
-			flex-wrap: nowrap !important; // Three columns, single row
-		}
-	}
-
-	.wp-block-column {
-		background: var(--light-color);
-		flex-shrink: 0;
-		max-width: 22rem;
-
-		// Mid: two per row + orphan centered
-		width: 22rem;
-		flex-basis: 22rem !important;
-		flex-grow: 0;
-
-		@media #{$large-up} {
-			// Let columns share space equally
-			flex: 1 1 0;
-			width: auto !important;
-			flex-basis: auto !important;
-		}
-
-		@media #{$medium-below} {
-			// Single centered column
-			width: 100%;
-		}
-	}
-
-	.wp-block-heading {
-		margin: .5rem 0 0;
-	}
-
-	h3 {
-		font-size: clamp(1.25rem, 1.5vw, 1.5rem);
-	}
-
-	p {
-		margin: .5rem 0;
-		font-size: .875rem;
-	}
-}
 
 /*--------------------------------------------------------------
-  6.4 - Constellation / Icon Grid
+  6.3 - Constellation / Icon Grid
 --------------------------------------------------------------*/
 
 // Decorative animated icon grid used in the product suite section.
@@ -2301,7 +2382,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.5 - Product Suite
+  6.4 - Product Suite
 --------------------------------------------------------------*/
 
 // Hoverable product row cards. The whole row lifts and scales on hover,
@@ -2359,7 +2440,7 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.6 - Featured Item
+  6.5 - Featured Item
 --------------------------------------------------------------*/
 
 // Single large featured post card used at the bottom of the homepage.
@@ -2479,15 +2560,22 @@ body.home {
 
 
 /*--------------------------------------------------------------
-  6.7 - Pre-footer CTA
+  6.6 - Pre-footer CTA
 --------------------------------------------------------------*/
 
 // Full-width CTA band that sits above the footer, sharing its background gradient.
 // The rings-with-shapes SVG is drawn as ::after, layered behind the content
 // via z-index but in front of the page background.
+//
+// On single blog posts the .prefooter block starts inside .wp-block-post-content
+// and is moved by JS (moveBlogPrefooter) to sit before .site-footer. Hide it
+// while it's still in the content flow so there's no flash or layout disruption.
+.wp-block-post-content .prefooter {
+	display: none;
+}
+
 .prefooter {
 	@include to-edge;
-	@extend .is-style-bg-rings;
 	padding: 4.5rem 1rem;
 	max-width: none;
 	margin-top: 0;
@@ -2966,10 +3054,24 @@ body.single-press-article {
 			@include nomargin;
 		}
 	}
+	ul, ol {
+		li {
+			margin: 1em 0;
+			line-height: 1.5;
+		}
+	}
 }
 .post-content.wp-block-column {
 	max-width: 48.5rem;
 	width: 66%;
+	line-height: 1.5;
+	h2 {
+		font-size: var(--wp--preset--font-size--xx-large);
+	}
+	.wp-block-heading {
+		margin-top: 1.5rem;
+		margin-bottom: .625rem;
+	}
 	p {
 		margin: 1rem 0;
 	}
@@ -2983,16 +3085,6 @@ body.single-press-article {
 	width: 18.75rem;
 	position: sticky;
 	top: calc( var(--announcement-bar-height, 0px) + 6rem );
-}
-.wp-block-post-content {
-	line-height: 1.5;
-	h2 {
-		font-size: var(--wp--preset--font-size--xx-large);
-	}
-	.wp-block-heading {
-		margin-top: 1.5rem;
-		margin-bottom: .625rem;
-	}
 }
 
 .post-sidebar {
@@ -3055,20 +3147,31 @@ body.single-press-article {
 ==============================================================*/
 
 body.single-solutions, body.single-product {
-	--page-accent-color-bg:      color-mix(in oklab, var(--page-accent-color) 14%, white);
-	--page-accent-color-bg-soft: color-mix(in oklab, var(--page-accent-color) 7%, white);
+	--page-accent-color-bg:      color-mix(in oklch, var(--page-accent-color) 24%, white);
+	--page-accent-color-bg-soft: color-mix(in oklch, var(--page-accent-color) 7%, white);
 	--superlight-accent-color: var(--page-accent-color-bg-soft);
 	.is-style-bg-dots {
-		background: color-mix(in oklab, var(--page-accent-color) 20%, white);
+		background: color-mix(in oklch, var(--page-accent-color) 20%, white);
 		&:before {
-			opacity: .3;
+			opacity: .5;
 		}
 	}
+	.is-style-bg-dots.is-style-ellipse-top {
+		background: none;
+		&:before {
+			background-color: color-mix(in oklch, var(--page-accent-color) 20%, white);		
+		}
+	}
+	
 	.is-style-bg-ellipse, .single-slide .splide__list {
 		&::after {
 			--page-accent-color-bg: color-mix(in oklab, var(--page-accent-color) 50%, white);		
 		}
 	}
+	.has-white-light-white-gradient-background {
+		--page-accent-color-bg: color-mix(in oklch, var(--page-accent-color) 12%, white);
+	}
+	
 	.has-vertical-gradient-background {
 		&:before {
 			background: linear-gradient(var(--page-accent-color-bg), var(--light-color)) !important;
@@ -3096,9 +3199,9 @@ body.single-solutions, body.single-product {
   8.0 - Animations
 ==============================================================*/
 
-/*--------------------------------------------------------------
+/*==============================================================
   8.1 - Parallax
---------------------------------------------------------------*/
+==============================================================*/
 
 // Slow upward drift keyed to the element's scroll position in the viewport.
 // --parallax-distance controls how far the element travels (negative = up).
@@ -3120,12 +3223,10 @@ body.single-solutions, body.single-product {
 
 /*==============================================================
   9.0 - Block Backgrounds
-  Note: Need to organize these so gradients are all using :after 
-  and background SVGs are all using :before.
 ==============================================================*/
 
 
-.is-style-bg-dark {
+.is-style-bg-dark, .is-style-bg-navy {
 	background: var(--alert-background);
 	color: var(--light-color);
 	// Cascade light text color down to headings and links
@@ -3157,12 +3258,12 @@ body.single-solutions, body.single-product {
 
 /* gradients use :before */
 
-.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-vertical-gradient-background, .has-white-to-superlight-gradient-background {
+.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-vertical-gradient-background, .has-white-to-superlight-gradient-background, .is-style-bg-navy {
 	background: none !important;
 }
 
 
-.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-white-to-superlight-gradient-background, .has-vertical-gradient-background, .product-gradient {
+.has-light-to-superlight-horizontal-gradient-background, .has-white-light-white-gradient-background, .has-white-to-superlight-gradient-background, .has-vertical-gradient-background, .product-gradient, .is-style-bg-navy {
 	@include has-before;
 	&:before {
 		width: 100%;
@@ -3170,6 +3271,12 @@ body.single-solutions, body.single-product {
 		top: 0;
 		left: 0;
 		z-index: -2;
+	}
+}
+
+.is-style-bg-navy {
+	&:before {
+		background: var(--navy-color);
 	}
 }
 
@@ -3205,7 +3312,17 @@ body.single-solutions, body.single-product {
 
 /* background SVGs use :after */
 
-.is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-rings, .is-style-bg-dots {
+@mixin dots-pattern {
+	background-image:
+		radial-gradient(circle, var(--page-accent-color) 2.5px, transparent 2.5px),
+		radial-gradient(circle, var(--page-accent-color) 1px, transparent 1px);
+	background-size: 12.5rem 12.5rem, 2.5rem 2.5rem;
+	background-position: center top, center top;
+	opacity: .4;
+	pointer-events: none;
+}
+
+.is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-rings, .is-style-bg-dots, .is-style-motion-blur {
 	@include has-after;
 	&:after {
 		width: 100%;
@@ -3213,6 +3330,22 @@ body.single-solutions, body.single-product {
 		top: 0;
 		left: 0;
 		z-index: 0;
+	}
+}
+
+.is-style-motion-blur {
+	&:after {
+		left: auto;
+		right: 0;
+		background: url(../images/our-approach-graphic.svg);
+		background-position: right bottom;
+		background-size: 30%;
+		background-repeat: no-repeat;
+		pointer-events: none;
+	}
+	&.top:after {
+		right: 1rem;
+		background-position: right top;
 	}
 }
 
@@ -3230,14 +3363,13 @@ body.single-solutions, body.single-product {
 
 .is-style-bg-rings {
 	&:after {
-		z-index: 0;
 		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
 		pointer-events: none;
 		background-size: 135vw;
 	}	
 }
 
-.is-style-bg-rings, .is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-dots {
+.is-style-bg-rings, .is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-dots, .is-style-motion-blur {
 	> * { position: relative; z-index: 1; }
 }
 
@@ -3253,7 +3385,7 @@ body.single-solutions, body.single-product {
 }
 
 .is-style-ellipse-bottom:after {
-	mask-position: center bottom;
+	mask-position: right bottom;
 	mask-size: 88vw auto;
 }
 
@@ -3266,34 +3398,190 @@ body.single-solutions, body.single-product {
 .is-style-bg-dots {
 	&::after {
 		z-index: 0;
-		background-image:
-			// Large accent dot — one per 5×5 tile
-			radial-gradient(
-				circle,
-				var(--page-accent-color) 2.5px,
-				transparent 2.5px
-			),
-			// Small dots — every grid position
-			radial-gradient(
-				circle,
-				var(--page-accent-color) 1px,
-				transparent 1px
-			);
-		background-size:
-			12.5rem 12.5rem,   // 5×5 tile for large dots
-			2.5rem 2.5rem; // 1×1 tile for small dots
-		background-position:
-			center top,
-			center top;
-		opacity: .4;
-		pointer-events: none;
+		@include dots-pattern;
 	}
 }
 
+// Dots + ellipse/rings combo: the ellipse's mask on :after would otherwise
+// clip the dots background-image to its shape too, since mask clips the
+// whole box's paint, not one layer. Move dots to :before so it renders
+// full-bleed independently, and let the ellipse/rings own :after alone.
+.is-style-bg-dots.is-style-ellipse-top,
+.is-style-bg-dots.is-style-ellipse-bottom,
+.is-style-bg-dots.is-style-bg-ellipse,
+.is-style-bg-dots.is-style-bg-rings {
+	&:after { background-image: none; }
+	@include has-before;
+	&:before {
+		@include rounder;
+		width: 100%; height: 100%; top: 0; left: 0; z-index: 0;;
+		@include dots-pattern;
+	}
+}
 
-.is-style-purple-seafoam-wash { // used for MomentiveIQ feature block on the products archive page
+.is-style-bg-dots.is-style-ellipse-top {
+	&:after {
+		top: 0;
+		opacity: 1;
+	}
+}
+
+.is-style-seafoam-wash { // used for MomentiveIQ feature block on the products archive page
 	background:
 		radial-gradient(ellipse 85% 140% at 64% 110%, rgba(189, 233, 226, 0.5) 0%, rgba(189, 233, 226, 0.25) 45%, rgba(189, 233, 226, 0) 85%),
 		radial-gradient(ellipse 70% 100% at 2% -10%, rgba(204, 201, 243, 0.5) 0%, rgba(204, 201, 243, 0.22) 45%, rgba(204, 201, 243, 0) 85%),
 		#fbfdff;
+}
+
+
+
+/*==============================================================
+  9.1 - Content Blocks
+==============================================================*/
+
+.is-style-highlight {
+	@include round;
+	background: var(--superlight-accent-color);
+	padding: var(--wp--preset--spacing--x-small);
+	display: grid;
+	align-items: center;
+	gap: 0 var(--wp--preset--spacing--x-small);
+	flex-wrap: wrap;
+	margin: var(--wp--preset--spacing--small) 0;
+
+	&.with-button {
+		grid-template-columns: 7fr 3fr;
+		grid-template-areas: "Blurb Button";
+		.wp-block-buttons {
+			grid-area: Button;
+		}
+		.wp-block-paragraph {
+			margin-top: auto;
+			grid-area: Blurb;
+		}
+		&.with-heading {
+			grid-template-areas: "Headline Button"
+			"Blurb Button";
+			.wp-block-paragraph.heading {
+				grid-area: Headline;
+				margin-top: auto;
+			}
+			.wp-block-paragraph.blurb {
+				grid-area: Blurb;
+			}
+		}
+	}
+	
+	&.with-heading {
+		.wp-block-paragraph.blurb {
+			padding-top: .5rem;
+		}
+	}
+
+	.wp-block-buttons {
+		margin: 0;
+		max-width: 100%;
+	}
+	.wp-block-paragraph.heading {
+		flex-basis: 100%;
+		font-size: var(--wp--preset--font-size--medium);
+		font-weight: 600;
+	}
+	&.with-icon {
+		grid-template-columns: 3rem 1fr;
+		grid-template-areas: "Icon Headline"
+		"Blurb Blurb";
+		row-gap: .5rem;
+		column-gap: .25rem;
+		.wp-block-paragraph.heading {
+			grid-area: Headline;
+			align-self: center;
+		}
+		.svg-icon {
+			grid-area: Icon;		
+		}
+		.wp-block-paragraph.blurb {
+			grid-area: Blurb;
+		}
+		.svg-icon, .svg-icon svg {
+			height: 3rem;
+			width: 3rem;
+		}
+	}
+	&.with-image {
+		grid-template-columns: 3fr 2fr;
+		grid-template-areas: "Blurb Image"
+			"Button Image";
+		gap: 0 1.875rem;
+		.wp-block-buttons {
+			padding-top: .5rem;
+			margin-bottom: auto;
+		}
+		figure.wp-block-image {
+			border-radius: 1rem !important;
+			margin: 0;
+			+ .wp-block-buttons {
+				margin-left: 0 !important;
+			}
+		}
+		&.with-heading {
+			grid-template-areas: "Headline Image"
+				"Blurb Image"
+				"Button Image";
+		}
+		.wp-block-image {
+			grid-area: Image;
+			height: 100%;
+			aspect-ratio: 12 / 7;
+			img {
+				height: 100%;
+				object-fit: contain; //cover;
+			}
+		}
+	}
+	&.is-layout-constrained p {
+		margin: 0 auto 0 0 !important;
+	}
+}
+.single-article .is-style-highlight figure.wp-block-image {
+	width: 100%;
+}
+.post-content.wp-block-column .is-style-highlight p {
+	margin: 0;
+}
+
+.draggable-image-slider {
+	padding-bottom: 3rem;
+	.splide__arrows {
+		bottom: 0;
+		right: 1.5rem; //calc((100vw - var(--wp--style--global--content-size))/2);
+	}
+	.splide__pagination {
+		bottom: 0;
+		left: 1.5rem; //calc((100vw - var(--wp--style--global--content-size))/2);	
+		right: auto;
+		.splide__pagination__page:not(.is-active) {
+			background: var(--midtone-color);
+		}
+	}
+	@media #{$large-up} {
+		.splide__arrows, .splide__pagination {
+			display: none;
+		}
+	}
+	li.splide__slide {
+		display: flex;
+		align-items: center;
+		@media #{$small-up} {
+			width: calc( ( 100vw - 5.5rem ) / 2 );
+		}
+		@media #{$medium-up} {
+			width: calc( ( var(--wp--style--global--content-size) - 3rem ) / 3 );
+		}
+		figure {
+			@include rounder;
+			margin: auto 0 !important; /* override WP defaults */
+		}
+	}
+
 }

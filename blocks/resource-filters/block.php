@@ -38,6 +38,65 @@ add_action( 'init', function () {
 	);
 } );
 
+/**
+ * Localize the post-type map onto whichever of our scripts are registered.
+ *
+ * Done on enqueue hooks (NOT on init) for two reasons:
+ *  1. Timing: post type labels are finalized by other init callbacks (e.g.
+ *     rename-posts-to-blog.php renames `post` → "Blog" on init). Building the
+ *     map on init races those; building it at enqueue time reads final labels.
+ *  2. Correctness: wp_localize_script data is only emitted when the script is
+ *     actually enqueued and printed. Attaching it on the enqueue hooks (front
+ *     end + block editor) guarantees the `momentiveResourceFilters` global is
+ *     present wherever the scripts run — which is why the editor select was
+ *     empty and the front-end labels were stale before.
+ */
+function momentive_resource_filters_localize(): void {
+	$data = array( 'postTypes' => momentive_resource_filters_post_type_map() );
+
+	foreach ( array( 'momentive-resource-filters', 'momentive-resource-filters-editor' ) as $handle ) {
+		if ( wp_script_is( $handle, 'registered' ) ) {
+			// Remove any prior copy (in case both hooks fire) then attach fresh.
+			wp_localize_script( $handle, 'momentiveResourceFilters', $data );
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'momentive_resource_filters_localize', 20 );
+add_action( 'enqueue_block_editor_assets', 'momentive_resource_filters_localize', 20 );
+
+/**
+ * Build a slug => [ label, singular, endpoint ] map of post types the filter
+ * bar can query. Public, REST-enabled post types only. `singular` is used for
+ * the card's top-label; `endpoint` is the REST route (from rest_base).
+ *
+ * @return array<string,array{label:string,singular:string,endpoint:string}>
+ */
+function momentive_resource_filters_post_type_map(): array {
+	$map = array();
+
+	$types = get_post_types(
+		array( 'public' => true, 'show_in_rest' => true ),
+		'objects'
+	);
+
+	foreach ( $types as $slug => $obj ) {
+		// Skip types that don't make sense as filterable resources.
+		if ( in_array( $slug, array( 'attachment', 'page' ), true ) ) {
+			continue;
+		}
+		$rest_base = ! empty( $obj->rest_base ) ? $obj->rest_base : $slug;
+		$singular  = ! empty( $obj->labels->singular_name ) ? $obj->labels->singular_name : $obj->label;
+
+		$map[ $slug ] = array(
+			'label'    => $obj->label,            // plural admin label (for pickers)
+			'singular' => $singular,              // singular label (for top-label)
+			'endpoint' => '/wp-json/wp/v2/' . ltrim( (string) $rest_base, '/' ),
+		);
+	}
+
+	return $map;
+}
+
 
 function momentive_resource_filters_render( array $attributes, string $content ): string {
 	$show_categories  = ! empty( $attributes['showCategories'] );
@@ -49,6 +108,21 @@ function momentive_resource_filters_render( array $attributes, string $content )
 	// The post type this filter bar is configured for.
 	// Defaults to 'post' so the blog archive works without configuration.
 	$default_post_type = sanitize_key( $attributes['defaultPostType'] ?? 'post' );
+
+	// Archive auto-detect: on a CPT archive, if the block was left at the bare
+	// 'post' default, target the archive's own post type instead — so dropping
+	// the filter bar on a Case Studies / Webinars / etc. archive "just works"
+	// without per-block configuration. A block explicitly set to another type
+	// keeps its setting (we only override the un-configured default).
+	if ( 'post' === $default_post_type && is_post_type_archive() ) {
+		$archive_type = get_query_var( 'post_type' );
+		if ( is_array( $archive_type ) ) {
+			$archive_type = reset( $archive_type );
+		}
+		if ( is_string( $archive_type ) && '' !== $archive_type && post_type_exists( $archive_type ) ) {
+			$default_post_type = sanitize_key( $archive_type );
+		}
+	}
 
 	// Categories — filtered to only those used by the configured post type.
 	// This means the newsroom filter shows press-article categories,

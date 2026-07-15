@@ -95,9 +95,12 @@ function momentive_render_person( array $block, string $content = '', bool $is_p
 		return;
 	}
 
-	$name      = get_the_title( $person_id );
-	$position  = (string) get_field( 'job_position', $person_id );
-	$linkedin  = (string) get_field( 'linkedin_url', $person_id );
+	$name              = get_the_title( $person_id );
+	$position          = (string) get_field( 'job_position', $person_id );
+	$organization      = (string) get_field( 'organization', $person_id );
+	$show_organization = (bool) get_field( 'show_organization' ); // block-level field
+	$position_display  = $position . ( ( $show_organization && $organization ) ? ', ' . $organization : '' );
+	$linkedin          = (string) get_field( 'linkedin_url', $person_id );
 	$permalink = get_permalink( $person_id );
 	$slug      = get_post_field( 'post_name', $person_id );
 	$dom_id    = 'person-' . sanitize_html_class( $slug );
@@ -126,8 +129,8 @@ function momentive_render_person( array $block, string $content = '', bool $is_p
 		echo '<span class="momentive-person__photo">' . $thumb . '</span>';
 	}
 	echo '<span class="momentive-person__name">' . esc_html( $name ) . '</span>';
-	if ( $position ) {
-		echo '<span class="momentive-person__position">' . esc_html( $position ) . '</span>';
+	if ( $position_display ) {
+		echo '<span class="momentive-person__position">' . esc_html( $position_display ) . '</span>';
 	}
 	echo '</a>';
 
@@ -153,8 +156,8 @@ function momentive_render_person( array $block, string $content = '', bool $is_p
 
 		echo '<div class="momentive-person__profile-body">';
 		echo '<h2 class="momentive-person__profile-name">' . esc_html( $name ) . '</h2>';
-		if ( $position ) {
-			echo '<p class="momentive-person__profile-position">' . esc_html( $position ) . '</p>';
+		if ( $position_display ) {
+			echo '<p class="momentive-person__profile-position">' . esc_html( $position_display ) . '</p>';
 		}
 		if ( $linkedin ) {
 			printf(

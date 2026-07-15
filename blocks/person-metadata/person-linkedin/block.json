@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"name": "acf/person-linkedin",
 	"title": "Person LinkedIn",
 	"description": "A LinkedIn icon link for the current person (linkedin_url field).",

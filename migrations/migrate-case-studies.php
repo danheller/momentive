@@ -23,13 +23,18 @@
  *   6. Assembles the prose body (intro / challenge+solution / results /
  *      additional / about) into the block scaffold the 6 coverage posts use.
  *
- * USAGE:
- *   wp eval-file migrate-case-studies.php --dry-run
- *   wp eval-file migrate-case-studies.php
- *   wp eval-file migrate-case-studies.php --only=1743          # single legacy ID
- *   wp eval-file migrate-case-studies.php --limit=5
+ * USAGE (flags are POSITIONAL — `wp eval-file` rejects --flags):
+ *   wp eval-file migrate-case-studies.php                 # LIVE (writes posts)
+ *   wp eval-file migrate-case-studies.php dry-run         # no writes
+ *   wp eval-file migrate-case-studies.php dry-run limit=6 # dry run, first 6
+ *   wp eval-file migrate-case-studies.php only=1743       # single legacy ID
+ *   MOMENTIVE_DRY=1 wp eval-file migrate-case-studies.php # dry run via env
  *
- * Flags are read from $args / WP_CLI runtime; see momentive_cs_get_flags().
+ * SOURCE: legacy case_studies data is read from the WXR export file (the
+ * migration runs on the REBUILT site, where legacy posts don't exist in the
+ * DB). Set MOMENTIVE_LEGACY_WXR to the export path, MOMENTIVE_UPLOADS_BASE for
+ * the media host, MOMENTIVE_PRODUCT_CSV / MOMENTIVE_ICON_DIR as needed.
+ * Flags are read in momentive_cs_get_flags().
  *
  * SAFETY: testimonial matching fails toward "harmless duplicate", never
  * "silent wrong content". Name shortening was reviewed/approved out-of-band
@@ -49,10 +54,32 @@ const MOMENTIVE_CS_LEGACY_TYPE = 'case_studies';
 const MOMENTIVE_CS_NEW_TYPE    = 'case-study';
 const MOMENTIVE_TESTIMONIAL_TYPE = 'testimonials';
 
+// Meta key stamped on every post/testimonial this migration creates, set to the
+// run timestamp. Lets a future run (or a manual query) identify exactly what a
+// given migration run touched, for safe rollback.
+const MOMENTIVE_RUN_META = '_momentive_migration_run';
+
+/** Per-run identifier (timestamp), stamped on created posts. Stable per process. */
+function momentive_cs_run_id(): string {
+	static $id = null;
+	if ( null === $id ) {
+		$id = gmdate( 'Y-m-d\TH:i:s\Z' );
+	}
+	return $id;
+}
+
 // ACF field keys (from the authoritative export).
 const FK_STAT_VALUE   = 'field_6a42c6c8357d9';
 const FK_STAT_DESC    = 'field_6a42c6ef357da';
 const FK_STAT_REPEAT  = 'field_6a42c667b17bc';
+
+// linked-products block field keys (block-level bindings). These MUST appear in
+// the block's inline ACF `data` or ACF can't resolve the block's fields and the
+// block renders nothing. Values: heading text, show_heading flag, and the
+// block-level (override) linked_products selection.
+const FK_LP_HEADING       = 'field_6a429fb9316b6';
+const FK_LP_SHOW_HEADING  = 'field_6a42a00e316b7';
+const FK_LP_PRODUCTS      = 'field_6a42aac112ead'; // block-level override field
 
 // CCT id -> product NAME map. Populated from the Product Settings CCT CSV at
 // runtime (momentive_cs_load_product_map). The low-number IDs in
@@ -67,29 +94,50 @@ const FK_STAT_REPEAT  = 'field_6a42c667b17bc';
 
 /**
  * Strip MS-Word span cruft from a WYSIWYG value, preserving inner text/markup.
- * Removes <span data-contrast="…"> and <span data-ccp-props="…"> wrappers
- * (and their closing tags) without touching the content between them.
+ *
+ * Word/Office-online paste leaves <span> wrappers with a range of fingerprints:
+ *   - data-* attributes: data-contrast, data-ccp-props, data-ccp-charstyle, …
+ *   - class tokens: NormalTextRun, TextRun, EOP, SCXW########, BCX#,
+ *     SpellingErrorV#Themed, comment/tracked-change classes, etc.
+ * These render as "Invalid content" in the block editor. We remove the opening
+ * span tags (keeping inner text) and then drop all now-orphaned </span>.
+ *
+ * Legitimate styling spans are not used in the legacy case-study body, so
+ * removing Word spans and their closers is safe here.
  */
 function momentive_cs_strip_word( string $html ): string {
 	if ( '' === trim( $html ) ) {
 		return '';
 	}
 
-	// Remove opening spans that carry Word's editing attributes, keep inner text.
+	// 1) Opening spans carrying ANY Word data-* attribute (data-contrast,
+	//    data-ccp-props, data-ccp-charstyle, data-ccp-*, etc.).
 	$html = preg_replace(
-		'#<span\b[^>]*\bdata-(?:contrast|ccp-props)\b[^>]*>#i',
+		'#<span\b[^>]*\bdata-(?:contrast|ccp-[a-z-]+)\b[^>]*>#i',
 		'',
 		$html
 	);
 
-	// That can leave orphan </span> tags; remove a matching number from the end
-	// of each paragraph run. Simplest robust approach: drop ALL </span> that no
-	// longer have an opener. Since we removed only Word spans (not legitimate
-	// styling spans, which the legacy body does not use), removing leftover
-	// closers is safe here.
+	// 2) Opening spans whose class contains a Word fingerprint token.
+	$word_classes = 'NormalTextRun|TextRun|EOP|SCXW[0-9]+|BCX[0-9]+'
+		. '|SpellingError[^"\'\s]*|ContextualSpellingAndGrammarError[^"\'\s]*'
+		. '|AdvancedProofingIssue[^"\'\s]*|Comment[A-Za-z]*|TrackedChange'
+		. '|Selected|Underlined';
+	$html = preg_replace(
+		'#<span\b[^>]*\bclass="[^"]*\b(?:' . $word_classes . ')\b[^"]*"[^>]*>#i',
+		'',
+		$html
+	);
+
+	// 3) Any remaining bare/styleless spans that were Word output (no semantic
+	//    value). Keep spans that carry a real attribute we might want (none in
+	//    this corpus), but drop empty <span> and <span style="..."> wrappers.
+	$html = preg_replace( '#<span(?:\s+style="[^"]*")?\s*>#i', '', $html );
+
+	// 4) Drop all now-orphaned closing spans.
 	$html = preg_replace( '#</span>#i', '', $html );
 
-	// Collapse the empty " " spacer paragraphs Word leaves behind.
+	// 5) Collapse the empty/&nbsp;-only spacer paragraphs Word leaves behind.
 	$html = preg_replace( '#<p>(?:\s|&nbsp;|\x{00A0})*</p>#iu', '', $html );
 
 	return trim( (string) $html );
@@ -471,6 +519,120 @@ function momentive_cs_build_attachment_map(): array {
 	return $map;
 }
 
+/* -------------------------------------------------------------------------
+ * Legacy source: parse case_studies posts from the WXR export
+ *
+ * The migration runs on the REBUILT site, where the legacy `case_studies`
+ * posts do not exist in the database. So legacy content is read from the WXR
+ * export file, not via get_posts()/get_post_meta(). Each parsed item exposes
+ * the same shape the loop needs: id, title, slug, status, excerpt, a meta map
+ * (ACF fields, repeaters PHP-serialized as in the DB), and category slugs.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Extract a single CDATA/plain child tag value from an item block.
+ */
+function momentive_cs_xml_tag( string $item, string $tag ): string {
+	if ( preg_match( '#<' . preg_quote( $tag, '#' ) . '><!\[CDATA\[(.*?)\]\]></' . preg_quote( $tag, '#' ) . '>#s', $item, $m ) ) {
+		return $m[1];
+	}
+	if ( preg_match( '#<' . preg_quote( $tag, '#' ) . '>(.*?)</' . preg_quote( $tag, '#' ) . '>#s', $item, $m ) ) {
+		return $m[1];
+	}
+	return '';
+}
+
+/**
+ * Parse all case_studies items from the legacy WXR into structured arrays.
+ *
+ * @return array<int,array{
+ *   id:int, title:string, slug:string, status:string, excerpt:string,
+ *   meta:array<string,string>, cats:array<int,string>
+ * }>
+ */
+function momentive_cs_load_legacy_posts(): array {
+	$path = defined( 'MOMENTIVE_LEGACY_WXR' )
+		? MOMENTIVE_LEGACY_WXR
+		: __DIR__ . '/momentivesoftware_current-case-studies_2026-06-29.xml';
+
+	$out = array();
+	if ( ! file_exists( $path ) ) {
+		WP_CLI::error( "Legacy WXR not found at {$path}. Set MOMENTIVE_LEGACY_WXR or place the export beside the script." );
+		return $out;
+	}
+	$xml = file_get_contents( $path );
+	if ( false === $xml ) {
+		WP_CLI::error( 'Could not read legacy WXR.' );
+		return $out;
+	}
+
+	if ( ! preg_match_all( '#<item>(.*?)</item>#s', $xml, $items ) ) {
+		return $out;
+	}
+
+	foreach ( $items[1] as $item ) {
+		if ( false === strpos( $item, '<wp:post_type><![CDATA[case_studies]]>' ) ) {
+			continue;
+		}
+
+		// Meta: collect every postmeta key/value pair.
+		$meta = array();
+		if ( preg_match_all(
+			'#<wp:meta_key><!\[CDATA\[(.*?)\]\]></wp:meta_key>\s*<wp:meta_value><!\[CDATA\[(.*?)\]\]></wp:meta_value>#s',
+			$item, $mm, PREG_SET_ORDER ) ) {
+			foreach ( $mm as $pair ) {
+				// First occurrence wins (mirrors single-value get_post_meta).
+				if ( ! array_key_exists( $pair[1], $meta ) ) {
+					$meta[ $pair[1] ] = $pair[2];
+				}
+			}
+		}
+
+		// Categories (Solutions taxonomy is stored as category domain).
+		$cats = array();
+		if ( preg_match_all(
+			'#<category domain="category" nicename="([^"]*)">#',
+			$item, $cm ) ) {
+			$cats = array_values( array_unique( $cm[1] ) );
+		}
+
+		$out[] = array(
+			'id'      => (int) momentive_cs_xml_tag( $item, 'wp:post_id' ),
+			'title'   => momentive_cs_xml_tag( $item, 'title' ),
+			'slug'    => momentive_cs_xml_tag( $item, 'wp:post_name' ),
+			'status'  => momentive_cs_xml_tag( $item, 'wp:status' ) ?: 'publish',
+			'excerpt' => momentive_cs_xml_tag( $item, 'excerpt:encoded' ),
+			'date'         => momentive_cs_xml_tag( $item, 'wp:post_date' ),
+			'date_gmt'     => momentive_cs_xml_tag( $item, 'wp:post_date_gmt' ),
+			'modified'     => momentive_cs_xml_tag( $item, 'wp:post_modified' ),
+			'modified_gmt' => momentive_cs_xml_tag( $item, 'wp:post_modified_gmt' ),
+			'meta'    => $meta,
+			'cats'    => $cats,
+		);
+	}
+
+	// Stable order by legacy ID.
+	usort( $out, static function ( $a, $b ) {
+		return $a['id'] <=> $b['id'];
+	} );
+
+	return $out;
+}
+
+/**
+ * Read a legacy meta value (single), unserializing if it's a serialized array.
+ * Mirrors maybe_unserialize( get_post_meta( id, key, true ) ).
+ *
+ * @return mixed
+ */
+function momentive_cs_legacy_meta( array $legacy, string $key ) {
+	$raw = $legacy['meta'][ $key ] ?? '';
+	if ( '' === $raw ) {
+		return '';
+	}
+	return maybe_unserialize( $raw );
+}
+
 /**
  * Sideload a file by URL into the rebuilt media library, deduped by source URL.
  * Modeled on migrate-leaders.php's msw_sideload_unique().
@@ -518,7 +680,34 @@ function momentive_cs_sideload( string $url, int $post_id, bool $dry ): int {
 		'name'     => basename( parse_url( $url, PHP_URL_PATH ) ),
 		'tmp_name' => $tmp,
 	);
+
+	// SVG note: this site uses the Safe SVG plugin, which gates SVG handling on
+	// (a) the sanitizer being able to run and (b) user capability. Under WP-CLI
+	// there is no logged-in user, so Safe SVG's capability check fails and the
+	// sideload is rejected with "not allowed to upload SVG files". The fix is to
+	// run the migration as an admin:  wp eval-file … --user=<admin-id-or-login>
+	// With a user set, Safe SVG sanitizes and allows the SVG normally.
+	//
+	// We still register a plain MIME allowance as a fallback for installs where
+	// Safe SVG isn't intercepting the sideload path; harmless when it is.
+	$ext    = strtolower( pathinfo( $file_array['name'], PATHINFO_EXTENSION ) );
+	$is_svg = ( 'svg' === $ext || 'svgz' === $ext );
+
+	$mime_cb = static function ( $mimes ) {
+		$mimes['svg']  = 'image/svg+xml';
+		$mimes['svgz'] = 'image/svg+xml';
+		return $mimes;
+	};
+	if ( $is_svg ) {
+		add_filter( 'upload_mimes', $mime_cb, 99 );
+	}
+
 	$att_id = media_handle_sideload( $file_array, $post_id );
+
+	if ( $is_svg ) {
+		remove_filter( 'upload_mimes', $mime_cb, 99 );
+	}
+
 	if ( is_wp_error( $att_id ) ) {
 		@unlink( $tmp );
 		WP_CLI::warning( "    media import FAILED: {$url} ({$att_id->get_error_message()})" );
@@ -529,9 +718,25 @@ function momentive_cs_sideload( string $url, int $post_id, bool $dry ): int {
 	return (int) $att_id;
 }
 
-/** Resolve a rebuilt Product post ID by title. Cached per-run. */
+/**
+ * Normalize a product name for fuzzy matching: lowercase, strip everything
+ * except letters/numbers. "Crowd Wisdom" / "CrowdWisdom" / "crowd-wisdom" all
+ * collapse to "crowdwisdom". Handles the inconsistent spacing in product names.
+ */
+function momentive_cs_norm_product( string $name ): string {
+	return preg_replace( '/[^a-z0-9]/', '', strtolower( trim( $name ) ) );
+}
+
+/**
+ * Resolve a rebuilt Product post ID by title. Exact title first, then a
+ * normalized (space/punctuation/case-insensitive) match against all products,
+ * to absorb naming inconsistencies (e.g. "Crowd Wisdom" vs "CrowdWisdom",
+ * "Path LMS" vs "Path"). Cached per-run.
+ */
 function momentive_cs_product_post_by_name( string $name ): int {
 	static $cache = array();
+	static $norm_index = null; // normalized-name => product ID
+
 	$name = trim( $name );
 	if ( '' === $name ) {
 		return 0;
@@ -540,7 +745,7 @@ function momentive_cs_product_post_by_name( string $name ): int {
 		return $cache[ $name ];
 	}
 
-	// get_page_by_title() is deprecated in WP 6.2+; use a title-matched query.
+	// 1) Exact title match (deprecation-safe query).
 	$ids = get_posts( array(
 		'post_type'              => 'product',
 		'post_status'            => 'any',
@@ -551,8 +756,51 @@ function momentive_cs_product_post_by_name( string $name ): int {
 		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
 	) );
-	$cache[ $name ] = $ids ? (int) $ids[0] : 0;
-	return $cache[ $name ];
+	if ( $ids ) {
+		return $cache[ $name ] = (int) $ids[0];
+	}
+
+	// 2) Normalized match. Build a name->ID index of all products once.
+	if ( null === $norm_index ) {
+		$norm_index = array();
+		$all = get_posts( array(
+			'post_type'              => 'product',
+			'post_status'            => 'any',
+			'posts_per_page'         => -1,
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		) );
+		foreach ( $all as $pid ) {
+			$key = momentive_cs_norm_product( get_the_title( $pid ) );
+			if ( '' !== $key && ! isset( $norm_index[ $key ] ) ) {
+				$norm_index[ $key ] = (int) $pid;
+			}
+		}
+	}
+
+	$nkey = momentive_cs_norm_product( $name );
+	if ( '' !== $nkey && isset( $norm_index[ $nkey ] ) ) {
+		return $cache[ $name ] = $norm_index[ $nkey ];
+	}
+
+	// 3) Last resort: normalized containment, but ONLY if exactly one product
+	//    matches — an ambiguous containment returns 0 (logged by caller) rather
+	//    than risking the wrong product.
+	if ( '' !== $nkey && strlen( $nkey ) >= 4 ) {
+		$candidates = array();
+		foreach ( $norm_index as $k => $pid ) {
+			if ( strlen( $k ) >= 4 && ( false !== strpos( $k, $nkey ) || false !== strpos( $nkey, $k ) ) ) {
+				$candidates[ $pid ] = true;
+			}
+		}
+		if ( 1 === count( $candidates ) ) {
+			return $cache[ $name ] = (int) array_key_first( $candidates );
+		}
+	}
+
+	return $cache[ $name ] = 0;
 }
 
 /* -------------------------------------------------------------------------
@@ -640,6 +888,7 @@ function momentive_cs_create_testimonial( array $legacy, bool $dry_run ): int {
 	update_field( 'testimonial_content', $quote, $post_id );
 	update_field( 'testimonial_author_name', $name, $post_id );
 	update_field( 'testimonial_author_description', $desc, $post_id );
+	update_post_meta( $post_id, MOMENTIVE_RUN_META, momentive_cs_run_id() );
 
 	return (int) $post_id;
 }
@@ -744,11 +993,28 @@ function momentive_cs_download_block( string $url ): string {
 		. "<!-- /wp:button --></div>\n<!-- /wp:buttons -->";
 }
 
-/** linked-products sidebar block. Pulls from post-level field, so inline data is empty. */
+/**
+ * linked-products sidebar block.
+ *
+ * CRITICAL: an ACF block needs its field keys present in the inline `data`
+ * object, or ACF can't bind the block's fields and the block renders nothing on
+ * the front end. So we emit the same scaffold the working (pre-migration) posts
+ * had — the three block-level field keys, with show_heading enabled. The
+ * block-level products override is left empty; the render falls back to the
+ * post-level linked_products field (written separately via update_field).
+ */
 function momentive_cs_linked_products_block(): string {
-	// Matches the coverage posts: inline fields blank, render reads post-level
-	// linked_products (written separately via update_field).
-	return '<!-- wp:momentive/linked-products /-->';
+	$attrs = wp_json_encode( array(
+		'name' => 'momentive/linked-products',
+		'data' => array(
+			FK_LP_HEADING      => '',
+			FK_LP_SHOW_HEADING => '1',
+			FK_LP_PRODUCTS     => '',
+		),
+		'mode' => 'preview',
+	), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+
+	return "<!-- wp:momentive/linked-products {$attrs} /-->";
 }
 
 /**
@@ -836,19 +1102,22 @@ function momentive_cs_page( string $logo_block, string $download_block, string $
  *
  * Default is LIVE (per migration decision); dry-run is explicit opt-in.
  */
-function momentive_cs_get_flags(): array {
+function momentive_cs_get_flags( array $argv = array() ): array {
+	// DRY-RUN BY DEFAULT. Writing requires an explicit `live` token, so a
+	// mis-parsed or omitted flag can never cause an accidental live run.
 	$flags = array(
-		'dry_run' => false,
+		'dry_run' => true,
 		'only'    => 0,
 		'limit'   => 0,
 	);
 
-	// Positional args delivered to the eval-file script.
-	$argv = isset( $GLOBALS['args'] ) && is_array( $GLOBALS['args'] ) ? $GLOBALS['args'] : array();
+	// Positional args delivered to the eval-file script (passed in from file scope).
 	foreach ( $argv as $tok ) {
 		$tok = ltrim( (string) $tok, '-' ); // tolerate a leading -- if the user adds it
-		if ( 'dry-run' === $tok || 'dry_run' === $tok || 'dry' === $tok ) {
-			$flags['dry_run'] = true;
+		if ( 'live' === $tok || 'go' === $tok ) {
+			$flags['dry_run'] = false;
+		} elseif ( 'dry-run' === $tok || 'dry_run' === $tok || 'dry' === $tok ) {
+			$flags['dry_run'] = true; // explicit, though already the default
 		} elseif ( 0 === strpos( $tok, 'only=' ) ) {
 			$flags['only'] = (int) substr( $tok, 5 );
 		} elseif ( 0 === strpos( $tok, 'limit=' ) ) {
@@ -856,8 +1125,9 @@ function momentive_cs_get_flags(): array {
 		}
 	}
 
-	// Env fallback (most reliable across WP-CLI versions).
-	if ( getenv( 'MOMENTIVE_DRY' ) ) { $flags['dry_run'] = true; }
+	// Env override: MOMENTIVE_LIVE=1 enables writes; MOMENTIVE_DRY=1 forces dry.
+	if ( getenv( 'MOMENTIVE_LIVE' ) ) { $flags['dry_run'] = false; }
+	if ( getenv( 'MOMENTIVE_DRY' ) )  { $flags['dry_run'] = true; }
 	if ( getenv( 'MOMENTIVE_ONLY' ) )  { $flags['only']  = (int) getenv( 'MOMENTIVE_ONLY' ); }
 	if ( getenv( 'MOMENTIVE_LIMIT' ) ) { $flags['limit'] = (int) getenv( 'MOMENTIVE_LIMIT' ); }
 
@@ -868,29 +1138,38 @@ function momentive_cs_get_flags(): array {
  * Main
  * ---------------------------------------------------------------------- */
 
-function momentive_cs_run(): void {
-	$flags = momentive_cs_get_flags();
+function momentive_cs_run( array $argv = array() ): void {
+	$flags = momentive_cs_get_flags( $argv );
 	$dry   = $flags['dry_run'];
 
-	WP_CLI::log( '== Case Study migration ==' . ( $dry ? '  (DRY RUN)' : '' ) );
+	WP_CLI::log( '====================================================' );
+	WP_CLI::log( '  Case Study migration' );
+	WP_CLI::log( '  MODE: ' . ( $dry ? 'DRY RUN (no writes)' : '*** LIVE — WRITING POSTS ***' ) );
+	if ( $flags['only'] )  { WP_CLI::log( '  only:  legacy ID ' . $flags['only'] ); }
+	if ( $flags['limit'] ) { WP_CLI::log( '  limit: ' . $flags['limit'] . ' posts' ); }
+	if ( ! $dry ) {
+		WP_CLI::log( '  (pass no token, or "dry-run", to preview without writing)' );
+	}
+	WP_CLI::log( '====================================================' );
 
 	$product_map = momentive_cs_load_product_map();
 	$attach_map  = momentive_cs_build_attachment_map();
 	$t_index     = momentive_cs_build_testimonial_index();
 	WP_CLI::log( sprintf( 'Testimonial corpus: %d posts indexed.', count( $t_index['list'] ) ) );
 
-	$args = array(
-		'post_type'      => MOMENTIVE_CS_LEGACY_TYPE,
-		'post_status'    => 'any',
-		'posts_per_page' => $flags['limit'] > 0 ? $flags['limit'] : -1,
-		'orderby'        => 'ID',
-		'order'          => 'ASC',
-		'no_found_rows'  => true,
-	);
+	$legacy_all = momentive_cs_load_legacy_posts();
+	WP_CLI::log( sprintf( 'Legacy WXR: %d case_studies items parsed.', count( $legacy_all ) ) );
+
+	// Apply only/limit filters (the WXR is the source, so we filter in PHP).
 	if ( $flags['only'] > 0 ) {
-		$args['p'] = $flags['only'];
+		$legacy_all = array_values( array_filter( $legacy_all, static function ( $p ) use ( $flags ) {
+			return $p['id'] === $flags['only'];
+		} ) );
 	}
-	$legacy_posts = get_posts( $args );
+	if ( $flags['limit'] > 0 ) {
+		$legacy_all = array_slice( $legacy_all, 0, $flags['limit'] );
+	}
+	$legacy_posts = $legacy_all;
 
 	$summary = array(
 		'processed'       => 0,
@@ -907,31 +1186,36 @@ function momentive_cs_run(): void {
 	$unresolved_icons = array();
 	$media_unresolved = array();
 	$cat_unresolved   = array();
+	$pdf_failed       = array();
+	$product_unresolved = array();
 
 	foreach ( $legacy_posts as $legacy ) {
 		$summary['processed']++;
-		$title = get_the_title( $legacy );
-		WP_CLI::log( sprintf( "\n[%d] %s", $legacy->ID, $title ) );
+		$legacy_id = $legacy['id'];
+		$title     = $legacy['title'];
+		WP_CLI::log( sprintf( "\n[%d] %s", $legacy_id, $title ) );
+
+		$m = $legacy['meta']; // shorthand for raw meta map
 
 		// ---- prose fields ------------------------------------------------
-		$intro_header = (string) get_post_meta( $legacy->ID, 'intro_header', true );
-		$intro_text   = (string) get_post_meta( $legacy->ID, 'intro_text', true );
-		$chsol_text   = (string) get_post_meta( $legacy->ID, 'challenge_solution_text', true );
-		$results_text = (string) get_post_meta( $legacy->ID, 'results_text', true );
-		$add_text     = (string) get_post_meta( $legacy->ID, 'additional_content', true );
-		$about_text   = (string) get_post_meta( $legacy->ID, 'about_text', true );
-		$org_name     = (string) get_post_meta( $legacy->ID, 'organization_name', true );
+		$intro_header = (string) ( $m['intro_header'] ?? '' );
+		$intro_text   = (string) ( $m['intro_text'] ?? '' );
+		$chsol_text   = (string) ( $m['challenge_solution_text'] ?? '' );
+		$results_text = (string) ( $m['results_text'] ?? '' );
+		$add_text     = (string) ( $m['additional_content'] ?? '' );
+		$about_text   = (string) ( $m['about_text'] ?? '' );
+		$org_name     = (string) ( $m['organization_name'] ?? '' );
 
 		// ---- structured fields ------------------------------------------
-		$stats    = maybe_unserialize( get_post_meta( $legacy->ID, 'case_study_data', true ) );
+		$stats    = momentive_cs_legacy_meta( $legacy, 'case_study_data' );
 		$stats    = is_array( $stats ) ? array_values( $stats ) : array();
-		$features = maybe_unserialize( get_post_meta( $legacy->ID, 'case_study_features', true ) );
+		$features = momentive_cs_legacy_meta( $legacy, 'case_study_features' );
 		$features = is_array( $features ) ? array_values( $features ) : array();
-		$prod_ids = maybe_unserialize( get_post_meta( $legacy->ID, 'case_study_products_used', true ) );
+		$prod_ids = momentive_cs_legacy_meta( $legacy, 'case_study_products_used' );
 		$prod_ids = is_array( $prod_ids ) ? array_map( 'intval', array_values( $prod_ids ) ) : array();
 
 		// ---- testimonial ------------------------------------------------
-		$quote = (string) get_post_meta( $legacy->ID, 'case_study_author_testimonial', true );
+		$quote = (string) ( $m['case_study_author_testimonial'] ?? '' );
 		$tid   = 0;
 		if ( '' !== trim( $quote ) ) {
 			$tid = momentive_cs_find_testimonial( $quote, $t_index );
@@ -941,8 +1225,8 @@ function momentive_cs_run(): void {
 			} else {
 				$new_id = momentive_cs_create_testimonial( array(
 					'quote' => $quote,
-					'name'  => (string) get_post_meta( $legacy->ID, 'case_study_author_name', true ),
-					'desc'  => (string) get_post_meta( $legacy->ID, 'case_study_author_description', true ),
+					'name'  => (string) ( $m['case_study_author_name'] ?? '' ),
+					'desc'  => (string) ( $m['case_study_author_description'] ?? '' ),
 				), $dry );
 				$summary['testimonial_new']++;
 				if ( $new_id > 0 ) {
@@ -969,6 +1253,7 @@ function momentive_cs_run(): void {
 				$linked_product_ids[] = $pid;
 			} else {
 				WP_CLI::log( "    product unresolved: CCT {$cct_id} -> \"{$pname}\" (no Product post)" );
+				$product_unresolved[ $pname ] = true;
 			}
 		}
 		$linked_product_ids = array_values( array_unique( $linked_product_ids ) );
@@ -980,13 +1265,13 @@ function momentive_cs_run(): void {
 		// We need the post ID before sideloading media (media_handle_sideload
 		// attaches to a post) and before building content that references the
 		// new attachment IDs. So we upsert a shell now, fill content below.
-		$slug = $legacy->post_name;
+		$slug = $legacy['slug'];
 
 		if ( $dry ) {
 			// In dry-run we can't create a post; resolve media URLs for logging only.
-			$logo_id   = (int) get_post_meta( $legacy->ID, 'case_study_logo', true );
-			$hero_id   = (int) get_post_meta( $legacy->ID, 'hero_image', true );
-			$pdf_url   = (string) get_post_meta( $legacy->ID, 'case_study_file', true );
+			$logo_id   = (int) ( $m['case_study_logo'] ?? 0 );
+			$hero_id   = (int) ( $m['hero_image'] ?? 0 );
+			$pdf_url   = (string) ( $m['case_study_file'] ?? '' );
 			$logo_url  = $logo_id && isset( $attach_map[ $logo_id ] ) ? $attach_map[ $logo_id ] : '';
 			$hero_url  = $hero_id && isset( $attach_map[ $hero_id ] ) ? $attach_map[ $hero_id ] : '';
 			if ( $logo_id && '' === $logo_url ) {
@@ -995,7 +1280,6 @@ function momentive_cs_run(): void {
 			if ( $hero_id && '' === $hero_url ) {
 				$media_unresolved[] = "{$title}: hero ID {$hero_id} not in attachment map";
 			}
-			$n_blocks = ( $tid > 0 ? 1 : 0 ) + ( $stats ? 1 : 0 ) + ( $features ? 1 : 0 );
 			WP_CLI::log( sprintf(
 				'    [dry-run] would write: testimonial=%s stats=%d features=%d products=%d logo=%s hero=%s pdf=%s',
 				$tid > 0 ? "#{$tid}" : 'none',
@@ -1020,9 +1304,28 @@ function momentive_cs_run(): void {
 			'post_type'   => MOMENTIVE_CS_NEW_TYPE,
 			'post_title'  => $title,
 			'post_name'   => $slug,
-			'post_status' => $legacy->post_status,
-			'post_excerpt'=> $legacy->post_excerpt,
+			'post_status' => $legacy['status'],
+			'post_excerpt'=> $legacy['excerpt'],
 		);
+
+		// Preserve original posted/modified dates from the legacy export. Guard
+		// against empty/zero dates (some WXR rows have 0000-00-00). When the
+		// local date is set, WordPress derives _gmt if we omit it, but the WXR
+		// gives both, so pass both when valid.
+		$valid_date = static function ( $d ) {
+			$d = trim( (string) $d );
+			return ( '' !== $d && 0 !== strpos( $d, '0000-00-00' ) ) ? $d : '';
+		};
+		$pd  = $valid_date( $legacy['date'] );
+		$pdg = $valid_date( $legacy['date_gmt'] );
+		$pm  = $valid_date( $legacy['modified'] );
+		$pmg = $valid_date( $legacy['modified_gmt'] );
+
+		if ( '' !== $pd )  { $shell['post_date']     = $pd; }
+		if ( '' !== $pdg ) { $shell['post_date_gmt'] = $pdg; }
+		// post_modified isn't honored by wp_insert/update_post directly (core
+		// overwrites it to "now"), so we set it explicitly after the write.
+
 		if ( $existing ) {
 			$shell['ID'] = (int) $existing[0];
 			$new_id = wp_update_post( $shell, true );
@@ -1036,11 +1339,14 @@ function momentive_cs_run(): void {
 			continue;
 		}
 		$new_id = (int) $new_id;
+		if ( empty( $existing ) ) {
+			update_post_meta( $new_id, MOMENTIVE_RUN_META, momentive_cs_run_id() );
+		}
 
 		// ---- media: sideload logo, hero (featured), PDF ------------------
-		$logo_legacy_id = (int) get_post_meta( $legacy->ID, 'case_study_logo', true );
-		$hero_legacy_id = (int) get_post_meta( $legacy->ID, 'hero_image', true );
-		$pdf_url        = trim( (string) get_post_meta( $legacy->ID, 'case_study_file', true ) );
+		$logo_legacy_id = (int) ( $m['case_study_logo'] ?? 0 );
+		$hero_legacy_id = (int) ( $m['hero_image'] ?? 0 );
+		$pdf_url        = trim( (string) ( $m['case_study_file'] ?? '' ) );
 
 		$logo_att = 0;
 		if ( $logo_legacy_id ) {
@@ -1071,8 +1377,10 @@ function momentive_cs_run(): void {
 				$pdf_local = (string) wp_get_attachment_url( $pdf_att );
 				$summary['pdf_imported']++;
 			} else {
-				// keep original URL rather than dropping the button.
+				// Sideload failed (e.g. remote TLS). Keep the original URL in the
+				// button rather than dropping it, and record for manual follow-up.
 				$pdf_local = $pdf_url;
+				$pdf_failed[] = "{$title}: {$pdf_url}";
 			}
 		}
 
@@ -1144,19 +1452,39 @@ function momentive_cs_run(): void {
 			continue;
 		}
 
+		// Restore original modified date. wp_insert_post()/wp_update_post()
+		// always overwrite post_modified to "now", and we do a content update
+		// above, so the only reliable fix is a direct DB write here, AFTER all
+		// post writes for this item are done. (post_date was set via the shell.)
+		if ( '' !== $pm || '' !== $pmg ) {
+			global $wpdb;
+			$set = array();
+			if ( '' !== $pm )  { $set['post_modified']     = $pm; }
+			if ( '' !== $pmg ) { $set['post_modified_gmt'] = $pmg; }
+			if ( $set ) {
+				$wpdb->update( $wpdb->posts, $set, array( 'ID' => $new_id ) );
+				clean_post_cache( $new_id );
+			}
+		}
+
 		// Post-level linked products (source of truth).
 		if ( $linked_product_ids ) {
 			update_field( 'linked_products', $linked_product_ids, $new_id );
 		}
 
 		// Breadcrumb title (rebuilt posts carry this; default to plain title).
-		$bc = (string) get_post_meta( $legacy->ID, 'short_title', true );
+		// Breadcrumb title: the legacy site shows the organization name in the
+		// breadcrumb for case studies, so migrate organization_name into the
+		// rebuilt breadcrumb_title. Fall back to legacy short_title, then to the
+		// post title only as a last resort.
+		$bc = trim( (string) ( $m['organization_name'] ?? '' ) );
+		if ( '' === $bc ) { $bc = trim( (string) ( $m['short_title'] ?? '' ) ); }
 		if ( '' === $bc ) { $bc = $title; }
 		update_post_meta( $new_id, 'breadcrumb_title', $bc );
 
-		// Categories: resolve legacy slugs to REBUILT terms; log misses.
-		$cats = wp_get_object_terms( $legacy->ID, 'category', array( 'fields' => 'slugs' ) );
-		if ( $cats && ! is_wp_error( $cats ) ) {
+		// Categories: resolve legacy slugs (from WXR) to REBUILT terms; log misses.
+		$cats = $legacy['cats'];
+		if ( $cats ) {
 			$term_ids = array();
 			foreach ( $cats as $cslug ) {
 				$term = get_term_by( 'slug', $cslug, 'category' );
@@ -1196,6 +1524,20 @@ function momentive_cs_run(): void {
 		}
 	}
 
+	if ( $pdf_failed ) {
+		WP_CLI::log( sprintf( "\n== PDFs that did not sideload (%d) — kept as external links, re-host manually ==", count( $pdf_failed ) ) );
+		foreach ( $pdf_failed as $line ) {
+			WP_CLI::log( '  ' . $line );
+		}
+	}
+
+	if ( $product_unresolved ) {
+		WP_CLI::log( sprintf( "\n== Product names with no matching Product post (%d) — check naming ==", count( $product_unresolved ) ) );
+		foreach ( array_keys( $product_unresolved ) as $pname ) {
+			WP_CLI::log( '  ' . $pname );
+		}
+	}
+
 	if ( $cat_unresolved ) {
 		WP_CLI::log( "\n== Unresolved categories (no rebuilt term) ==" );
 		foreach ( $cat_unresolved as $line ) {
@@ -1229,4 +1571,7 @@ function momentive_cs_manifest(): array {
 	return $manifest;
 }
 
-momentive_cs_run();
+// `wp eval-file` provides positional args as a script-scope $args variable.
+// Capture it here (file scope) and thread it through, since functions can't
+// see the eval-file local scope.
+momentive_cs_run( isset( $args ) && is_array( $args ) ? $args : array() );

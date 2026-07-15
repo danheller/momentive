@@ -160,33 +160,41 @@ add_filter( 'rest_category_query', function( array $args, $request ) {
 
 
 // ---------------------------------------------------------------------------
-// Admin column: show Solution(s) in the posts list
+// Admin column: Linked Products
 // ---------------------------------------------------------------------------
+// Replaces the former "Solutions" column, which duplicated the native
+// Categories column. Linked Products is genuinely new information — useful
+// for spotting posts that came through migration without products assigned,
+// and for reviewing product coverage at a glance.
 
 add_filter( 'manage_case-study_posts_columns', function( array $columns ): array {
 	$new = [];
 	foreach ( $columns as $key => $label ) {
 		$new[ $key ] = $label;
 		if ( $key === 'title' ) {
-			$new['solutions'] = __( 'Solutions', 'momentive' );
+			$new['cs_linked_products'] = __( 'Linked Products', 'momentive' );
 		}
 	}
 	return $new;
 } );
 
 add_action( 'manage_case-study_posts_custom_column', function( string $column, int $post_id ): void {
-	if ( $column !== 'solutions' ) return;
+	if ( $column !== 'cs_linked_products' ) return;
 
-	$terms = get_the_terms( $post_id, 'category' );
-	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+	// Post-level linked_products field (Case Study Settings, field_6a429f79316b5).
+	$products = get_field( 'linked_products', $post_id );
+	if ( empty( $products ) ) {
 		echo '<span style="color:#999">—</span>';
 		return;
 	}
 	$names = [];
-	foreach ( $terms as $term ) {
-		// Skip the Solutions parent itself if it's assigned.
-		if ( $term->slug === 'solutions' ) continue;
-		$names[] = esc_html( $term->name );
+	foreach ( (array) $products as $product ) {
+		if ( is_object( $product ) ) {
+			$names[] = esc_html( $product->post_title );
+		} elseif ( is_numeric( $product ) ) {
+			$title = get_the_title( (int) $product );
+			if ( $title ) $names[] = esc_html( $title );
+		}
 	}
 	echo $names ? implode( ', ', $names ) : '<span style="color:#999">—</span>';
 }, 10, 2 );

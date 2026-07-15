@@ -184,48 +184,14 @@ add_action( 'acf/include_fields', function() {
 	'title' => 'HubSpot Form',
 	'fields' => array(
 		array(
-			'key' => 'field_6a3aa8ba03d5e',
-			'label' => 'Source',
-			'name' => 'form_source',
-			'aria-label' => '',
-			'type' => 'select',
-			'instructions' => 'Use the "Post" setting for webinars, which have an "upcoming" and "on-demand" registration form. This allows the form to change automatically when the event has passed.',
-			'required' => 0,
-			'conditional_logic' => 0,
-			'wrapper' => array(
-				'width' => '',
-				'class' => '',
-				'id' => '',
-			),
-			'choices' => array(
-				'block' => 'Block embed field',
-				'post' => 'Post fields',
-			),
-			'default_value' => 'block',
-			'return_format' => 'value',
-			'multiple' => 0,
-			'allow_null' => 0,
-			'ui' => 0,
-			'ajax' => 0,
-			'placeholder' => '',
-		),
-		array(
 			'key' => 'field_6a2873ba3bf87',
 			'label' => 'Embed Code',
 			'name' => 'hubspot_embed_code',
 			'aria-label' => '',
 			'type' => 'textarea',
-			'instructions' => '',
+			'instructions' => 'Paste the HubSpot embed snippet here to override the post-level form. Leave blank to use the webinar\'s form_upcoming / form_ondemand field automatically.',
 			'required' => 0,
-			'conditional_logic' => array(
-				array(
-					array(
-						'field' => 'field_6a3aa8ba03d5e',
-						'operator' => '!=',
-						'value' => 'post',
-					),
-				),
-			),
+			'conditional_logic' => 0,
 			'wrapper' => array(
 				'width' => '',
 				'class' => '',
@@ -2069,6 +2035,65 @@ add_action( 'acf/include_fields', function() {
 	'description' => '',
 	'show_in_rest' => 0,
 ) );
+
+
+	// -------------------------------------------------------------------------
+	// Whitepaper Settings
+	// -------------------------------------------------------------------------
+	// hero_image field key (field_6a45de7b50be7) matches what the manually-built
+	// reference posts stored in _hero_image. Keep this key stable — the migration
+	// script and any existing rebuilt posts reference it.
+
+	acf_add_local_field_group( array(
+	'key' => 'group_6a45de7a50be6',
+	'title' => 'Whitepaper Settings',
+	'fields' => array(
+		array(
+			'key' => 'field_6a45de7b50be7',
+			'label' => 'Hero Image',
+			'name' => 'hero_image',
+			'aria-label' => '',
+			'type' => 'image',
+			'instructions' => 'Optional page-hero override. Leave empty to use the featured image in the hero block. The featured image (_thumbnail_id) is used on archive cards regardless.',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'return_format' => 'array',
+			'library' => 'all',
+			'min_width' => '',
+			'min_height' => '',
+			'min_size' => '',
+			'max_width' => '',
+			'max_height' => '',
+			'max_size' => '',
+			'mime_types' => '',
+			'preview_size' => 'thumbnail',
+		),
+	),
+	'location' => array(
+		array(
+			array(
+				'param' => 'post_type',
+				'operator' => '==',
+				'value' => 'whitepaper',
+			),
+		),
+	),
+	'menu_order' => 0,
+	'position' => 'side',
+	'style' => 'default',
+	'label_placement' => 'top',
+	'instruction_placement' => 'label',
+	'hide_on_screen' => '',
+	'active' => true,
+	'description' => '',
+	'show_in_rest' => 0,
+) );
+
 } );
 
 

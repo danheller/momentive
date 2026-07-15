@@ -1,0 +1,74 @@
+{
+    "key": "group_6a421df4548b3",
+    "title": "Case Study Settings",
+    "fields": [
+        {
+            "key": "field_6a421dd3f32a8",
+            "label": "Breadcrumb Title",
+            "name": "breadcrumb_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Optional. Shortens the post title in breadcrumbs. Leave blank to use the full post title",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6a429f79316b5",
+            "label": "Products",
+            "name": "linked_products",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Select the products to display. Logos and links are pulled from each product automatically.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "product"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "case-study"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1784013634
+}

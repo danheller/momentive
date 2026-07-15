@@ -125,7 +125,7 @@ add_filter( 'acf/prepare_field/name=accent_color', function( $field ) {
 	return $field;
 } );
 
-/* 
+/*
  * Add editor javascript to show/hide accent color field based on whether there is a parent post.
  */
 
@@ -145,6 +145,49 @@ add_action( 'enqueue_block_editor_assets', function() {
 		true
 	);
 } );
+
+
+// ---------------------------------------------------------------------------
+// Admin column: show Accent Color swatch in the posts list
+// ---------------------------------------------------------------------------
+//
+// Child solutions inherit accent_color from their parent (the field is
+// hidden on child posts in the editor — see acf/prepare_field/name=accent_color
+// above), so this column resolves the same way wp_head does: walk up to the
+// parent when the post has one.
+
+add_filter( 'manage_solutions_posts_columns', function( array $columns ): array {
+	$new = [];
+	foreach ( $columns as $key => $label ) {
+		$new[ $key ] = $label;
+		if ( $key === 'title' ) {
+			$new['accent_color'] = __( 'Accent Color', 'momentive' );
+		}
+	}
+	return $new;
+} );
+
+add_action( 'manage_solutions_posts_custom_column', function( string $column, int $post_id ): void {
+	if ( $column !== 'accent_color' ) return;
+
+	$parent_id = wp_get_post_parent_id( $post_id );
+	$source_id = $parent_id ? $parent_id : $post_id;
+	$color     = get_field( 'accent_color', $source_id );
+
+	if ( ! $color ) {
+		echo '<span style="color:#999">—</span>';
+		return;
+	}
+
+	printf(
+		'<span style="display:inline-flex;align-items:center;gap:6px;">
+			<span style="display:inline-block;width:16px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,0.15);background:%s;"></span>
+			<code>%s</code>
+		</span>',
+		esc_attr( $color ),
+		esc_html( $color )
+	);
+}, 10, 2 );
 
 
 /**

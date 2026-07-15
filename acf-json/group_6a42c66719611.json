@@ -1,0 +1,94 @@
+{
+    "key": "group_6a42c66719611",
+    "title": "Stat Column Block Settings",
+    "fields": [
+        {
+            "key": "field_6a42c667b17bc",
+            "label": "Stats",
+            "name": "stats",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "Each stat shows a large value with a description below. The value is shown exactly as typed — any format works (\"2,000\", \"43%\", \"$1.2M\", \">1 million\", or a word).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Stat",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_6a42c6c8357d9",
+                    "label": "Value",
+                    "name": "stat_value",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "The headline figure, shown verbatim. e.g. 2,000 — 43% — $1.2M — >1 million",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_6a42c667b17bc"
+                },
+                {
+                    "key": "field_6a42c6ef357da",
+                    "label": "Description",
+                    "name": "stat_description",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "rows": 2,
+                    "placeholder": "",
+                    "new_lines": "",
+                    "parent_repeater": "field_6a42c667b17bc"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "momentive\/stat-columns"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1784013634
+}

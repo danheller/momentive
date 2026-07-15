@@ -1,17 +1,9 @@
 To do:
 
 	Next up
-	- Case Studies (to connect to testimonials)
-	- Megamenu revision
 	- Continue with CPTs
-
-	Webinars
-	- Maybe try using Claude.ai to do field mapping; old webinar_presenter serialized data is now a post object/relationship called "presenters"
-
-	Blog/newsroom
-	- Migrate author assignments: "One thing to be aware of when migrating authors: the ACF author field will need to be populated per post. If the posts already have a PublishPress author term assigned, you can write a one-time migration script that reads each post's _ppma_author term, looks up the matching authors CPT post by title, and saves the ACF field value — rather than doing it manually for every post. Worth doing if there are more than a handful of posts with named authors." (Note: there are still other migration tasks to be done on blog posts besides this, but a migration script might serve this purpose.)
-	- Find/migrate elementor mystery blocks - search for "elementor-template" in posts, e.g. https://unmomento.wpenginepowered.com/blog/disaster-fundraising/, and identify what those blocks are meant to be.
-	- There are some core/accordion blocks in blog posts (e.g. /blog/membership-marketing-strategy-channels-campaign-best-practices/) that should be converted to the custom block
+	- 
+	
 
 	Megamenus
 	- Need to adjust the design for usability and to accommodate more stuff
@@ -33,22 +25,41 @@ To do:
 
 Custom post types still to be migrated 
 
-	- Events (?)
-	- Product Overviews (think these should be nested under products, don't need a CPT, just a toggle that turns on the recording fields/behavior. Duplicate recordings fields from Webinar Settings.)
-	- Videos
+
+These look like gated content, like webinars but for a PDF or something else:
 	- Whitepapers
 	- Guides & Research
 	- Toolkits
 	- Infographics
+	- Product Overviews 
+		- Looks like these should be nested under products.
+		- They seem to work just like webinars:
+			Upcoming example: https://momentivesoftware.com/solutions/career-centers-software/ym-careers/overview/
+			On-demand example: https://momentivesoftware.com/solutions/accounting-software/mip-accounting/overview/
+		- Duplicate "recordings" fields from Webinar Settings, get the video embed from a corresponding "assets" post
+	- Videos
+		- Only three posts
+		- No form, just a "watch now" button
+		- Example: https://momentivesoftware.com/videos/mip-dashboards-financial-reporting/
+
+These look like pages, which don't need to be custom post types:
+	- Industries
+	
+These can/should go away:
+	- Assets (folding into other post types)
+	- Clients (has been renamed "Clients (To be removed)" on the current site)
+
+
+Other ones, to be determined
+	
+	- Events (?)
+	- Product Overviews (think these should be nested under products, don't need a CPT, just a toggle that turns on the recording fields/behavior. Duplicate recordings fields from Webinar Settings.)
+	- Videos
 	- Interactive Tools
-	- Case Studies
 	- Video Testimonials (combine with testimonials?)
 	- Landing Pages
-	- Assets (planning to fold)
 	- Integrations
-	- Industries (turn into pages?)
 	- Donation Examples (?)
-	- Clients
 	- Reviews
 	- Award Recipients (this is a post type with four posts that was built for one page: https://momentivesoftware.com/bring-on-better-awards/ - fold and use patterns)
 

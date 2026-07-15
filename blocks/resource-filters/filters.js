@@ -3,6 +3,23 @@
 
 	const { esc, initLowerLabels, renderCategoryLink, debounce } = window.SiteUtils;
 
+	// Data-driven post-type map localized from PHP:
+	//   { slug: { label, singular, endpoint } }
+	// Read lazily (inside the helpers, not at module-parse time) so it works
+	// regardless of whether the localized global is printed before or after
+	// this script.
+	function postTypeMap() {
+		return ( window.momentiveResourceFilters && window.momentiveResourceFilters.postTypes ) || {};
+	}
+
+	function postTypeEndpoint( slug ) {
+		return postTypeMap()[ slug ]?.endpoint ?? '/wp-json/wp/v2/posts';
+	}
+
+	function postTypeSingular( slug ) {
+		return postTypeMap()[ slug ]?.singular ?? '';
+	}
+
 	function initLoadMore( grid ) {
 		const queryBlock = grid.closest( '.wp-block-query' );
 		const pagination = queryBlock?.querySelector( '.wp-block-query-pagination' );
@@ -203,7 +220,7 @@
 			}
 
 			const params = new URLSearchParams( {
-				per_page: 12,
+				per_page: 15,
 				page:     state.page,
 				orderby:  state.orderby,
 				order:    state.order,
@@ -215,8 +232,15 @@
 			}
 
 			// ── Resolve which post type to query ──────────────────────────────
-			// If the user has selected exactly one post_type filter, use that.
-			// Otherwise fall back to the block's configured defaultPostType.
+			// If the user has selected exactly one post_type filter, use that;
+			// otherwise fall back to the block's configured defaultPostType.
+			//
+			// NOTE: true multi-type querying (the Resource Center "All Resources"
+			// case) is a separate, planned feature — it needs a server-side REST
+			// endpoint that queries several post types in one WP_Query so merge,
+			// sort, and pagination stay correct. Until that exists, selecting
+			// more than one post type intentionally falls back to the default
+			// type rather than attempting a fragile client-side endpoint merge.
 			const activePostType = state.postTypes.length === 1
 				? state.postTypes[0]
 				: defaultPostType;
@@ -271,28 +295,6 @@
 			}
 		}
 
-		// ── Post type → REST endpoint ─────────────────────────────────────────
-
-		function postTypeEndpoint( slug ) {
-			const map = {
-				'post':               '/wp-json/wp/v2/posts',
-				'press-article':      '/wp-json/wp/v2/press-article',
-				'case_studies':       '/wp-json/wp/v2/case_studies',
-				'events':             '/wp-json/wp/v2/events',
-				'faq':                '/wp-json/wp/v2/faq',
-				'guides':             '/wp-json/wp/v2/guides',
-				'infographics':       '/wp-json/wp/v2/infographics',
-				'interactive-tools':  '/wp-json/wp/v2/interactive-tools',
-				'product-overviews':  '/wp-json/wp/v2/product-overviews',
-				'video-testimonials': '/wp-json/wp/v2/video-testimonials',
-				'toolkits':           '/wp-json/wp/v2/toolkits',
-				'videos':             '/wp-json/wp/v2/videos',
-				'webinars':           '/wp-json/wp/v2/webinars',
-				'whitepapers':        '/wp-json/wp/v2/whitepapers',
-			};
-			return map[ slug ] ?? '/wp-json/wp/v2/posts';
-		}
-
 		// ── Card renderer ─────────────────────────────────────────────────────
 		// activePostType is now passed as a parameter instead of being
 		// referenced from an outer scope — this was the source of the
@@ -314,15 +316,23 @@
 
 			const isPost = activePostType === 'post';
 
+			// Top-label rule:
+			//   • press-article → first category name (its long-standing behavior)
+			//   • every other type, including post → the post type's SINGULAR
+			//     label (e.g. "Blog" for post, "Case Study" for case-study),
+			//     sourced from the PHP-localized map.
+			const topLabelText = activePostType === 'press-article'
+				? ( cats[0] ? cats[0].name : '' )
+				: postTypeSingular( activePostType );
+
+			const topLabel = topLabelText
+				? `<p class="top-label wp-block-paragraph">${ esc( topLabelText ) }</p>`
+				: '';
+
 			return `<li class="wp-block-post">
 				<div class="wp-block-group story-card">
 
-					${ isPost
-						? `<p class="top-label wp-block-paragraph">Blog</p>`
-						: ( cats[0]
-							? `<p class="top-label wp-block-paragraph">${ esc( cats[0].name ) }</p>`
-							: '' )
-					}
+					${ topLabel }
 
 					${ media ? `<figure class="wp-block-post-featured-image" style="aspect-ratio:16/9">
 						<a href="${ esc( post.link ) }" tabindex="-1" aria-hidden="true">
@@ -335,7 +345,7 @@
 
 					<div class="story-content">
 
-						${ isPost && catLinks
+						${ activePostType !== 'press-article' && catLinks
 							? `<div class="taxonomy-category lower-label wp-block-post-terms">
 								${ catLinks }
 							   </div>`

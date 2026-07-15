@@ -22,8 +22,7 @@
  * 6.0  Front-End Features
  *      6.1  Announcement Bar
  *      6.2  Reading Progress Bar
- * 7.0  Custom Fields
- * 8.0  Developer Experience (required from /inc/)
+ * 7.0  Developer Experience (required from /inc/)
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -120,7 +119,7 @@ add_filter( 'render_block', function ( $content, $block ) {
 	$classes = $block['attrs']['className'] ?? '';
 	if ( ! $classes ) return $content;
 
-	$markers = [ 'autoslider', 'solutions-slider', 'testimonials-slider', 'news-slider' ];
+	$markers = [ 'autoslider', 'solutions-slider', 'testimonials-slider', 'news-slider', 'draggable-image-slider' ];
 	foreach ( $markers as $marker ) {
 		if ( false !== strpos( $classes, $marker ) ) {
 			wp_enqueue_script( 'sliders' );
@@ -129,6 +128,20 @@ add_filter( 'render_block', function ( $content, $block ) {
 		}
 	}
 
+	return $content;
+}, 10, 2 );
+
+// top labels for preview
+
+add_filter( 'render_block', function( $content, $block ) {
+	if (
+		$block['blockName'] === 'core/query-title'
+		&& ! empty( $block['attrs']['className'] )
+		&& str_contains( $block['attrs']['className'], 'top-label' )
+	) {
+		$content = preg_replace( '/^<h1([^>]*)>/', '<p$1>', $content );
+		$content = preg_replace( '/<\/h1>$/', '</p>', $content );
+	}
 	return $content;
 }, 10, 2 );
 
@@ -162,19 +175,21 @@ function momentive_register_block_styles() {
 			'bg-dots'              => __( 'Dots Background',       'momentive' ),
 			'bg-rings'             => __( 'Rings Background',      'momentive' ),
 			'bg-dark'              => __( 'Dark Background',       'momentive' ),
+			'bg-navy'              => __( 'Navy Background',       'momentive' ),
 			'bg-light'             => __( 'Light Background',      'momentive' ),
 			'bg-gradient'          => __( 'Gradient Background',   'momentive' ),
 			'bg-ellipse'           => __( 'Ellipse',               'momentive' ),
 			'ellipse-bottom'       => __( 'Ellipse Bottom',        'momentive' ),
 			'ellipse-top'          => __( 'Ellipse Top',           'momentive' ),
-			'purple-seafoam-wash'  => __( 'Purple Seafoam Wash',   'momentive' ),
-			'cloudy-sunset'        => __( 'Cloudy Sunset',         'momentive' ),
+			'seafoam-wash'         => __( 'Seafoam Wash',          'momentive' ),
+			'motion-blur'          => __( 'Motion Blur',           'momentive' ),
 		],
 
 		'core/list' => [
 			'no-disc'              => __( 'No Disc',               'momentive' ),
 			'column-checks'        => __( 'Orange Checks',         'momentive' ),
 			'circle-checks'        => __( 'Circle Checks',         'momentive' ),
+			'checkboxes'           => __( 'Checkboxes',            'momentive' ),
 		],
 
 		'core/media-text' => [
@@ -299,7 +314,10 @@ require get_template_directory() . '/blocks/megamenu-panel/block.php';
 require get_template_directory() . '/blocks/solution-slide/block.php';
 require get_template_directory() . '/blocks/product-marquee/block.php';
 require get_template_directory() . '/blocks/product-solution-tabs/block.php';
+require get_template_directory() . '/blocks/back-link/block.php';
 require get_template_directory() . '/blocks/webinar-cta/block.php';
+require get_template_directory() . '/blocks/webinar-form-heading/block.php';
+require get_template_directory() . '/blocks/webinar-presenters/block.php';
 require get_template_directory() . '/blocks/webinar-schedule/block.php';
 require get_template_directory() . '/blocks/webinar-status/block.php';
 require get_template_directory() . '/blocks/recording/block.php';
@@ -316,10 +334,7 @@ require get_template_directory() . '/blocks/icon-list/block.php';
 
 require get_template_directory() . '/inc/icons.php';
 require get_template_directory() . '/inc/solutions.php';
-
-// Press articles — includes shared body class with blog posts (.single-article)
-// and the render_block filter that injects related posts below the post layout columns.
-require get_template_directory() . '/inc/newsroom.php';
+require get_template_directory() . '/inc/blog-and-newsroom.php';
 require get_template_directory() . '/inc/people.php';
 require get_template_directory() . '/inc/testimonials.php';
 require get_template_directory() . '/inc/faq.php';
@@ -327,6 +342,8 @@ require get_template_directory() . '/inc/products.php';
 require get_template_directory() . '/inc/webinars.php';
 require get_template_directory() . '/inc/recordings.php'; // not a post type, but a passthrough to what were formerly "assets"
 require get_template_directory() . '/inc/case-studies.php';
+require get_template_directory() . '/inc/whitepapers.php';
+require get_template_directory() . '/inc/infographics.php';
 
 /*==============================================================================
   5.0 - Query & Content Filters
@@ -355,6 +372,7 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 	}
 	return $query;
 }, 10, 2 );
+
 
 
 /*==============================================================================
@@ -417,20 +435,11 @@ add_action( 'wp_enqueue_scripts', function () {
 } );
 
 /*==============================================================================
-  7.0 - Custom Fields
-==============================================================================*/
-
-require get_template_directory() . '/inc/acf-groups.php';
-
-/*==============================================================================
-  8.0 - Developer Experience
+  7.0 - Developer Experience
 ==============================================================================*/
 
 // "Edit Header" and "Edit Footer" hover buttons visible to logged-in editors.
 require get_template_directory() . '/inc/header-footer-edit-buttons.php';
-
-// Rename "Posts" to "Blog" throughout the WordPress admin.
-require get_template_directory() . '/inc/rename-posts-to-blog.php';
 
 // Customize the dashboard sidebar menu order.
 require get_template_directory() . '/inc/custom-menu-order.php';
@@ -440,6 +449,10 @@ require get_template_directory() . '/inc/patterns.php';
 
 // Check for a block recursively within content (including within patterns)
 require get_template_directory() . '/inc/check-content-for-block.php';
+
+// Normalize stray &nbsp; inside is-style-has-swoop headings at save time
+// (prevents pasted-in nbsp from breaking the swoop underline's word wrap).
+require get_template_directory() . '/inc/swoop-heading-cleanup.php';
 
 // Removes all comment-related UI, menus, and dashboard widgets.
 require get_template_directory() . '/inc/disable-comments.php';

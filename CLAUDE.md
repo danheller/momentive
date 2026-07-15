@@ -14,7 +14,7 @@ Custom Full Site Editing (FSE) theme built on the [Frost](https://frostwp.com/) 
 | Styling | SCSS compiled via `sass --watch`, no PostCSS |
 | Custom blocks | Plain JS using `wp.*` globals (no build step), except `impact-stat` |
 | JSX blocks | `@wordpress/scripts` (webpack + Babel) |
-| Custom fields | ACF Pro — field groups defined in `inc/acf-groups.php` via `acf_add_local_field_group()` |
+| Custom fields | ACF Pro — field groups defined in the ACF UI, version-controlled via `acf-json/` local JSON |
 | Sliders | Splide (bundled into `/assets/`) |
 | Local dev | Local by Flywheel |
 | Hosting | WP Engine |
@@ -36,26 +36,30 @@ momentive/
 │
 ├── blocks/            Custom blocks — each self-contained
 │   ├── {block-name}/
-│   │   ├── block.json       Block metadata + attribute schema
-│   │   ├── block.php        Registration + render callback
-│   │   ├── editor.js        Editor UI (plain JS, no build step)
+│   │   ├── block.json       Block metadata + attribute schema (apiVersion: 3)
+│   │   ├── block.php        Main include: registration + render callback (ACF renderTemplate target)
+│   │   ├── editor.js        Editor UI for JS-registered blocks (plain JS, no build step)
+│   │   ├── render.php       Front-end render for JS-registered blocks with save()=>null (e.g. icon-list)
 │   │   ├── {name}.js        Front-end JS (conditionally enqueued)
 │   │   └── {name}.css       Front-end styles (conditionally enqueued)
 │   └── build/         Compiled output for JSX blocks (committed to git)
 │
+├── acf-json/          ACF local JSON — field group definitions, auto-synced by ACF UI
+│
 ├── inc/               Modular PHP — all required from functions.php
-│   ├── acf-groups.php          All ACF field group definitions
 │   ├── solutions.php           Solutions CPT + accent color injection
 │   ├── products.php            Products CPT + accent color injection
 │   ├── testimonials.php        Testimonials CPT
 │   ├── faq.php                 FAQ CPT
-│   ├── newsroom.php            Press Articles CPT + related posts injection
+│   ├── webinars.php            Webinars CPT + form resolution helper
+│   ├── whitepapers.php         Whitepapers CPT
 │   ├── people.php              People CPT + person_role taxonomy + byline architecture (replaces authors.php)
 │   ├── icons.php               Icon system (discovery, sprite output, helpers)
 │   ├── check-content-for-block.php  momentive_content_has_block() helper
 │   ├── patterns.php            Pattern registration helpers
 │   ├── header-footer-edit-buttons.php  Logged-in edit buttons
-│   ├── rename-posts-to-blog.php
+│   ├── blog-and-newsroom.php   Press Articles CPT + related posts injection + hero_image swap filter+ Blog post label renaming + Blog Settings ACF options sub-page
+│   ├── swoop-heading-cleanup.php  Strips stray &nbsp; from is-style-has-swoop headings at save time
 │   ├── custom-menu-order.php
 │   └── disable-comments.php
 │
@@ -91,12 +95,15 @@ Do not edit files in `assets/css/` directly. Separate stylesheets:
 | `splide.css` | Slider library | Always (global) |
 | `solutions.css` | Solution slide cards | Conditional via `momentive_content_has_block()` |
 | `testimonial.css` | Testimonial cards | Conditional |
+| `gate.css` | Gated whitepaper layout | Conditional |
 
 ---
 
 ## JavaScript build process
 
-Only `momentive/impact-stat` requires a build step. All other blocks use WordPress globals directly.
+Only `momentive/impact-stat` requires a build step. All other blocks use WordPress globals directly (no build step is the default — see Block structure conventions under Custom blocks).
+
+**Always set `"apiVersion": 3` in `block.json`.** Older API versions trigger editor console warnings and deprecation issues (editor-canvas iframe behavior, asset handling). All current blocks are apiVersion 3.
 
 ```bash
 npm install          # first-time setup
@@ -136,7 +143,7 @@ if ( ! $on_singular && ! $on_archive ) return;
 Injected on `<body>` via `wp_head` for singular Solutions and Product pages. Sourced from ACF fields:
 
 - **Solutions:** `accent_color` field. Child solutions inherit from their parent (walks up with `wp_get_post_parent_id()`). The ACF field is hidden on child solutions in the editor.
-- **Products:** `page_accent_color` field (the tinted background color). Also injects `--page-icon-color` from `accent_color` field (the icon/brand color). Note: product accent is split into two fields — this may be worth renaming later.
+- **Products:** `tint_color` field (the tinted background color). Also injects `--page-icon-color` from `accent_color` field (the icon/brand color). Note: product accent is split into two fields.
 
 Any block on the page can consume `--page-accent-color` in CSS without needing inline styles.
 
@@ -177,24 +184,61 @@ Defined in `:root` inside `momentive.scss` and mirrored in `theme.json`:
 - URL: `/products/{slug}/`
 - Taxonomy: `product_type` (private; terms: `active-product`, `orphan-product`) + shared `category`
 - Shared solution categories: children of the built-in "Solutions" category term. Restricted in the ACF category picker via `acf/fields/taxonomy/query/name=product_category`; default category panel removed from editor via JS
-- ACF fields: `page_accent_color` (hero tint), `accent_color` (icon color), `product_icon`, `product_order`, `summary`, `background_image`, `logos` (repeater), `product_logo_*` (endorsed/unendorsed, white/color variants)
+- ACF fields: `tint_color` (hero tint), `accent_color` (icon color), `product_icon`, `product_order`, `summary`, `background_image`, `logos` (repeater), `product_logo_*` (endorsed/unendorsed, white/color variants)
 - New post template: `patterns/product-content.php`
 - Product Marquee excludes Orphan products via `momentive_product_marquee_query_args` filter
 
 ### `testimonial`
 
 - ACF fields: `solution_family` (relationship to category term), `author_name`, `author_description`, `author_photo`, `testimonial_type`
+- Note: the rebuilt CPT stores content/author in `testimonial_content`, `testimonial_author_name`, `testimonial_author_description` (the keys the case-study migration reads/writes when creating-and-referencing testimonials). CPT registration name is `testimonials` (plural) in the DB.
 
 ### `faq`
 
 - ACF fields: `solution_family`
 - Used by the accordion block in query mode
 
+### `case-study`
+
+- URL: `/case-studies/{slug}/`, archive preserved at `/case-studies/` for inbound links. CPT slug is hyphenated (`case-study`) per convention; legacy type was `case_studies`.
+- Migrated from the legacy site (151 published + 5 drafts) via `migrations/migrate-case-studies.php` — see Migrations.
+- **Architectural principle:** structured legacy data stays structured, rendered by a block (stats → `stat-columns`, features → `icon-list`, products → post-level `linked_products` + `linked-products` block). Only genuinely prose sections (intro, challenge/solution, results, about) become free-form paragraph/heading/list blocks. Spacing lives in SCSS via theme.json presets carried by the pattern, never inline per-post.
+- **Categories:** solution categories via the native category panel (multi-select), scoped to children of the "Solutions" parent — ~4 posts have multiple (ECS has 4). Not a single-select ACF field.
+- ACF fields (Case Study Settings, `group_6a421df4548b3`): `linked_products` (post-level source of truth), `breadcrumb_title`. Sidebar features/stats live in their blocks, not post fields.
+- New post template: `patterns/case-study-content.php` (full scaffold: breadcrumb, hero with logo/title/featured-image/download button, two-column body, sticky sidebar with linked-products + Key Features + CTA).
+- Page chrome that varies per post: hero **logo image** (`small-logo`, from legacy `case_study_logo` attachment), **download PDF button** (from legacy `case_study_file`), both sideloaded during migration; omitted when absent.
+
+### `webinar` (`inc/webinars.php`)
+
+- URL: `/webinars/{slug}/`
+- Legacy CPT slug: `webinars` (plural); rebuilt: `webinar` (singular)
+- Taxonomy: `webinar_type_tax` (private; terms: `upcoming`, `on-demand`)
+- ACF fields (Webinar Settings, `group_6a3a318255bf0`): `webinar_type` (select: upcoming|on-demand), `is_series` (true/false), `webinar_date` (date_picker, Ymd format), `webinar_end_date`, `webinar_time_start` (time_picker, H:i:s), `webinar_time_end`, `webinar_timezone` (text), `form_upcoming` (textarea — HubSpot embed), `form_ondemand` (textarea — HubSpot embed), `video_embed_code` (textarea — Wistia embed), `presenters` (post_object → `people`, multiple), `hero_image` (image, **return_format: array** — optional singular-view override)
+- New post template: `patterns/webinar-content.php`
+- Migrated from the legacy site (149 posts) via `migrations/migrate-webinars.php` — see Migrations
+
+**`momentive_resolve_webinar_form( $post_id )`** (in `inc/webinars.php`): returns the correct HubSpot embed code based on live status — reads `form_upcoming` when the webinar date is in the future, `form_ondemand` otherwise. No cross-field fallback. Used by the `acf/hubspot-form` block render template when no block-level embed override is set.
+
+**Featured image vs. `hero_image`:** the featured image (`_thumbnail_id`) is the archive card image. `hero_image` is an optional ACF override for the singular-view hero — when set, a `render_block` filter in `blog-and-newsroom.php` swaps the `core/post-featured-image` block output on singular `webinar` (and `post`, `press-article`) pages. Leave `hero_image` empty to use the featured image in both places. The migration sets them independently: `_thumbnail_id` from the legacy `_thumbnail_id` field, `hero_image` from `resource_hero_image` only when they differ.
+
+### `whitepaper` (`inc/whitepapers.php`)
+
+- URL: `/whitepapers/{slug}/`
+- Legacy CPT slug: `whitepapers` (plural); rebuilt: `whitepaper` (singular)
+- ACF fields (Whitepaper Settings, `group_6a45de7a50be6`): `hero_image` (`field_6a45de7b50be7`, image, return_format: array — optional singular-view hero override, same pattern as webinars)
+- New post template: `patterns/whitepaper-content.php`
+- Migrated from the legacy site (69 posts) via `migrations/migrate-whitepapers.php` — see Migrations
+- CSS: `assets/css/gate.css` (conditionally enqueued via `momentive_content_has_block`)
+
+**Gated vs. not-gated layout:** determined by whether the legacy post had a `hubspot_form_code` value. Gated posts (majority) get a two-column layout: left column has title, description, and checklist; right column has featured image and HubSpot form. Not-gated posts get a different right column: featured image, checklist, and download button. The layout variant is determined per-post during migration and baked into the block content.
+
+**HubSpot embed stored inline in block data**, not in post-level ACF fields (unlike webinars). The `acf/hubspot-form` block's `data` object carries the embed code directly. See the `wp_slash()` gotcha in the Migrations section — this is why the embed code must survive the `wp_update_post` pipeline intact.
+
 ### `press-article` (Newsroom)
 
 - URL: `/newsroom/{slug}/`
 - Archive: `/newsroom/`
-- Shares `single.html` template via body class filter (`.single-article`) in `newsroom.php`
+- Shares `single.html` template via body class filter (`.single-article`) in `blog-and-newsroom.php`
 - ACF fields: `hero_image`
 - Related posts injected below post content via `render_block` filter
 
@@ -263,6 +307,20 @@ The blog byline is **not** `post_author`. On this site `post_author` is frequent
 
 ## Custom blocks
 
+### Block structure conventions (read before adding a block)
+
+Every custom block is a self-contained folder under `blocks/{block-name}/`. The house conventions, established across the People work and the Case Study build:
+
+- **No build step by default.** Blocks are plain JS using `wp.*` globals (or pure PHP render for ACF blocks). A build step (`@wordpress/scripts`, `src/` → `build/`) is used **only when JSX is genuinely required** — currently just `momentive/impact-stat`. Reach for a build only when the editor UI can't be expressed reasonably without JSX (e.g. a rich custom inspector); otherwise stay no-build.
+- **`block.json` is the manifest, `apiVersion: 3`.** Always set `"apiVersion": 3` — older API versions emit editor console warnings and hit deprecations (iframe/editor-canvas behavior, asset handling). `"category": "momentive"`. Declare `supports` explicitly (`anchor`, `html: false`, etc.). For ACF render blocks, include the ACF hook: `"acf": { "mode": "preview", "renderTemplate": "block.php" }`.
+- **`block.php` is the main include file** for every block — it's the file the theme loads. For ACF blocks it does double duty: registration (`register_block_type( __DIR__ )` on `init`), conditional asset registration/enqueue, AND the render template body (ACF's `renderTemplate` target). For JS-registered blocks it handles registration + enqueue and points `editor_script`/`render_callback` at the right files.
+- **Conditional asset enqueue.** Register CSS/JS with `wp_register_*` inside `block.php`, then enqueue on `enqueue_block_assets` guarded by `is_admin()` + `momentive_content_has_block( 'momentive/{name}' )`. Don't enqueue globally.
+- **`{name}.css`** uses theme.json preset variables for spacing/typography/color (`var(--wp--preset--spacing--small)`, `var(--wp--preset--color--secondary)`) — no hardcoded dimensions where a preset exists. Include an editor `.is-placeholder` style.
+- **ACF field groups** are defined in the ACF UI and version-controlled via `acf-json/` local JSON (ACF auto-writes the JSON on save). Location rule: `block == momentive/{name}`. Render reads fields with `get_field()`; renders nothing on the front end when empty; shows a `.is-placeholder` div in the editor (`$is_preview`).
+- **Typed signatures.** PHP uses typed returns (`: void`, `: array`, `: int`) and `??`/`?:` — valid on this stack even if a linter flags them.
+
+**ACF block render gotcha (learned the hard way on linked-products):** an ACF block needs its field keys present in the inline `data` object in the block comment, or ACF can't bind the block's fields and the block renders **blank on the front end while still working in the editor preview**. When emitting ACF blocks programmatically (migrations, patterns), include the `{"name":...,"data":{"field_key":"value",...},"mode":"preview"}` scaffold. Also: inside an FSE template, blocks render **outside the main query loop**, so `get_the_ID()` is unreliable for resolving the host post — use the `$post_id` ACF passes into the render template instead.
+
 ### No-build blocks (plain JS)
 
 | Block | Notes |
@@ -270,7 +328,7 @@ The blog byline is **not** `post_author`. On this site `post_author` is frequent
 | `momentive/accordion` | Static or query (FAQ CPT) mode. Three style variants: default, categorized, icon. `closeOthers` and `openFirst` options. `@starting-style` animation on panels. `core/details`, `core/accordion*`, `core/icon` are unregistered to avoid ambiguity. |
 | `momentive/breadcrumbs` | Uses ACF `breadcrumb_title` override if set. Options for home link and separator. |
 | `momentive/post-byline` | Author photo, name, last-updated date (only when >24h after publish), reading time (`ceil(words/220)`). Falls back to WP author if ACF field empty. |
-| `momentive/post-cta-button` | Outputs nothing if ACF `cta_button` field is empty — safe to include unconditionally in templates. |
+| `momentive/post-cta-button` | Renders the CTA button in the blog post hero. Resolution order: (1) per-post `cta_button` ACF link field override; (2) `blog_hero_button` Link field on the post's solution category term; (3) `site_wide_blog_hero_button` Link field on the Blog Settings options page. Outputs nothing if all three are empty — safe to include unconditionally in templates. Logic lives in `momentive_resolve_post_cta_button()` in `block.php`. |
 | `momentive/resource-filters` | AJAX filter + sort bar for archives. Proximity-targets adjacent Query Loop (no ID needed). Load More replaces pagination. REST endpoint map in `filters.js`. |
 | `momentive/table-of-contents` | Parses H2/H3, sticky, scroll-spy. Collapses when list >50% viewport height. Expand/collapse state in `sessionStorage`. |
 | `momentive/social-share` | Copy link (clipboard API + `execCommand` fallback), LinkedIn, X, Facebook. Popups use constrained window. |
@@ -278,11 +336,13 @@ The blog byline is **not** `post_author`. On this site `post_author` is frequent
 | `momentive/testimonial` | Renders a testimonial card. Integrates with Query Loop. |
 | `momentive/product-marquee` | Two auto-scrolling rows (Splide AutoScroll). Row 1 scrolls left, row 2 right. Pauses on hover. Pulls from Products CPT; filtered to `active-product` type via `momentive_product_marquee_query_args` hook. Wordmark image fallback when no logo image is set. |
 | `momentive/product-solution-tabs` | Tabbed grid of products grouped by Solution. Tabs derived automatically from `get_solutions_with_products()` — no manual curation per instance. Deep-linkable via URL hash. Mobile dropdown with "All" option. Enqueuing checks both `momentive_content_has_block()` and `is_post_type_archive('product')`. |
-| `momentive/hubspot-form` | ACF block. Two modes: standard embed (paste embed code), and two-step (email capture inline → full form in modal). Modal appended to `document.body` to avoid stacking context issues with sticky nav. |
+| `momentive/hubspot-form` | ACF block. Two modes: standard embed (paste embed code), and two-step (email capture inline → full form in modal). Modal appended to `document.body` to avoid stacking context issues with sticky nav. **Form resolution order:** (1) block-level `hubspot_embed_code` field if set; (2) post-level form fields via `momentive_resolve_webinar_form()` — so the correct form surfaces automatically when a webinar transitions from upcoming to on-demand. The legacy `form_source` select field was removed; the block now auto-detects. |
+| `momentive/back-link` | ACF block. A back-navigation link with configurable label and URL (fields: `label`, `url`). Used in webinar post content as the first block in the left column. Renders nothing when both fields are empty. |
 | `momentive/megamenu-panel` | InnerBlocks-based panel. Allowed children: `core/columns`, `core/group`. Paired with flat WordPress nav and separate FSE template parts per panel (`parts/megamenu-*.html`). |
 | `momentive/person` | ACF block. Single-person card (headshot + name + position) for the Our Team page; native blocks (columns/grid) handle the layout and ordering of multiple instances. Person chosen via an ACF Post Object field (`person`, restricted to `people`, intentionally **not** role-restricted so it's reusable for presenters/bylines later). The card is a real `<a>` to the person's permalink; `view.js` intercepts the click to open the profile in a native `<dialog>` lightbox (progressive enhancement — no JS just navigates to the profile page). Deep-linkable: `/our-team/#person-{slug}` auto-opens that profile, and opening a profile writes the hash via `replaceState`. Backdrop tinted from `--wp--preset--color--superlight-accent` via `color-mix` to match the site. |
 | `momentive/person-position` | ACF block. Renders the current queried person's `job_position`. Used in the `single-people` template hero (fills the `.person-position` slot). Resolves the person via `get_the_ID()`; placeholder shown on the editor canvas. |
 | `momentive/person-linkedin` | ACF block. Renders a LinkedIn icon link for the current queried person (`linkedin_url`). Used in the `single-people` template hero. Same `get_the_ID()` resolution pattern as `person-position`. |
+| `momentive/icon-list` | **JS-registered** block (not ACF) for the Case Study "Key Features" sidebar. A repeater of `{ iconSlug, text }` rows edited in the inspector, each row using the shared **visual icon picker** (`window.momentive.IconPicker` — same control as `icon-block`/`icon-link`, so you see/click the glyph rather than picking a slug from a text dropdown). `save() => null`; front end rendered by PHP `render.php` via the sprite `<use href="#icon-{slug}">`. Icon treatment (no shape, no background, secondary color) lives in `style.css`. `showHeading` attribute (the Case Study sidebar supplies its own "Key Features" `<h2>`, so the migrated blocks set `showHeading:false`). This block was made JS-registered (vs. the no-build ACF default) specifically for the visual picker — with 130+ icons and a teammate maintaining during leave, the click-the-glyph UX justified the deviation. Trade-off: migration emits it as serialized block markup (`<!-- wp:momentive/icon-list {"items":[...]} /-->`) rather than a field-to-field ACF write. |
 
 ### ACF blocks (PHP render template)
 
@@ -293,6 +353,12 @@ The blog byline is **not** `post_author`. On this site `post_author` is frequent
 | `acf/product-solution-tabs` | See above. |
 | `acf/person` | See `momentive/person` above. |
 | `acf/person-position`, `acf/person-linkedin` | Field blocks for the `single-people` template hero. See above. |
+| `momentive/linked-products` | ACF block. Renders related products as logos linking to product pages, pulling the unendorsed logo + permalink from each Product post (so logos stay in sync — change a product's logo once, every instance updates). Heading is a block attribute. Product selection: a **post-level** `linked_products` field is the source of truth (set on the Case Study), with an optional block-level override; render prefers the block field, falls back to the post-level field resolved via the ACF-provided `$post_id` (NOT `get_the_ID()` — see the FSE gotcha above). Named generically (not "case-study-products") for reuse on solution pages etc. |
+| `momentive/stat-columns` | ACF block. Repeater (`stats`: `stat_value` + `stat_description`); renders each value **verbatim as a string** — no number parsing, no count-up animation (39% of legacy case-study stat values can't be parsed: ">1 million", "~50%", "24-fold", "#1", typos). Handles 0–4 count gracefully (hidden at 0, centered at 1). Deliberately separate from `momentive/impact-stat`, which does animated count-up with prefix/number/suffix and is wrong for this free-form data. |
+| `acf/webinar-status` | ACF block. Renders the upcoming/on-demand status badge for a webinar post. Reads `webinar_type` field and resolves live status against `webinar_date`. |
+| `acf/webinar-schedule` | ACF block. Renders formatted date, time range, and timezone for a webinar. Reads `webinar_date`, `webinar_end_date`, `webinar_time_start`, `webinar_time_end`, `webinar_timezone`. Renders nothing when date is empty. |
+| `acf/webinar-form-heading` | ACF block. Renders an optional heading above the HubSpot form in the sidebar. Field: `heading_override` (text). Renders nothing when empty — safe to include unconditionally in the webinar template. |
+| `momentive/webinar-presenters` | ACF block. Renders presenter cards (headshot + name + job_position) from the `presenters` ACF field (post_object → `people`). Block attributes: `layout` (grid or list), `show_headshots` (true/false). Falls back gracefully when `people` posts have no featured image. |
 
 ### JSX build block
 
@@ -364,7 +430,8 @@ Key patterns:
 | `solution-content.php` | Default template for new Solution posts. |
 | `blog-article-content.php` | Blog post body layout. |
 | `press-article-content.php` | Press article body layout. |
-| `related-posts.php` | "Recommended for you" section, injected by `newsroom.php`. |
+| `case-study-content.php` | Default template for new Case Study posts. Full scaffold: breadcrumb bar, hero (logo image slot, post-title, post-featured-image, download button), two-column `post-layout`, sticky sidebar (`linked-products` + "Key Features" `icon-list` + CTA). Applied via CPT template (same `init` hook pattern as webinar/product). The migration emits this same structure with per-post data filled in. |
+| `related-posts.php` | "Recommended for you" section, injected by `blog-and-newsroom.php`. |
 
 ---
 
@@ -426,23 +493,64 @@ add_filter( 'query_loop_block_query_vars', ... );
 
 ---
 
-## ACF field groups (defined in `inc/acf-groups.php`)
+## ACF options pages
 
-All field groups use `acf_add_local_field_group()` — no JSON export needed.
+Options pages are registered in PHP (not through the ACF UI) so that `parent_slug` can be set to any WordPress menu slug. The field group that populates the page is still created in the ACF UI as normal.
+
+**Registration pattern** (in an `inc/` file, on the `init` hook):
+
+```php
+add_action( 'init', function () {
+    if ( ! function_exists( 'acf_add_options_sub_page' ) ) return;
+    acf_add_options_sub_page( [
+        'page_title'  => 'Blog Settings',
+        'menu_title'  => 'Blog Settings',
+        'menu_slug'   => 'momentive-blog-settings',
+        'parent_slug' => 'edit.php',   // nests under "Blog" in the dashboard sidebar
+        'capability'  => 'manage_options',
+    ] );
+} );
+```
+
+**Hook:** use `init`, not `acf/init`. The `acf/init` hook is unreliable for options page registration in ACF Pro versions before 6.3.
+
+**Field value access:** `get_field( 'field_name', 'option' )` — pass the string `'option'` as the second argument.
+
+**Nesting under existing menus:** set `parent_slug` to the WordPress menu slug of any existing admin menu item (`edit.php` for Blog/Posts, `edit.php?post_type=product` for Products, etc.). To create a standalone top-level entry use `acf_add_options_page()` instead.
+
+**Registered options pages:**
+
+| Slug | Parent menu | Purpose |
+|---|---|---|
+| `momentive-blog-settings` | Blog (`edit.php`) | Site-wide blog hero CTA fallback button |
+
+---
+
+## ACF field groups
+
+Field groups are created and edited in the ACF UI. ACF automatically writes a JSON file to `acf-json/` on every save — that directory is committed and serves as the version-controlled source of truth. To add or change a field group, edit it in the ACF UI; the JSON updates itself.
 
 | Group | Location | Key fields |
 |---|---|---|
-| Category Settings | `taxonomy == category` | `related_solution` (post_object → solutions) |
-| HubSpot Form | `block == acf/hubspot-form` | `hubspot_embed_code` (textarea), `two_step` (true/false) |
+| Category Settings | `taxonomy == category` | `related_solution` (post_object → solutions), `blog_hero_button` (link — button shown in blog post hero for posts in this category; read by `momentive_resolve_post_cta_button()`) |
+| Blog Settings | `options_page == momentive-blog-settings` | `site_wide_blog_hero_button` (link — site-wide fallback hero button shown on all blog posts with no category-specific button set) |
+| HubSpot Form | `block == acf/hubspot-form` | `hubspot_embed_code` (textarea — block-level override; leave empty to use post-level form fields), `two_step` (true/false). The former `form_source` select was removed; form origin is now auto-detected. |
 | Post Settings | `post_type == post` | `breadcrumb_title`, `cta_button` (link), `post_author_ref` (post_object → `people`, restricted to `author` role), `hero_image` |
 | Person Settings | `post_type == people` | `job_position`, `linkedin_url`, `first_name`, `last_name`, `linked_user` (legacy/unused after byline reversal — confirm before removing) |
 | User Settings | `user_form == all` | `linked_person` (post_object → `people`, restricted to `author` role; **return format: Post Object**) |
 | Testimonial Settings | `post_type == testimonial` | `solution_family` (taxonomy), `author_name`, `author_description`, `author_photo`, `testimonial_type` (select), `related_case_study` |
 | FAQ Settings | `post_type == faq` | `solution_family` |
-| Product Settings | `post_type == product` | `solution_family`, `summary`, `breadcrumb_title`, `product_order`, `background_image`, `page_accent_color` (hex), `logos` (repeater), `product_icon` (select), `accent_color` (hex), `product_logo_*` (image — endorsed/unendorsed × color/white) |
+| Product Settings | `post_type == product` | `solution_family`, `summary`, `breadcrumb_title`, `product_order`, `background_image`, `tint_color` (hex), `logos` (repeater), `product_icon` (select), `accent_color` (hex), `product_logo_*` (image — endorsed/unendorsed × color/white) |
 | Solution Settings | `post_type == solutions` | `breadcrumb_title`, `accent_color` (hex), `solution_icon` (select), `background_image`, `solution_card_label`, `solution_order` |
+| Case Study Settings | `post_type == case-study` (`group_6a421df4548b3`) | `linked_products` (post-level source of truth for the sidebar block), `breadcrumb_title`. Stats/features live in their blocks, not post fields. |
+| Linked Products Block | `block == momentive/linked-products` (`group_6a429f79214af`) | `heading`, `show_heading`, `linked_products` (block-level override). Field keys: heading `field_6a429fb9316b6`, show_heading `field_6a42a00e316b7`, override products `field_6a42aac112ead`. The post-level `linked_products` (Case Study Settings) is `field_6a429f79316b5`. |
+| Stat Columns Block | `block == momentive/stat-columns` | `stats` repeater (`stat_value` `field_6a42c6c8357d9`, `stat_description` `field_6a42c6ef357da`; repeater `field_6a42c667b17bc`) |
+| Webinar Settings | `post_type == webinar` (`group_6a3a318255bf0`) | `webinar_type` `field_6a3a3182ba777`, `is_series` `field_6a3e1db41ee80`, `webinar_date` `field_6a3a31bcba778`, `webinar_end_date` `field_6a3a31dbba779`, `webinar_time_start` `field_6a3a31f9ba77a`, `webinar_time_end` `field_6a3a323bba77b`, `webinar_timezone` `field_6a3a3249ba77c`, `form_upcoming` `field_6a3a3321ba77f`, `form_ondemand` `field_6a3a3356ba780`, `video_embed_code` `field_6a3ef54a65cd6`, `presenters` `field_6a3edd7da2c1f`, `hero_image` `field_6a3eddd24103c` (return_format: array) |
+| Back Link Block | `block == momentive/back-link` (`group_6a44a4078d0f6`) | `label` `field_6a44a408f79e0`, `url` `field_6a44a420f79e1` |
+| Webinar Form Heading Block | `block == acf/webinar-form-heading` (`group_6a44a695407f9`) | `heading_override` `field_6a44a695e649d` |
+| Webinar Presenters Block | `block == momentive/webinar-presenters` (`group_6a448a68cf996`) | `layout` `field_6a448a69ebb4b`, `show_headshots` `field_6a4542d50b10a` |
+| Whitepaper Settings | `post_type == whitepaper` (`group_6a45de7a50be6`) | `hero_image` `field_6a45de7b50be7` (image, return_format: array) |
 
-**ACF local JSON:** `/acf-json/` directory is not yet set up. To enable field group version control, create the directory and enable it in ACF settings.
 
 ---
 
@@ -465,7 +573,7 @@ All field groups use `acf_add_local_field_group()` — no JSON export needed.
 
 **Build output committed.** `blocks/build/` is in version control so content editors and collaborators don't need Node.js. Only developers who modify JSX blocks need to run the build.
 
-**ACF fields in PHP, not JSON export.** `acf_add_local_field_group()` in `inc/acf-groups.php` keeps field definitions in version control without a separate JSON export step. The trade-off is verbose PHP; the benefit is a single source of truth.
+**ACF field groups in local JSON, not PHP.** Field groups are defined in the ACF UI and version-controlled via `acf-json/` — ACF writes the JSON automatically on every save, so definitions stay in git without a manual export step or verbose PHP. The `inc/acf-groups.php` approach (PHP `acf_add_local_field_group()`) was retired in favour of this.
 
 **`--page-accent-color` on `body`.** Injecting the accent color at the body level (rather than per-block) means any block anywhere on a product/solution page can reference it with `var(--page-accent-color)` in CSS, with no PHP coordination needed per block.
 
@@ -474,6 +582,10 @@ All field groups use `acf_add_local_field_group()` — no JSON export needed.
 **HubSpot modal appended to `document.body`.** The modal needs `z-index` above the sticky nav, which creates a stacking context. Appending to body breaks out of any stacking context in the page content.
 
 **`core/accordion` triple-unregistration.** WordPress's native accordion blocks can't be removed via the standard `allowed_block_types_all` filter alone — they re-register themselves via `__unstableBlockDefinitions`. A three-pronged approach (`allowed_block_types_all` + `block_editor_settings_all` filter + JS `unregisterBlockType` on `wp.domReady`) is required.
+
+**Swoop underline needs a local stacking context, unconditionally.** The `.is-style-has-swoop` SVG is drawn with `z-index: -1` inside a `<strong>` that only sets `position: relative` (no `z-index` of its own), so that `-1` resolves against whatever ancestor establishes the nearest stacking context. That context used to exist only as a side effect of the `is-style-bg-dots` / `is-style-bg-rings` / `is-style-ellipse-*` style rule (`> * { position: relative; z-index: 1; }`) applied to `.hero-background`'s child. A hero built with a plain custom background (the block's native Background color/gradient support, no `is-style-bg-*` class) had no such context, so the swoop SVG fell back to the page root and rendered *behind* the hero's own opaque background — invisible, even though the DOM/JS side (`is-ready`/`is-visible` classes, correct `<path>`) was working fine. Fixed by giving `.hero-background > *` `position: relative; z-index: 1` unconditionally in `momentive.scss`, independent of background style.
+
+**Swoop headings strip stray `&nbsp;` at save time.** Content pasted in from the legacy site often carries invisible non-breaking spaces (`&nbsp;` entity or the raw U+00A0 character) that neither the visual nor code editor surfaces — only the browser inspector shows them. Inside a `.is-style-has-swoop` heading, an nbsp glues adjacent words (and the swooped `<strong>`, which is `white-space: nowrap`) into one unbreakable run for the line-breaking algorithm; on a large/long heading with no valid space left to break at, the browser falls back to breaking mid-word (e.g. "Every member" rendering as "Every mem" / "ber" across two lines). `inc/swoop-heading-cleanup.php` hooks `wp_insert_post_data`, walks the parsed block tree, and normalizes both nbsp forms back to a plain space inside any `core/heading` block carrying `is-style-has-swoop` — scoped narrowly so intentional nbsp elsewhere (e.g. hero paragraphs) is left untouched.
 
 **Unified People CPT over separate team/author/presenter types.** One human can hold multiple roles (leader who authors, author who presents). Separate types guaranteed duplicate records and divergent data for the same person. A single `people` CPT with a non-exclusive `person_role` taxonomy models reality; presenters/leaders who are external (and shouldn't have WP accounts) are handled as profiles without a `linked_person`, which a users-table-based approach couldn't represent cleanly.
 
@@ -495,23 +607,137 @@ One-off WP-CLI scripts (`wp eval-file`). The People consolidation ran in three p
 
 Scripts are idempotent; merges are append-only on roles; photos dedupe by source URL across passes. A name-matching guard (`msw_clean()`) strips stray CDATA so re-runs don't create duplicates.
 
-**Still pending:** webinar → presenter *relationship* field (which person presented which webinar) — needed for the "presenter's past webinars" page Colleen requested. The raw pairing data exists in the same webinar export; this is a follow-up script once the relationship field is defined on the webinars CPT.
+**Still pending:** webinar → presenter *relationship* field — see Webinar migration below and Known limitations.
+
+### Case Study migration (`migrate-case-studies.php`)
+
+Migrates the legacy `case_studies` CPT (151 published + 5 drafts) to the rebuilt `case-study` CPT. **Runs on the REBUILT site**, reading legacy content from the **WXR export file**, not the database (the legacy posts don't exist in the rebuilt DB). Per post it: strips Word `<span>` cruft from prose; maps products (CCT-ID → name → rebuilt Product post); copies stats verbatim into `stat-columns`; normalizes feature icons into an `icon-list` block; runs testimonial create-and-reference; sideloads logo/hero/PDF media; assembles the full page scaffold; preserves original post dates.
+
+**Run modes (important — `wp eval-file` quirks):**
+- `wp eval-file` does **not** accept `--flags`; they error as "unknown parameter." Flags are **positional**: `wp eval-file migrate-case-studies.php live limit=6`. Positional args arrive as a script-scope `$args` variable (NOT `$GLOBALS['args']`), captured at file scope and passed into the parser.
+- **Dry-run is the default**; writing requires an explicit `live` token (or `MOMENTIVE_LIVE=1`). This is deliberate — a mis-parsed/forgotten flag once caused an accidental full live run, so the safe default now prevents that.
+- **Must run as an admin user: `--user=<login-or-id>`.** Safe SVG gates SVG handling on user capability; WP-CLI has no user by default, so SVG logo sideloads fail with "you are not allowed to upload SVG files" without `--user`.
+- Overridable constants: `MOMENTIVE_LEGACY_WXR`, `MOMENTIVE_UPLOADS_BASE`, `MOMENTIVE_PRODUCT_CSV`, `MOMENTIVE_ICON_DIR`.
+
+**Key migration behaviors and findings:**
+- **Word cruft:** legacy WYSIWYG fields carry many MS-Word span variants — `data-contrast`, `data-ccp-props`, `data-ccp-charstyle`, and class-only spans (`NormalTextRun`, `TextRun`, `EOP`, `SCXW…`, `BCX…`, spelling/comment spans). The stripper removes any span with a Word fingerprint (data-attr OR class) plus styleless spans, keeping inner text and hyperlinks. (~3,677 spans removed across the corpus, all 221 links preserved.) Leftover spans cause "Invalid content" errors in the editor.
+- **Prose → blocks:** prose fields are converted to the right block per element — `<p>`→paragraph, `<h2-6>`→heading, `<ul>/<ol>`→list, `<blockquote>`→quote, `<table>`→table (97 lists + 23 h3s in the corpus would be silently dropped by a paragraph-only extractor). Prose is verbatim from legacy after Word-stripping — not rewritten.
+- **Icons:** legacy `feature_icon` values have a `box-` prefix, stripped mechanically (`box-bxs-user-badge` → `bxs-user-badge`). All 132 distinct icons resolve against the sprite manifest; unresolved slugs are written as-is and logged. The migration does NOT do `bxs-→bx-` fallback — a few coverage posts were hand-corrected and the migration writes legacy faithfully (those are a known by-hand re-fix list).
+- **Products:** CCT-ID → name (from Product Settings CSV) → rebuilt Product post by title. Matching is exact title first, then **normalized** (lowercase, non-alphanumerics stripped) to absorb the company's inconsistent spacing ("Crowd Wisdom" vs "CrowdWisdom", "Path LMS" vs "Path"), then a unique-candidate containment fallback. Unresolved names roll up into an end-of-run summary. Products write to the **post-level** `linked_products` field; the sidebar `linked-products` block is emitted **with its ACF data scaffold** (field keys present) or it renders blank on the front end.
+- **Testimonials:** create-and-reference with fuzzy dedup. Match an existing `testimonial` CPT post by **normalized quote text** (reliable key; author names are abbreviated with collisions). ~50 matched existing, ~80–86 created new. New posts apply the **name-shortening convention**: full first name (incl. multi-word, e.g. "Mary Jo S.") + last initial; drop titles (Dr.) and post-comma credentials (CFO, DPA); drop middle initials ("Kevin R. Callahan" → "Kevin C."); group attributions kept verbatim; empty author → CPT post with blank author. Failure mode is "harmless duplicate," never silent wrong content. Name shortening was reviewed against a generated CSV before the run.
+- **Media:** attachment ID → URL map built from the WXR itself (`_wp_attached_file` + uploads base), so no separate 14MB media export needed. Logo + hero (set as featured image) + PDF sideloaded, deduped by `_momentive_source_url` meta. Failures don't block the post write: the slot is left empty (logged) or, for PDFs, the original external URL is kept in the button. Two logos (CAALA, Berkeley Rep) aren't in the export → logged unresolved. Many TripBuilder-hosted PDFs fail to sideload (remote host's outdated TLS / `cURL error 35`) → kept as external links and summarized.
+- **Dates:** original `post_date`/`post_date_gmt` set via the post shell; `post_modified`/`post_modified_gmt` set via direct `$wpdb->update()` *after* all writes (because `wp_insert/update_post` always force modified to "now"). `patch-case-study-dates.php` restores dates on already-migrated posts without re-running the full migration (slug-matched, dry-run default).
+- **Breadcrumb title:** migrates `organization_name` into `breadcrumb_title` (the legacy site shows the org name in the breadcrumb), falling back to legacy `short_title` then post title.
+- **Idempotency:** upserts by slug, so re-running updates in place rather than duplicating. Created posts/testimonials are stamped with `_momentive_migration_run` (a run timestamp) for safe rollback identification. In practice, restoring from a pre-migration backup is the clean reset.
+
+**Coverage validation:** 6 representative posts (ECS, Plimoth/MIP, Ewald/YM, United Way/GiveSmart, CAALA/Events, VECCS/YM Careers) exercise every field and edge case; generated block markup was diffed byte-for-byte against the hand-built rebuilt versions. Remaining diffs were all known hand-edits (an icon `bxs-`→`bx-` swap, a `4,000+`→`4,000` stat, a deliberately-omitted logo) — the migration writes legacy faithfully and those stay a short by-hand list.
+
+This migration establishes the **WP-CLI-from-WXR** pattern as the standard for moving content (dramatically faster than manual rebuilds): parse the legacy export → transform → write to the rebuilt DB, dry-run by default, per-item logging, end-of-run summaries of anything unresolved.
+
+### Webinar migration (`migrate-webinars.php`)
+
+Migrates the legacy `webinars` CPT (149 posts) to the rebuilt `webinar` CPT. Same WP-CLI-from-WXR pattern as the Case Study migration. Two export files are required next to the script:
+
+| File | Contents |
+|---|---|
+| `momentivesoftware.webinars.current.2026-07-01.xml` | `webinars` posts (149) + attachments (355) — source for posts, presenter data, media |
+| `momentivesoftware.assets.current.2026-07-01.xml` | `assets` posts (168) — source for `video_embed_code` (Wistia embeds) |
+
+**Run modes:** same positional-flag pattern as Case Study — dry-run by default, `live` token required to write. Must run with `--user=<admin>` (Safe SVG capability gate). Overridable via `MOMENTIVE_WM_LEGACY_WXR`, `MOMENTIVE_WM_ASSETS_WXR`, `MOMENTIVE_WM_UPLOADS_BASE`.
+
+**Key migration behaviors:**
+- **Images:** legacy `_thumbnail_id` → featured image (archive card); legacy `resource_hero_image` → `hero_image` ACF field only when it differs from `_thumbnail_id` (when they're the same, featured image handles both and `hero_image` is left empty). Both sideloaded, deduped by `_momentive_source_url`.
+- **HubSpot form:** single legacy `hubspot_form_code` field → `form_upcoming` or `form_ondemand` based on `webinar_type`. Upcoming webinars that later transition to on-demand continue to work without a manual update (the render template reads the correct field via `momentive_resolve_webinar_form()`).
+- **Video embed code:** read from the assets WXR by slug. Exact slug match first; normalized containment fallback (handles cases where asset slug has a `webinar-`/`video-` prefix or the webinar slug has extra words). ~126 exact matches, ~8 containment matches, ~15 unmatched (logged).
+- **Presenters:** legacy `webinar_presenter` serialized repeater → `people` CPT post IDs via name matching. Unmatched names create new People posts with `presenter` role. Deduped by normalized name within and across sessions.
+- **Insights / checklist / quote blocks:** legacy structured fields assembled into a superlight-accent group block. Social-share placement: inside the insights group when no presenter section follows; outside (after presenters) when presenters are present.
+- **Dates and excerpts:** original `post_date`/`post_modified` preserved (same `$wpdb->update()` pattern as Case Study). `excerpt:encoded` from WXR written as `post_excerpt`.
+- **Idempotency:** upserts by slug; posts stamped with `_momentive_migration_run` for rollback identification.
+
+**`patch-webinar-images-excerpts.php`:** targeted patch for already-migrated posts without requiring a full re-run. Fixes two issues from the initial run: (1) sideloads the correct `_thumbnail_id` attachment as featured image for posts where thumbnail ≠ hero image; clears the redundant `hero_image` override for posts where they were the same; (2) writes `post_excerpt` from the WXR where currently empty. Requires `--user=<admin>`; dry-run by default.
+
+### Whitepaper migration (`migrate-whitepapers.php`)
+
+Migrates the legacy `whitepapers` CPT (69 posts) to the rebuilt `whitepaper` CPT. Same WP-CLI-from-WXR pattern as webinars. One export file required next to the script:
+
+| File | Contents |
+|---|---|
+| `momentivesoftware.whitepapers.current.2026-07-01.xml` | `whitepapers` posts (69) + attachments — source for posts and media |
+
+**Run modes:** same positional-flag pattern — dry-run by default, `live` token required to write. Must run with `--user=<admin>`.
+
+**Key migration behaviors:**
+- **Gated vs. not-gated layout:** determined by whether `hubspot_form_code` is present in the legacy post. Gated posts get a two-column layout with the HubSpot form in the right column. Not-gated posts get the featured image, checklist, and download button in the right column instead.
+- **HubSpot embed inline in block data:** unlike webinars (which store form code in `form_upcoming`/`form_ondemand` post-level ACF fields), whitepapers store the embed code directly inside the `acf/hubspot-form` block comment's `data` object. Field-key-direct format is used (`"field_6a2873ba3bf87": "<embed code>"`) — this is the format the block editor writes and ACF expects. See the `wp_slash()` gotcha below.
+- **Images:** `_thumbnail_id` → featured image (archive card); `resource_hero_image` → `hero_image` ACF field only when it differs from `_thumbnail_id`. Same pattern as webinars.
+- **Insights / checklist blocks:** legacy structured fields assembled into a superlight-accent group block. Social-share always inside the insights group.
+- **Dates and excerpts:** original `post_date`/`post_modified` preserved via `$wpdb->update()`. `excerpt:encoded` from WXR written as `post_excerpt`.
+- **Idempotency:** upserts by slug; posts stamped with `_momentive_migration_run`.
+
+**`patch-whitepaper-excerpts.php`:** writes `post_excerpt` on already-migrated posts where it was initially left empty (63/69 posts have excerpt text in the WXR). Dry-run by default.
+
+**`patch-whitepaper-hubspot-forms.php`:** fixes malformed HubSpot form blocks from the initial migration run. Two bugs caused broken blocks: (1) wrong data key format (`hubspot_embed_code` field-name format instead of `field_6a2873ba3bf87` field-key-direct format); (2) `wp_slash()` missing — see gotcha below. The patch re-reads embed codes from the WXR and rebuilds the block comments correctly. Dry-run by default; skips posts already in the correct format.
+
+**`wp_slash()` / `wp_update_post` gotcha (critical — applies to any migration that stores block markup with JSON escape sequences in `post_content`):** `wp_update_post` calls `wp_unslash()` internally on all post data before writing to the DB. Without `wp_slash()` wrapping, every backslash in the block comment JSON is stripped: `\"` (escaped quote) becomes `"` (unescaped, breaking the JSON), and `\r\n` (JSON line endings) becomes `rn`. The fix is always to wrap the `post_content` value:
+
+```php
+wp_update_post( wp_slash( [ 'ID' => $new_id, 'post_content' => $post_content ] ), true );
+```
+
+This matters any time block content contains a JSON string with special characters — specifically ACF blocks that store embed codes (HubSpot, Wistia, etc.) inline in block data. Blocks with only simple alphanumeric values (like `back-link` or `post-title`) are unaffected because they have no backslashes to lose. Webinar migrations were unaffected because their embed codes were stored in post-level ACF fields via `update_field()`, not inline in block data.
 
 ---
 
 ## Known limitations / to-do
 
-- `acf-json/` local JSON not yet set up — field groups are not version-controlled as JSON
-- `icon-shuffle` block documentation incomplete
-- `icons` CPT: slug not confirmed; update README Post Types section
-- Featured blog post ordering: archive "Featured" section queries by `featured` tag; manual ordering not yet implemented (ACF options page approach is an option)
+- Featured blog post ordering: archive "Featured" section queries by `featured` tag; manual ordering not yet implemented
 - Resource filters: "All Resources" across multiple CPTs requires a custom REST endpoint — not yet built
 - Reading progress bar: currently `is_singular('post')` only; extend to `press-article` in `functions.php` if needed
 - `swoop-double` SVG path uses two `M` commands in one `d` string — verify cross-browser
-- Product accent color field naming is confusing (`page_accent_color` for the hero tint, `accent_color` for the icon; consider renaming)
-- People: webinar → presenter relationship field not yet built (blocks Colleen's "presenter's past webinars" page) — see Migrations
-- People: retired `team` and `authors` CPT registrations should be removed once migration is confirmed on production
+- Webinar: ~15 posts have no matching `video_embed_code` in the assets WXR — check the migration's "[video] no embed code found" log lines and add manually where needed
 - People: `linked_user` field on Person Settings is legacy after the byline-link reversal to `linked_person` on users — confirm nothing reads it, then remove
 - People: decide whether the shared "Momentive Software" byline should render or show no byline at all (editorial; architecture supports either)
 - People: decide whether leader/People profiles should be indexed (`noindex` on the CPT if not) — SEO-team question
 - Person block: deep-link hash (`/our-team/#person-{slug}`) only works on pages that include that person's block; the canonical share URL is the permalink. Possible enhancement: make the permalink itself open the lightbox when arriving via internal link
+- Case Study: 12 not-yet-created Product posts mean some `linked_products` won't resolve until those products exist — check the migration's end-of-run "unresolved products" summary after creating them, then re-run (idempotent by slug)
+- Case Study: TripBuilder-hosted PDFs can't sideload (remote TLS); they remain external links — re-host manually from the run's "PDFs that did not sideload" summary if local copies are wanted
+- Case Study: two logos (CAALA, Berkeley Rep) aren't in the WXR export — add by hand
+- Case Study: a few coverage posts were hand-corrected (icon `bxs-`/`bx-`, a stat value); the migration writes legacy faithfully, so re-apply those edits by hand after any re-run
+- Case Study: `migrate-case-studies.php` must run with `--user=<admin>` (Safe SVG capability gate) and the `live` token (dry-run is the default)
+
+### Pending CPT migrations
+
+**Gated content (registration form — no upcoming/on-demand lifecycle)**
+Whitepapers are done. Remaining gated types follow the same pattern (form inline in block data, gated vs. not-gated layout variant) and can be built from the whitepaper migration as a template:
+- `guide` (Guides & Research)
+- `toolkit`
+- `infographic`
+
+**Product Overviews**
+Not a new CPT. Extend the `product` post type with a toggle that enables upcoming/on-demand recording fields (mirrors Webinar Settings: `webinar_date`, `form_upcoming`, `form_ondemand`, `video_embed_code`). On the legacy site these live under product URLs (e.g. `/solutions/career-centers-software/ym-careers/overview/`). Video embed comes from a corresponding `assets` post, same pattern as webinars. Upcoming example: `https://momentivesoftware.com/solutions/career-centers-software/ym-careers/overview/` — On-demand: `https://momentivesoftware.com/solutions/accounting-software/mip-accounting/overview/`
+
+**Videos**
+Only 3 posts on the legacy site. No form — "watch now" button only. Likely folds into webinars (with a `video` type) or a minimal standalone CPT.
+
+**To be determined (decisions needed before building)**
+- `events` — scope unclear
+- Video Testimonials — consider folding into `testimonial` CPT with a `video` type
+- Interactive Tools, Landing Pages, Integrations, Donation Examples, Reviews
+
+**Migrate as pages, not CPTs**
+- Industries — these are effectively pages; rebuild as standard `page` posts
+
+**Fold into patterns, retire the CPT**
+- Award Recipients — 4 posts built for one page (`/bring-on-better-awards/`); content goes into a block pattern
+
+### Legacy CPTs to retire (no migration needed)
+- **Assets** — already folding `video_embed_code` into Webinars and (eventually) Product Overviews
+- **Clients** — already marked "To be removed" on the current site
+
+### Dashboard / plugin items to evaluate
+Still present in legacy admin; each needs a keep / replace / remove decision:
+- Rank Math SEO — keep, or replace with Yoast?
+- Site Configuration, Product Settings, Solution Settings — review what these control
+- Crocoblock — legacy page-builder dependency; retire once migration is complete
+- SEO Sheets, Publish Press Future, Capabilities, Site Documentation, Maintenance Reports, Thermometer — evaluate
+- 500 Designs Toolkit — folding into the new theme
