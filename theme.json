@@ -39,22 +39,22 @@
 				},
 				{
 					"color": "rgb(0, 120, 255)",
-					"name": "Accent Blue",
+					"name": "Accent Color",
 					"slug": "primary"
 				},
 				{
 					"color": "#C1E6F7",
-					"name": "Light Blue",
+					"name": "Light Accent",
 					"slug": "light-accent"
 				},
 				{
 					"color": "rgb(224, 243, 251)",
-					"name": "Extra Light Blue",
+					"name": "Extra Light Accent",
 					"slug": "extralight-accent"
 				},
 				{
 					"color": "rgb(239, 249, 253)",
-					"name": "Super Light Blue",
+					"name": "Super Light Accent",
 					"slug": "superlight-accent"
 				},
 				{
@@ -76,6 +76,16 @@
 					"color": "#daf7fb",
 					"name": "Aqua",
 					"slug": "aqua"
+				},
+				{
+					"color": "#7B61FF",
+					"name": "Purple",
+					"slug": "purple"
+				},
+				{
+					"color": "#D73F5D",
+					"name": "Rose",
+					"slug": "rose"
 				}
 			],
 

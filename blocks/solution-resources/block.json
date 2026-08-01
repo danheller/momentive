@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/solution-resources",
+	"title": "Solution Resources",
+	"category": "momentive",
+	"icon": "screenoptions",
+	"description": "Automatic grid of resources (blog posts, case studies, webinars, whitepapers, infographics) tagged with the current Solution's category. Fully automatic — no per-instance curation field. A resource appears here because it carries the Solution's linked category term, the same relationship product-solution-tabs uses for Products.",
+	"keywords": [ "resources", "solution", "grid", "related", "case studies", "webinars", "whitepapers" ],
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "block.php"
+	},
+	"supports": {
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"html": false,
+		"jsx": false
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"data": {
+				"is_preview": true
+			}
+		}
+	}
+}

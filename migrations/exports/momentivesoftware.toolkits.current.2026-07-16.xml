@@ -29,7 +29,7 @@
 	<title>Momentive Software</title>
 	<link>https://momentivesoftware.com</link>
 	<description></description>
-	<pubDate>Wed, 01 Jul 2026 18:37:45 +0000</pubDate>
+	<pubDate>Thu, 16 Jul 2026 17:36:15 +0000</pubDate>
 	<language>en-US</language>
 	<wp:wxr_version>1.2</wp:wxr_version>
 	<wp:base_site_url>https://momentivesoftware.com</wp:base_site_url>
@@ -44,7 +44,7 @@
 	
 
 <image>
-	<url>https://momentivesoftware.com/wp-content/uploads/2025/08/cropped-momentive-favicon-512-2-32x32.png</url>
+	<url>https://momentivesoftware.com/wp-content/uploads/2025/08/momentive-favicon-512-150x150.png</url>
 	<title>Momentive Software</title>
 	<link>https://momentivesoftware.com</link>
 	<width>32</width>
@@ -446,7 +446,7 @@
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_lmt_disableupdate]]></wp:meta_key>
-		<wp:meta_value><![CDATA[no]]></wp:meta_value>
+		<wp:meta_value><![CDATA[yes]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_thumbnail_id]]></wp:meta_key>
@@ -2191,11 +2191,7 @@ your organization achieve its goals.]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_lmt_disableupdate]]></wp:meta_key>
-		<wp:meta_value><![CDATA[no]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_elementor_page_assets]]></wp:meta_key>
-		<wp:meta_value><![CDATA[a:0:{}]]></wp:meta_value>
+		<wp:meta_value><![CDATA[yes]]></wp:meta_value>
 		</wp:postmeta>
 							</item>
 					<item>
@@ -2721,7 +2717,7 @@ your organization achieve its goals.]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_lmt_disableupdate]]></wp:meta_key>
-		<wp:meta_value><![CDATA[no]]></wp:meta_value>
+		<wp:meta_value><![CDATA[yes]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_wp_old_slug]]></wp:meta_key>
@@ -3271,7 +3267,7 @@ your organization achieve its goals.]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_lmt_disableupdate]]></wp:meta_key>
-		<wp:meta_value><![CDATA[no]]></wp:meta_value>
+		<wp:meta_value><![CDATA[yes]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_thumbnail_id]]></wp:meta_key>

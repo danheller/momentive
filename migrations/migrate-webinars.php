@@ -563,7 +563,7 @@ function momentive_wm_page(
 function momentive_wm_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_WM_LEGACY_WXR' )
 		? MOMENTIVE_WM_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware.webinars.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.webinars.current.2026-07-01.xml';
 
 	$base = defined( 'MOMENTIVE_WM_UPLOADS_BASE' )
 		? MOMENTIVE_WM_UPLOADS_BASE
@@ -698,7 +698,7 @@ function momentive_wm_sideload( string $url, int $post_id, bool $dry ): int {
 function momentive_wm_build_video_map(): array {
 	$path = defined( 'MOMENTIVE_WM_ASSETS_WXR' )
 		? MOMENTIVE_WM_ASSETS_WXR
-		: __DIR__ . '/momentivesoftware.assets.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.assets.current.2026-07-01.xml';
 
 	$map = [];
 	if ( ! file_exists( $path ) ) {
@@ -958,7 +958,7 @@ function momentive_wm_resolve_presenters(
 function momentive_wm_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_WM_LEGACY_WXR' )
 		? MOMENTIVE_WM_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware.webinars.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.webinars.current.2026-07-01.xml';
 
 	$out = [];
 	if ( ! file_exists( $path ) ) {

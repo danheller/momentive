@@ -68,35 +68,6 @@
             "preview_size": "medium"
         },
         {
-            "key": "field_6a23a1a0985df",
-            "label": "Testimonial Type",
-            "name": "testimonial_type",
-            "aria-label": "",
-            "type": "select",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "client": "Client",
-                "partner": "Partner",
-                "other": "Other"
-            },
-            "default_value": false,
-            "return_format": "value",
-            "multiple": 0,
-            "allow_null": 0,
-            "ui": 0,
-            "ajax": 0,
-            "placeholder": "",
-            "create_options": 0,
-            "save_options": 0
-        },
-        {
             "key": "field_6a23a1d7985e0",
             "label": "Related Case Study",
             "name": "related_case_study",
@@ -127,7 +98,7 @@
             "label": "Related Case Study URL",
             "name": "related_case_study_url",
             "aria-label": "",
-            "type": "url",
+            "type": "text",
             "instructions": "Please use this field only if the case study is posted on another website.",
             "required": 0,
             "conditional_logic": 0,
@@ -137,7 +108,11 @@
                 "id": ""
             },
             "default_value": "",
-            "placeholder": ""
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -161,5 +136,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1784013634
+    "modified": 1785132989
 }

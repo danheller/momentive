@@ -42,6 +42,13 @@
                 "operator": "==",
                 "value": "infographic"
             }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "guide"
+            }
         ]
     ],
     "menu_order": 1,
@@ -56,5 +63,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1784013634
+    "modified": 1784317868
 }

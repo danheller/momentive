@@ -2,16 +2,26 @@
 /**
  * Template Part: Story Card
  *
- * Handles display differences between 'post' and 'press-article' post types.
+ * Top label rule (default, per post type): webinar → live status badge
+ * (upcoming/on-demand/series, same markup as acf/webinar-status); press
+ * article → first category name, unlinked; everything else → the post
+ * type's own singular label (post's is rewritten to "Blog" by
+ * inc/rename-posts-to-blog.php, so no special case is needed for it here).
  *
  * Expected to run inside a WP_Query loop (the_post() already called).
  *
  * @var int    $card_heading_level  Optional. Heading level for post title. Default 3.
+ * @var string $card_top_label      Optional escape hatch: overrides the
+ *                                  per-post-type logic above with a literal
+ *                                  string. Pass '' to suppress the top label
+ *                                  entirely. Leave unset for the default
+ *                                  behavior described above.
  */
 global $post;
 $post_type     = get_post_type();
 $is_blog       = $post_type === 'post';
 $heading_level = isset( $card_heading_level ) ? (int) $card_heading_level : 3;
+$top_label     = isset( $card_top_label ) ? (string) $card_top_label : null;
 $permalink     = get_permalink();
 $title         = get_the_title();
 ?>
@@ -19,15 +29,40 @@ $title         = get_the_title();
 
     <?php // ── Top label ──────────────────────────────────────────────────── ?>
 
-    <?php if ( $is_blog ) : ?>
-        <p class="top-label wp-block-paragraph">Blog</p>
-    <?php else : ?>
+    <?php if ( null !== $top_label ) : ?>
+        <?php if ( '' !== $top_label ) : ?>
+        <p class="top-label wp-block-paragraph"><?php echo esc_html( $top_label ); ?></p>
+        <?php endif; ?>
+    <?php elseif ( 'webinar' === $post_type ) : ?>
         <?php
-        // Press articles and other CPTs: show first category name, unlinked.
+        // Webinars: the live upcoming/on-demand/series status badge — the
+        // same markup acf/webinar-status renders on a webinar's own page —
+        // rather than a plain category name or post-type label. This file
+        // (the actual renderTemplate body, not the ACF block wiring) reads
+        // the current global $post via get_the_ID(), so it works correctly
+        // here even though story-card.php always runs inside a secondary
+        // WP_Query loop, never the main query.
+        get_template_part( 'blocks/webinar-status/webinar-status' );
+        ?>
+    <?php elseif ( 'press-article' === $post_type ) : ?>
+        <?php
+        // Press articles: first category name, unlinked.
         $cats = get_the_category();
         if ( ! empty( $cats ) ) :
         ?>
         <p class="top-label wp-block-paragraph"><?php echo esc_html( $cats[0]->name ); ?></p>
+        <?php endif; ?>
+    <?php else : ?>
+        <?php
+        // Everything else — including 'post', whose singular label is
+        // rewritten to "Blog" by inc/rename-posts-to-blog.php, so no
+        // special case is needed for it here: the post type's own
+        // singular label (e.g. "Case Study", "Whitepaper", "Infographic").
+        $type_obj   = get_post_type_object( $post_type );
+        $type_label = $type_obj->labels->singular_name ?? '';
+        if ( $type_label ) :
+        ?>
+        <p class="top-label wp-block-paragraph"><?php echo esc_html( $type_label ); ?></p>
         <?php endif; ?>
     <?php endif; ?>
 

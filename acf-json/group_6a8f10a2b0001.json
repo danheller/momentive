@@ -1,0 +1,201 @@
+{
+    "key": "group_6a8f10a2b0001",
+    "title": "Previous Studies Block Settings",
+    "fields": [
+        {
+            "key": "field_6a8f10a2b1001",
+            "label": "Heading",
+            "name": "heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Section heading. Defaults to \"Explore Previous Studies\"",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "Explore Previous Studies",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6a8f10a2b1002",
+            "label": "Label",
+            "name": "label",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Short label applied to every card's badge alongside its own year, e.g. \"Small Staff Report\" becomes \"2024 Small Staff Report\". One label for the whole section, not per-card.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6a8f10a2b1003",
+            "label": "Studies",
+            "name": "items",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "Each card is a self-contained snapshot, entered by hand — not a link to another post. The download link should point straight at the hosted PDF\/asset.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Study",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_6a8f10a2b1004",
+                    "label": "Year",
+                    "name": "year",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Combined with the block's Label to form the card badge, e.g. \"2024\" + \"Small Staff Report\".",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "allow_in_bindings": 1,
+                    "placeholder": "e.g. 2024",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_6a8f10a2b1003"
+                },
+                {
+                    "key": "field_6a8f10a2b1005",
+                    "label": "Image",
+                    "name": "image",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "id",
+                    "library": "all",
+                    "min_width": "",
+                    "min_height": "",
+                    "min_size": "",
+                    "max_width": "",
+                    "max_height": "",
+                    "max_size": "",
+                    "mime_types": "",
+                    "allow_in_bindings": 1,
+                    "preview_size": "thumbnail",
+                    "parent_repeater": "field_6a8f10a2b1003"
+                },
+                {
+                    "key": "field_6a8f10a2b1006",
+                    "label": "Title",
+                    "name": "title",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_6a8f10a2b1003"
+                },
+                {
+                    "key": "field_6a8f10a2b1007",
+                    "label": "Description",
+                    "name": "description",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "rows": 3,
+                    "placeholder": "",
+                    "new_lines": "",
+                    "parent_repeater": "field_6a8f10a2b1003"
+                },
+                {
+                    "key": "field_6a8f10a2b1008",
+                    "label": "Download Link",
+                    "name": "download_link",
+                    "aria-label": "",
+                    "type": "link",
+                    "instructions": "Points straight at the hosted PDF\/asset — not the related post's permalink, even if one exists.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "allow_in_bindings": 0,
+                    "parent_repeater": "field_6a8f10a2b1003"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "momentive\/previous-studies"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1784330928
+}

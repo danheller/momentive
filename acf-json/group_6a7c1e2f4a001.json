@@ -1,0 +1,70 @@
+{
+    "key": "group_6a7c1e2f4a001",
+    "title": "Solution Resources Block Settings",
+    "fields": [
+        {
+            "key": "field_6a7c1e304a002",
+            "label": "Heading",
+            "name": "heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Heading shown above the grid. Defaults to \"Resources\".",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "Resources",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6a7c1e324a003",
+            "label": "Number to Show",
+            "name": "count",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "How many resources to show. Defaults to 6.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": 6,
+            "min": 1,
+            "max": 12,
+            "placeholder": "6",
+            "step": 1,
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "momentive\/solution-resources"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1784275200
+}

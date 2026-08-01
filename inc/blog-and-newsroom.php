@@ -59,6 +59,118 @@ function momentive_newsroom_setup() {
 }
 add_action( 'init', 'momentive_newsroom_setup' );
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Category-scoped permalink prefix: /{press-releases|in-the-news|momentive-in-action}/{slug}/
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// The legacy site gives every press-article a permalink prefixed by its news
+// category rather than a single fixed CPT slug, confirmed against the legacy
+// export's <link> values (see notes/press-article-reference-sheet.md):
+//   /press-releases/{slug}/     — "Press Release" category
+//   /in-the-news/{slug}/        — "In the News" category
+//   /momentive-in-action/{slug}/ — "Momentive in Action" category
+// Requesting the wrong prefix for a post's actual category (or the generic
+// /newsroom/ or /press-articles/ prefixes) 301-redirects to the correct one.
+//
+// This is the same "one CPT, several permalink prefixes" pattern already
+// used in inc/guides.php for /guides/ vs /research-study/, generalized from
+// a single field to a taxonomy lookup. register_post_type()'s own `rewrite`
+// above only understands the CPT's default 'press-releases' prefix (which
+// conveniently doubles as the Press Release category's prefix); everything
+// below adds the other prefixes on top of it.
+//
+// Term slug → URL prefix is a deliberate explicit map, not a 1:1 read of the
+// term's own slug — the "Press Release" category's actual term slug is the
+// singular `press-release` (confirmed on rebuilt posts 10265 and 7810), but
+// the legacy URL prefix is plural `press-releases`. The other two terms'
+// slugs (`in-the-news`, `momentive-in-action`) do happen to match their URL
+// prefix exactly, but mapping all three explicitly avoids relying on that
+// coincidence holding if a term is ever renamed in the admin.
+const MOMENTIVE_PRESS_ARTICLE_CATEGORY_PREFIXES = array(
+	'press-release'      => 'press-releases',
+	'in-the-news'         => 'in-the-news',
+	'momentive-in-action' => 'momentive-in-action',
+);
+
+// Default prefix when a press-article has none of the three mapped category
+// terms (e.g. a post whose categorization hasn't been set yet). Matches the
+// CPT's own registered rewrite slug, so an uncategorized post's permalink is
+// unaffected by any of this — same "does nothing until the mapped condition
+// is met" posture as the guide.php research-study filter.
+const MOMENTIVE_PRESS_ARTICLE_DEFAULT_PREFIX = 'press-releases';
+
+/**
+ * Resolve the URL prefix for a press-article post from its assigned
+ * category terms. Returns the default prefix when no mapped term is found
+ * (uncategorized posts, or a term slug outside the known three).
+ */
+function momentive_press_article_url_prefix( int $post_id ): string {
+	$terms = get_the_terms( $post_id, 'category' );
+	if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		return MOMENTIVE_PRESS_ARTICLE_DEFAULT_PREFIX;
+	}
+
+	foreach ( $terms as $term ) {
+		if ( isset( MOMENTIVE_PRESS_ARTICLE_CATEGORY_PREFIXES[ $term->slug ] ) ) {
+			return MOMENTIVE_PRESS_ARTICLE_CATEGORY_PREFIXES[ $term->slug ];
+		}
+	}
+
+	return MOMENTIVE_PRESS_ARTICLE_DEFAULT_PREFIX;
+}
+
+// Incoming-request side: route the two non-default prefixes, plus the two
+// generic/legacy prefixes readers might still land on (old links, bookmarks,
+// search-engine-indexed URLs), back to the press-article query var. The
+// default 'press-releases' prefix already resolves via the CPT's own
+// `rewrite` above and needs no rule here.
+add_action( 'init', function() {
+	add_rewrite_rule(
+		'^(in-the-news|momentive-in-action|newsroom|press-articles)/([^/]+)/?$',
+		'index.php?press-article=$matches[2]',
+		'top'
+	);
+}, 10 );
+
+// Outgoing-link side: rewrites the GENERATED permalink (get_permalink(),
+// the_permalink(), etc.) to use the post's actual category prefix instead of
+// the CPT's default. No-ops for anything that isn't a press-article, and for
+// press-articles that resolve to the default prefix (nothing to swap).
+//
+// Once this is in place, WordPress's own redirect_canonical() (core
+// behavior — no extra code needed here, same as inc/guides.php's dual
+// prefix) compares every incoming singular request to get_permalink() and
+// 301s any mismatch to the canonical URL. That's what makes the wrong-prefix
+// and /newsroom//press-articles/ cases redirect correctly: the rewrite rule
+// above lets WordPress resolve the post at all, then core notices the
+// resolved permalink doesn't match the requested URL and redirects.
+add_filter( 'post_type_link', function( string $link, WP_Post $post ): string {
+	if ( 'press-article' !== $post->post_type ) {
+		return $link;
+	}
+
+	$prefix = momentive_press_article_url_prefix( $post->ID );
+	if ( MOMENTIVE_PRESS_ARTICLE_DEFAULT_PREFIX === $prefix ) {
+		return $link;
+	}
+
+	return str_replace( '/' . MOMENTIVE_PRESS_ARTICLE_DEFAULT_PREFIX . '/', "/{$prefix}/", $link );
+}, 10, 2 );
+
+// One-time rewrite flush — same version-stamped convention as guides.php,
+// people.php, whitepapers.php, infographics.php. WordPress only compiles the
+// rewrite rule added above after a flush; bump the stamp to re-trigger one
+// after any further change to these rules.
+add_action( 'init', function() {
+	$stamp = '2026-07-27.1';
+	if ( get_option( 'momentive_press_article_rewrite_stamp' ) !== $stamp ) {
+		flush_rewrite_rules( false ); // false = skip .htaccess rewrite (WP Engine manages it)
+		update_option( 'momentive_press_article_rewrite_stamp', $stamp );
+	}
+}, 11 ); // after register_post_type + the rewrite rule above (both priority 10)
+
+
 /**
  * Use the name "Blog" in place of "Posts" in admin screens
  */
@@ -215,7 +327,7 @@ add_action( 'enqueue_block_editor_assets', function() {
 add_filter( 'render_block', function( $block_content, $block ) {
 
 	if ( $block['blockName'] !== 'core/post-featured-image' ) return $block_content;
-	if ( ! is_singular( [ 'post', 'press-article', 'webinar', 'whitepaper', 'infographic' ] ) ) return $block_content;
+	if ( ! is_singular( [ 'post', 'press-article', 'webinar', 'whitepaper', 'infographic', 'guide' ] ) ) return $block_content;
 
 	$hero_image = get_field( 'hero_image' );
 	if ( ! $hero_image ) return $block_content;
@@ -236,21 +348,6 @@ add_filter( 'render_block', function( $block_content, $block ) {
 
 }, 10, 2 );
 
-
-/* When a query template has the "order-by-modified" class, adjust the order accordingly.
- * Note: make sure the class is added to the template block inside the query, not to the 
- * query itself.
- */
-
-add_filter( 'query_loop_block_query_vars', function( $query, $block, $page ) {
-	$class_list = $block->attributes['className'] ?? '';
-	if ( strpos( $class_list, 'order-by-modified' ) !== false ) {
-		$query['orderby'] = 'modified';
-		$query['order']   = $query['order'] ?? 'DESC';
-	}
-
-	return $query;
-}, 10, 3 );
 
 /* When showing the modified date with
  * <!-- wp:post-date {"displayType":"modified"} /-->

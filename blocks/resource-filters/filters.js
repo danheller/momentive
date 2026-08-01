@@ -219,58 +219,44 @@
 				moreBtn.textContent = 'Loading…';
 			}
 
-			const params = new URLSearchParams( {
-				per_page: 15,
-				page:     state.page,
-				orderby:  state.orderby,
-				order:    state.order,
-				_embed:   true,
-			} );
+			// ── Resolve which post type(s) to query ────────────────────────────
+			// Accordion mode (FAQ query mode) only ever targets a single type in
+			// practice, so it keeps the original single-endpoint behavior. Grid
+			// mode now supports true multi-type merging: when more than one
+			// post_type checkbox is active, this calls the momentive/v1/resources
+			// REST route (inc/resources.php) instead of falling back to a single
+			// type. That route runs one WP_Query across several post types, so
+			// merge, sort, and pagination stay correct — the gap this file used
+			// to document as "a separate, planned feature."
+			const isMultiType = ! isAccordion && state.postTypes.length > 1;
 
-			if ( state.categories.length ) {
-				params.set( 'categories', state.categories.join( ',' ) );
-			}
-
-			// ── Resolve which post type to query ──────────────────────────────
-			// If the user has selected exactly one post_type filter, use that;
-			// otherwise fall back to the block's configured defaultPostType.
-			//
-			// NOTE: true multi-type querying (the Resource Center "All Resources"
-			// case) is a separate, planned feature — it needs a server-side REST
-			// endpoint that queries several post types in one WP_Query so merge,
-			// sort, and pagination stay correct. Until that exists, selecting
-			// more than one post type intentionally falls back to the default
-			// type rather than attempting a fragile client-side endpoint merge.
 			const activePostType = state.postTypes.length === 1
 				? state.postTypes[0]
 				: defaultPostType;
 
-			const endpoint = postTypeEndpoint( activePostType );
-
-			if ( state.search ) {
-				params.set( 'search', state.search );
-			}
-
 			try {
-				// Single fetch — result used by both grid and accordion paths.
-				const res        = await fetch( `${ endpoint }?${ params }` );
-				state.totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
-				const posts      = await res.json();
+				let posts;
 
-				if ( isAccordion ) {
-					const items = posts.map( buildAccordionItem ).join( '' );
-
-					if ( append ) {
-						accordion.insertAdjacentHTML( 'beforeend', items );
-						accordion.querySelectorAll( '.accordion-trigger:not([data-init])' )
-							.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
-					} else {
-						accordion.innerHTML = items;
-						accordion.querySelectorAll( '.accordion-trigger' )
-							.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
+				if ( isMultiType ) {
+					const multiParams = new URLSearchParams( {
+						per_page: 15,
+						page:     state.page,
+						orderby:  state.orderby,
+						order:    state.order,
+						post_type: state.postTypes.join( ',' ),
+					} );
+					if ( state.categories.length ) {
+						multiParams.set( 'categories', state.categories.join( ',' ) );
 					}
-				} else {
-					const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
+					if ( state.search ) {
+						multiParams.set( 'search', state.search );
+					}
+
+					const res        = await fetch( `/wp-json/momentive/v1/resources?${ multiParams }` );
+					state.totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
+					posts            = await res.json();
+
+					const html = posts.map( renderMultiTypeCard ).join( '' );
 
 					if ( append ) {
 						grid.insertAdjacentHTML( 'beforeend', html );
@@ -278,6 +264,52 @@
 						grid.innerHTML = html;
 					}
 					initLowerLabels( grid );
+
+				} else {
+					const params = new URLSearchParams( {
+						per_page: 15,
+						page:     state.page,
+						orderby:  state.orderby,
+						order:    state.order,
+						_embed:   true,
+					} );
+
+					if ( state.categories.length ) {
+						params.set( 'categories', state.categories.join( ',' ) );
+					}
+					if ( state.search ) {
+						params.set( 'search', state.search );
+					}
+
+					const endpoint = postTypeEndpoint( activePostType );
+
+					// Single fetch — result used by both grid and accordion paths.
+					const res        = await fetch( `${ endpoint }?${ params }` );
+					state.totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
+					posts            = await res.json();
+
+					if ( isAccordion ) {
+						const items = posts.map( buildAccordionItem ).join( '' );
+
+						if ( append ) {
+							accordion.insertAdjacentHTML( 'beforeend', items );
+							accordion.querySelectorAll( '.accordion-trigger:not([data-init])' )
+								.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
+						} else {
+							accordion.innerHTML = items;
+							accordion.querySelectorAll( '.accordion-trigger' )
+								.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
+						}
+					} else {
+						const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
+
+						if ( append ) {
+							grid.insertAdjacentHTML( 'beforeend', html );
+						} else {
+							grid.innerHTML = html;
+						}
+						initLowerLabels( grid );
+					}
 				}
 
 			} catch ( err ) {
@@ -365,6 +397,71 @@
 							</a>
 							<div class="wp-block-post-date">
 								<time datetime="${ esc( post.date ) }">${ date }</time>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</li>`;
+		}
+
+		// ── Multi-type card renderer ─────────────────────────────────────────
+		// Renders an item from the momentive/v1/resources REST route (a flat
+		// shape — see momentive_resource_to_rest_item() in inc/resources.php),
+		// not a core /wp/v2/{type} response, so it can't share renderCard()
+		// above directly. Top label always shows the post type's singular
+		// label (item.type_label) rather than a category name: results here
+		// span several types, so the type is the discriminating piece of
+		// info, same reasoning momentive/solution-resources uses server-side.
+		function renderMultiTypeCard( item ) {
+			const date = new Date( item.date ).toLocaleDateString( 'en-US', {
+				month: 'long', day: 'numeric', year: 'numeric',
+			} );
+
+			const catLinks = ( item.categories || [] )
+				.map( renderCategoryLink )
+				.join( '<span class="wp-block-post-terms__separator"> </span>' );
+
+			const topLabel = item.type_label
+				? `<p class="top-label wp-block-paragraph">${ esc( item.type_label ) }</p>`
+				: '';
+
+			return `<li class="wp-block-post">
+				<div class="wp-block-group story-card">
+
+					${ topLabel }
+
+					${ item.featured_image ? `<figure class="wp-block-post-featured-image" style="aspect-ratio:16/9">
+						<a href="${ esc( item.link ) }" tabindex="-1" aria-hidden="true">
+							<img src="${ esc( item.featured_image ) }"
+								 alt=""
+								 loading="lazy"
+								 style="width:100%;height:100%;object-fit:cover;">
+						</a>
+					</figure>` : '' }
+
+					<div class="story-content">
+
+						${ catLinks
+							? `<div class="taxonomy-category lower-label wp-block-post-terms">
+								${ catLinks }
+							   </div>`
+							: ''
+						}
+
+						<h3 class="wp-block-post-title">
+							<a href="${ esc( item.link ) }">${ esc( item.title ) }</a>
+						</h3>
+						<div class="wp-block-post-excerpt">
+							<p>${ esc( item.excerpt ) }</p>
+						</div>
+						<div class="wp-block-group meta">
+							<a class="wp-block-read-more" href="${ esc( item.link ) }">
+								Read more
+								<span class="screen-reader-text">: ${ esc( item.title ) }</span>
+							</a>
+							<div class="wp-block-post-date">
+								<time datetime="${ esc( item.date ) }">${ date }</time>
 							</div>
 						</div>
 

@@ -66,6 +66,10 @@
 <!-- /wp:columns --></div>
 <!-- /wp:group -->
 
+<!-- wp:group {"className":"solution-resources-section","layout":{"type":"constrained"}} -->
+<div class="wp-block-group solution-resources-section"><!-- wp:acf/solution-resources {"name":"acf/solution-resources","data":{"heading":"","_heading":"field_6a7c1e304a002","count":6,"_count":"field_6a7c1e324a003"},"mode":"preview"} /--></div>
+<!-- /wp:group -->
+
 <!-- wp:group {"className":"demo-form is-style-ellipse-bottom","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|medium","top":"var:preset|spacing|medium"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group demo-form is-style-ellipse-bottom" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:columns -->
 <div class="wp-block-columns"><!-- wp:column -->

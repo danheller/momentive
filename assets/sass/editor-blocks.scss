@@ -1184,26 +1184,40 @@ table.wp-block-table td:last-child {
 	}
 	
 	.solutions-slider {
+		padding: 0;
 		ul {
 			padding-left: 0 !important;
 			display: grid;
-			grid-template-columns: repeat( 4, 1fr );
+			grid-template-columns: repeat( 3, 1fr );
 			gap: 1rem;
 			li {
+				width: 100%;
 				margin: 0;
 				.wp-block, .acf-block-body, .acf-block-body > div, .acf-block-preview, .solution {
 					height: 100%;
+				}
+				div {
+					padding: 0;
 				}
 			}
 		}
 		.solution-icon {
 			width: 3rem;
 			height: 3rem;
+			svg {
+				width: 3rem;
+				height: 3rem;
+				color: var(--secondary-color);
+			}
 		}
 		.solution {
-			background: #777;
-			color: #fff;
+			background: #fff;
+			border-radius: 1rem;
+			padding: 1.5rem;
 			margin-left: 0;
+			h3 {
+				font-size: var(--wp--preset--font-size--large);
+			}
 		}
 	}
 

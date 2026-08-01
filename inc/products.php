@@ -283,7 +283,92 @@ add_filter( 'momentive_product_marquee_query_args', function( array $args ): arr
 
 
 // ---------------------------------------------------------------------------
-// For new 'product' posts, use "patterns/product-content.php" pattern. 
+// Redirect-to-Solution: some legacy "products" are really Solution aliases
+// ---------------------------------------------------------------------------
+//
+// A handful of legacy products exist only to populate product lists/archives
+// (Product Marquee, product-solution-tabs, linked-products) via ACF fields
+// that only products carry — but their real content lives on a Solution
+// page, and a visitor should never actually land on the product's own
+// singular page. `redirect_to_solution` (Product Settings, Post Object →
+// solutions) is the flag; its mere presence on a product means "alias this
+// product to that Solution" — no separate on/off toggle needed.
+//
+// Two things read this field:
+//   1. momentive_get_product_link() — the one resolver every product-linking
+//      block/template should call instead of get_permalink() directly, so
+//      on-site clicks (Marquee, product-solution-tabs, linked-products) go
+//      straight to the Solution with no extra redirect hop.
+//   2. The template_redirect handler below — catches anything that reaches
+//      the product's own URL directly (stale external links, search-engine-
+//      indexed URLs, bookmarks) and 301s it to the Solution. This is a
+//      deliberate, permanent architecture decision rather than a temporary
+//      state, so a permanent redirect (not a 302) is the correct choice for
+//      SEO/link-equity purposes.
+//
+// Deliberately NOT paired with the `orphan-product` product_type term —
+// the legacy site includes some of these aliased products in the Marquee
+// and other product lists, so whether a given alias should still appear
+// there stays an independent, per-product editorial decision.
+
+/**
+ * Resolves the URL a product should link to: the aliased Solution's
+ * permalink when `redirect_to_solution` is set (and points to a real,
+ * published Solution), otherwise the product's own permalink. Use this
+ * anywhere a product card/link is rendered instead of calling
+ * get_permalink() directly, so internal links skip the redirect hop below.
+ */
+function momentive_get_product_link( int $product_id ): string {
+	$solution_id = get_field( 'redirect_to_solution', $product_id );
+	if ( $solution_id && get_post_type( $solution_id ) === 'solutions' && get_post_status( $solution_id ) === 'publish' ) {
+		$solution_link = get_permalink( $solution_id );
+		if ( $solution_link ) {
+			return $solution_link;
+		}
+	}
+	return get_permalink( $product_id ) ?: '';
+}
+
+// Catch direct hits on an aliased product's own singular page (external
+// links, search results, bookmarks) and send them to the Solution instead.
+add_action( 'template_redirect', function (): void {
+	if ( ! is_singular( 'product' ) || is_preview() ) {
+		return;
+	}
+	$product_id  = get_the_ID();
+	$solution_id = get_field( 'redirect_to_solution', $product_id );
+	if ( ! $solution_id || get_post_type( $solution_id ) !== 'solutions' || get_post_status( $solution_id ) !== 'publish' ) {
+		return;
+	}
+	$solution_link = get_permalink( $solution_id );
+	if ( ! $solution_link ) {
+		return;
+	}
+	wp_safe_redirect( $solution_link, 301 );
+	exit;
+} );
+
+// Admin notice reminding editors an aliased product's front end never
+// renders — easy to forget while editing summary/logo/colors on one, since
+// only those list-facing fields actually matter for a redirect-only product.
+add_action( 'edit_form_after_title', function ( WP_Post $post ): void {
+	if ( $post->post_type !== 'product' ) {
+		return;
+	}
+	$solution_id = get_field( 'redirect_to_solution', $post->ID );
+	if ( ! $solution_id ) {
+		return;
+	}
+	printf(
+		'<div class="notice notice-warning inline"><p>This product redirects visitors to <a href="%s"><strong>%s</strong></a>. Its own singular page is never shown on the front end — only the fields used in product lists (summary, logo, icon, colors) matter here.</p></div>',
+		esc_url( get_edit_post_link( $solution_id ) ?: '' ),
+		esc_html( get_the_title( $solution_id ) )
+	);
+} );
+
+
+// ---------------------------------------------------------------------------
+// For new 'product' posts, use "patterns/product-content.php" pattern.
 // ---------------------------------------------------------------------------
 
 

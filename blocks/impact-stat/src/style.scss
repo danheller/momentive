@@ -20,6 +20,9 @@
 	.impact-stats-inner {
 		grid-column: 2;
 	}
+	.wp-block-columns .wp-block-column {
+		padding: 0;
+	}
 }
 
 .impact-stat, .wp-block-columns .wp-block-column .impact-stat {

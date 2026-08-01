@@ -1,0 +1,47 @@
+/**
+ * momentive/solution-resources
+ *
+ * Grid wrapper only — the cards themselves reuse the global .story-card
+ * styling (momentive.scss, "7.1 Story Card"), same as .related-posts__grid
+ * and the resource-filters Query Loop grid. Mirrors .related-posts__grid's
+ * 3-column layout for visual consistency across the site's "here are some
+ * related things" patterns.
+ */
+
+.solution-resources {
+	padding: var(--wp--preset--spacing--medium, 2rem) 0;
+}
+
+.solution-resources__heading {
+	font-size: var(--wp--preset--font-size--xxx-large);
+	margin: 0 0 var(--wp--preset--spacing--small, 1.5rem);
+}
+
+.solution-resources__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--wp--preset--spacing--small, 1.5rem);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.solution-resources__item {
+	display: flex;
+	flex-direction: column;
+}
+
+@media (max-width: 782px) {
+	.solution-resources__grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Editor placeholder shown when there's no host Solution, or no resources yet. */
+.solution-resources.is-placeholder {
+	padding: var(--wp--preset--spacing--x-small, 1rem);
+	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
+	border-radius: 0.5rem;
+	color: var(--wp--preset--color--contrast, #555);
+	text-align: center;
+}

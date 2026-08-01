@@ -8,6 +8,7 @@ export default function Save( { attributes } ) {
 		statLabel,
 		accentColor,
 		animationDuration,
+		animate,
 	} = attributes;
 
 	// Integer check: format with thousands separator; decimals stay as-is.
@@ -25,6 +26,7 @@ export default function Save( { attributes } ) {
 		'data-stat-suffix': statSuffix,
 		'data-stat-integer': isInteger ? 'true' : 'false',
 		'data-animation-duration': animationDuration,
+		'data-animate': animate ? 'true' : 'false',
 	} );
 
 	return (

@@ -392,7 +392,7 @@ function momentive_cs_shorten_name( string $name ): string {
 function momentive_cs_load_product_map(): array {
 	$path = defined( 'MOMENTIVE_PRODUCT_CSV' )
 		? MOMENTIVE_PRODUCT_CSV
-		: __DIR__ . '/product-settings-cct.csv';
+		: __DIR__ . '/exports/product-settings-cct.csv';
 
 	$map = array();
 	if ( ! file_exists( $path ) ) {
@@ -478,7 +478,7 @@ function momentive_cs_load_product_map(): array {
 function momentive_cs_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_LEGACY_WXR' )
 		? MOMENTIVE_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware_current-case-studies_2026-06-29.xml';
+		: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
 
 	$base = defined( 'MOMENTIVE_UPLOADS_BASE' )
 		? MOMENTIVE_UPLOADS_BASE
@@ -553,7 +553,7 @@ function momentive_cs_xml_tag( string $item, string $tag ): string {
 function momentive_cs_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_LEGACY_WXR' )
 		? MOMENTIVE_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware_current-case-studies_2026-06-29.xml';
+		: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
 
 	$out = array();
 	if ( ! file_exists( $path ) ) {

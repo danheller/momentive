@@ -46,7 +46,7 @@ WP_CLI::log( '=====================================================' );
 
 /* ---- Build slug → excerpt map from WXR ----------------------------------- */
 
-$wxr_path = __DIR__ . '/momentivesoftware.whitepapers.current.2026-07-01.xml';
+$wxr_path = __DIR__ . '/exports/momentivesoftware.whitepapers.current.2026-07-01.xml';
 
 if ( ! file_exists( $wxr_path ) ) {
 	WP_CLI::error( "Legacy WXR not found: {$wxr_path}" );

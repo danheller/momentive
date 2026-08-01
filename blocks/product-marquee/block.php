@@ -73,7 +73,7 @@ function momentive_render_product_marquee( array $attributes ): string {
 	 */
 	$render_card = static function ( WP_Post $product ): string {
 		$title        = get_the_title( $product );
-		$permalink    = get_permalink( $product );
+		$permalink    = momentive_get_product_link( $product->ID );
 		$logo         = get_field( 'product_logo_unendorsed', $product->ID );
 		$icon_slug    = get_field( 'product_icon', $product->ID );
 		$accent_color = get_field( 'accent_color', $product->ID );

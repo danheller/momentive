@@ -31,12 +31,9 @@ These look like gated content, like webinars but for a PDF or something else:
 	- Guides & Research
 	- Toolkits
 	- Infographics
-	- Product Overviews 
-		- Looks like these should be nested under products.
-		- They seem to work just like webinars:
-			Upcoming example: https://momentivesoftware.com/solutions/career-centers-software/ym-careers/overview/
-			On-demand example: https://momentivesoftware.com/solutions/accounting-software/mip-accounting/overview/
-		- Duplicate "recordings" fields from Webinar Settings, get the video embed from a corresponding "assets" post
+	- Product Overviews
+		- Own CPT, gated like whitepapers/infographics — a Post Object field to the linked product drives the permalink (/products/{slug}/overview/) instead of the legacy nested URL.
+		- See notes/product-overview-reference-sheet.md for the full field map, permalink design, and the "assets" recording findings.
 	- Videos
 		- Only three posts
 		- No form, just a "watch now" button
@@ -53,7 +50,6 @@ These can/should go away:
 Other ones, to be determined
 	
 	- Events (?)
-	- Product Overviews (think these should be nested under products, don't need a CPT, just a toggle that turns on the recording fields/behavior. Duplicate recordings fields from Webinar Settings.)
 	- Videos
 	- Interactive Tools
 	- Video Testimonials (combine with testimonials?)

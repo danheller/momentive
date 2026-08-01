@@ -28,7 +28,7 @@ if ( getenv( 'MOMENTIVE_DRY' ) )  { $dry = true; }
 
 $wxr = defined( 'MOMENTIVE_LEGACY_WXR' )
 	? MOMENTIVE_LEGACY_WXR
-	: __DIR__ . '/momentivesoftware_current-case-studies_2026-06-29.xml';
+	: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
 
 if ( ! file_exists( $wxr ) ) {
 	WP_CLI::error( "Legacy WXR not found at {$wxr}. Set MOMENTIVE_LEGACY_WXR." );

@@ -32,6 +32,10 @@
     "animationDuration": {
       "type": "number",
       "default": 1800
+    },
+    "animate": {
+      "type": "boolean",
+      "default": true
     }
   },
   "supports": {

@@ -151,10 +151,14 @@ add_action( 'enqueue_block_editor_assets', function() {
 // Admin column: show Accent Color swatch in the posts list
 // ---------------------------------------------------------------------------
 //
-// Child solutions inherit accent_color from their parent (the field is
-// hidden on child posts in the editor — see acf/prepare_field/name=accent_color
-// above), so this column resolves the same way wp_head does: walk up to the
-// parent when the post has one.
+// Child solutions inherit accent_color from their parent for front-end
+// rendering (see wp_head above) and the field is hidden on child posts in
+// the single-post editor (see acf/prepare_field/name=accent_color above).
+// This column deliberately does NOT walk up to the parent the way those two
+// do — it shows a value only when accent_color is actually set on that exact
+// post, so the list view reflects what's really stored on each row rather
+// than the resolved/inherited display color (which would make every child
+// look "set" even though the field is blank and hidden for it).
 
 add_filter( 'manage_solutions_posts_columns', function( array $columns ): array {
 	$new = [];
@@ -170,9 +174,7 @@ add_filter( 'manage_solutions_posts_columns', function( array $columns ): array 
 add_action( 'manage_solutions_posts_custom_column', function( string $column, int $post_id ): void {
 	if ( $column !== 'accent_color' ) return;
 
-	$parent_id = wp_get_post_parent_id( $post_id );
-	$source_id = $parent_id ? $parent_id : $post_id;
-	$color     = get_field( 'accent_color', $source_id );
+	$color = get_field( 'accent_color', $post_id );
 
 	if ( ! $color ) {
 		echo '<span style="color:#999">—</span>';
@@ -201,7 +203,7 @@ function get_solution_color_for_term( int $term_id ): string {
 	static $cache = [];
 	if ( isset( $cache[ $term_id ] ) ) return $cache[ $term_id ];
 
-	$solution = get_field( 'solution_relationship', 'category_' . $term_id );
+	$solution = get_field( 'related_solution', 'category_' . $term_id );
 	$post     = is_array( $solution ) ? ( $solution[0] ?? null ) : $solution;
 	$color    = $post ? (string) get_field( 'accent_color', $post->ID ) : '';
 

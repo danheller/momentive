@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/previous-studies",
+	"title": "Previous Studies",
+	"category": "momentive",
+	"icon": "backup",
+	"description": "A curated \"Explore Previous Studies\" card grid for research-study guides. Each card is a hand-entered snapshot (year, image, title, description, download link), not a link to another post.",
+	"keywords": [ "previous studies", "research", "cards", "reports", "archive" ],
+	"textdomain": "momentive",
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "block.php"
+	},
+	"supports": {
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"html": false,
+		"jsx": false
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"data": {
+				"is_preview": true
+			}
+		}
+	}
+}

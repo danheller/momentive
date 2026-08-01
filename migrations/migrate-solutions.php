@@ -102,8 +102,84 @@ const MOMENTIVE_SOL_FK_ORDER            = 'field_6a32e3f929c42';
 const MOMENTIVE_SOL_FK_BACKGROUND_IMAGE = 'field_6a1e02ffae915';
 const MOMENTIVE_SOL_FK_CARD_LABEL       = 'field_6a20b62df882b';
 
-// acf/hubspot-form block field key (block-level embed override).
-const MOMENTIVE_SOL_FK_HUBSPOT_EMBED = 'field_6a2873ba3bf87';
+// acf/hubspot-form block field keys (block-level embed override + two-step toggle).
+const MOMENTIVE_SOL_FK_HUBSPOT_EMBED   = 'field_6a2873ba3bf87';
+const MOMENTIVE_SOL_FK_HUBSPOT_TWOSTEP = 'field_6a35626f3a11b';
+
+// momentive/solution-resources block field keys (group_6a7c1e2f4a001).
+const MOMENTIVE_SOL_FK_RESOURCES_HEADING = 'field_6a7c1e304a002';
+const MOMENTIVE_SOL_FK_RESOURCES_COUNT   = 'field_6a7c1e324a003';
+
+/**
+ * Family-wide HubSpot demo-form override — added 2026-07-23.
+ *
+ * Daniel hand-built each hub's "Request a Demo" section as a synced pattern
+ * (a real `wp:block {"ref":ID}` reusable block, e.g. Volunteer Management =
+ * pattern 17824) with the intent of reusing the SAME form embed across every
+ * child in that family. A synced pattern is atomic, though — you can't
+ * reference just the form portion of one — so referencing the pattern
+ * directly would also carry over its shared/generic title+description,
+ * overwriting each child's own distinct marketing copy (confirmed via the
+ * legacy data: e.g. Association Management's 14 children each reference a
+ * different AMS product by name — "See Aptify AMS in Action", "Discover
+ * Nimble AMS built on Salesforce", etc. — not interchangeable boilerplate).
+ *
+ * So the split Daniel asked for: momentive_sol_demo_form_block() keeps
+ * building kicker/title/description/image per child from legacy fields,
+ * exactly as before, but the HubSpot embed itself is swapped for this
+ * family-wide canonical value instead of trusting each child's own
+ * (sometimes stale) `request_a_demo_-_hubspot_form_script` field.
+ *
+ * These embed values are the legacy per-child field's OWN majority value
+ * within each family — not re-typed from the pattern — cross-checked
+ * against Volunteer Management's actual pasted pattern markup and confirmed
+ * byte-for-byte identical (portalId/formId/region/sfdcCampaignId), just with
+ * whitespace/nbsp cleanup. Two families had a lone outlier child that
+ * doesn't match this majority (see the Known limitations note); this
+ * override intentionally normalizes those to the family's canonical form,
+ * matching every other child. Data & Analytics (legacy hub 268) has no
+ * entry here — it has zero children in the legacy corpus, so there's
+ * nothing to override; any child added there later falls back to its own
+ * legacy field, unchanged.
+ */
+const MOMENTIVE_SOL_DEMO_FORM_OVERRIDE = array(
+	263  => array( // accounting
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"fc7ae2f0-dbf9-4ff6-adb9-a4b1ec607e5b\",\n    region: \"na1\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	264  => array( // learning-management
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"50f7ef6e-f7bb-4216-9853-7c033b464137\",\n    region: \"na1\",\n    sfdcCampaignId: \"701Ph00000anNObIAM\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	265  => array( // fundraising
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"c2e5c876-4e77-4d45-b3c5-3bb3951d68f3\",\n    region: \"na1\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	267  => array( // event-management
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"0387513b-7d22-4fdb-97b8-c302e7582870\",\n    region: \"na1\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	5309 => array( // certification-management
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"c3e60170-9524-4969-9725-6a940324c151\",\n    region: \"na1\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	6000 => array( // association-management
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"23e3a79d-34ca-4c20-a1d8-df632f7536a7\",\n    region: \"na1\",\n    sfdcCampaignId: \"701Ph00000t8GT2IAM\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	6383 => array( // volunteer-management
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"9264c035-8e09-4db4-8291-bc18504ba6d9\",\n    region: \"na1\",\n    sfdcCampaignId: \"701Ph00000v910sIAA\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	6540 => array( // career-centers
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"f5d7da37-6347-485a-b0ec-a091d22d27b5\",\n    region: \"na1\",\n    sfdcCampaignId: \"701Ph00000uYpUUIA0\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+	7582 => array( // donor-management — pattern ref 17859
+		'embed'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"//js.hsforms.net/forms/embed/v2.js\"></script>\n<script>\n  hbspt.forms.create({\n    portalId: \"46621835\",\n    formId: \"cf76f0a9-22c4-4992-ac70-05f973d84113\",\n    region: \"na1\",\n    sfdcCampaignId: \"701Ph00001060mQIAQ\"\n  });\n</script>",
+		'two_step' => '0',
+	),
+);
 
 /**
  * Legacy IDs to skip entirely — "(OLD)" / "(DUPLICATE)" drafts with no
@@ -235,6 +311,40 @@ function momentive_sol_xml_tag( string $item, string $tag ): string {
 }
 
 /**
+ * Derive the true slug from a legacy post's live `<link>`, falling back to
+ * its WXR `wp:post_name` when the link is missing or unparseable.
+ *
+ * The legacy site's Elementor/JetEngine setup frequently left `post_name`
+ * out of sync with the actual served URL — renamed post titles, slug reuse
+ * after a page was recreated, etc. Checked against all 87 in-scope child
+ * Solutions: 51 of 87 have a `post_name` that does NOT match the last path
+ * segment of their own `<link>` (e.g. legacy 6888 "Ticketing and Guest
+ * Management" has post_name `fundraising-ticketing-and-guest-management` but
+ * a real, verified permalink of .../fundraising-software/ticketing/ — using
+ * post_name verbatim would have produced the wrong URL for the majority of
+ * these posts). The `<link>` reflects what WordPress actually resolved and
+ * served at export time, so it's the more trustworthy source — this is the
+ * same signal a human would get by checking the live page's URL by hand.
+ *
+ * @param string $link     Raw `<link>` tag content.
+ * @param string $fallback The WXR `wp:post_name` value.
+ * @return string
+ */
+function momentive_sol_slug_from_link( string $link, string $fallback ): string {
+	$path = (string) parse_url( trim( $link ), PHP_URL_PATH );
+	$path = trim( $path, '/' );
+	if ( '' === $path ) {
+		return $fallback;
+	}
+	$segments = explode( '/', $path );
+	$slug     = end( $segments );
+
+	// Sanity check: a real slug is URL-safe and non-empty. If this somehow
+	// isn't slug-shaped, don't trust it over the fallback.
+	return ( '' !== $slug && preg_match( '/^[a-z0-9-]+$/', $slug ) ) ? $slug : $fallback;
+}
+
+/**
  * Parse all `solutions` items from the legacy WXR into structured arrays.
  *
  * @return array<int,array{id:int,title:string,slug:string,status:string,parent:int,meta:array<string,string>}>
@@ -242,7 +352,7 @@ function momentive_sol_xml_tag( string $item, string $tag ): string {
 function momentive_sol_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_SOL_LEGACY_WXR' )
 		? MOMENTIVE_SOL_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware.solutions.current.2026-07-14.xml';
+		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-07-14.xml';
 
 	$out = array();
 	if ( ! file_exists( $path ) ) {
@@ -275,13 +385,17 @@ function momentive_sol_load_legacy_posts(): array {
 			}
 		}
 
+		$post_name     = momentive_sol_xml_tag( $item, 'wp:post_name' );
+		$link_slug     = momentive_sol_slug_from_link( momentive_sol_xml_tag( $item, 'link' ), $post_name );
+
 		$out[] = array(
-			'id'     => (int) momentive_sol_xml_tag( $item, 'wp:post_id' ),
-			'title'  => momentive_sol_xml_tag( $item, 'title' ),
-			'slug'   => momentive_sol_xml_tag( $item, 'wp:post_name' ),
-			'status' => momentive_sol_xml_tag( $item, 'wp:status' ) ?: 'publish',
-			'parent' => (int) momentive_sol_xml_tag( $item, 'wp:post_parent' ),
-			'meta'   => $meta,
+			'id'              => (int) momentive_sol_xml_tag( $item, 'wp:post_id' ),
+			'title'           => momentive_sol_xml_tag( $item, 'title' ),
+			'slug'            => $link_slug,
+			'legacy_post_name' => $post_name, // kept only for the correction-count log below
+			'status'          => momentive_sol_xml_tag( $item, 'wp:status' ) ?: 'publish',
+			'parent'          => (int) momentive_sol_xml_tag( $item, 'wp:post_parent' ),
+			'meta'            => $meta,
 		);
 	}
 
@@ -325,7 +439,7 @@ function momentive_sol_repeater( array $legacy, string $key ): array {
 function momentive_sol_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_SOL_LEGACY_WXR' )
 		? MOMENTIVE_SOL_LEGACY_WXR
-		: __DIR__ . '/momentivesoftware.solutions.current.2026-07-14.xml';
+		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-07-14.xml';
 	$base = defined( 'MOMENTIVE_SOL_UPLOADS_BASE' )
 		? MOMENTIVE_SOL_UPLOADS_BASE
 		: 'https://momentivesoftware.com/wp-content/uploads/';
@@ -435,7 +549,7 @@ function momentive_sol_sideload_url( string $url, int $post_id, bool $dry ): int
  * ---------------------------------------------------------------------- */
 
 function momentive_sol_load_cct(): array {
-	$path = defined( 'MOMENTIVE_SOL_CCT_CSV' ) ? MOMENTIVE_SOL_CCT_CSV : __DIR__ . '/solution-settings-cct.csv';
+	$path = defined( 'MOMENTIVE_SOL_CCT_CSV' ) ? MOMENTIVE_SOL_CCT_CSV : __DIR__ . '/exports/solution-settings-cct.csv';
 	$by_linked_page = array();
 	if ( ! file_exists( $path ) ) {
 		WP_CLI::warning( "Solution Settings CCT not found at {$path} — solution_order will be left unset." );
@@ -474,7 +588,7 @@ function momentive_sol_load_legacy_testimonials(): array {
 	$path = defined( 'MOMENTIVE_SOL_TESTIMONIALS_WXR' ) ? MOMENTIVE_SOL_TESTIMONIALS_WXR : null;
 	if ( ! $path ) {
 		// Try a couple of likely filenames before giving up.
-		foreach ( glob( __DIR__ . '/*testimonial*.xml' ) ?: array() as $candidate ) {
+		foreach ( glob( __DIR__ . '/exports/*testimonial*.xml' ) ?: array() as $candidate ) {
 			$path = $candidate;
 			break;
 		}
@@ -539,6 +653,22 @@ function momentive_sol_build_testimonial_index(): array {
  * match is found (both are logged by the caller).
  */
 function momentive_sol_resolve_testimonial( int $legacy_id, array $legacy_testimonials, array $t_index ): int {
+	// Try direct ID match FIRST. Testimonials, like Solutions and most other
+	// CPTs on this site, were bulk-imported preserving their legacy numeric
+	// IDs — migrate-testimonials.php's in-place field remapping (moving
+	// testimonial_content into post_content, wiring up the author photo
+	// field) only makes sense as a script if the rebuilt `testimonials` CPT
+	// posts already live at their original legacy IDs. If so, a legacy
+	// solution's referenced testimonial ID *is* the rebuilt testimonial
+	// post's ID directly — no legacy testimonials WXR or quote-text fuzzy
+	// match needed at all. Falls through to the WXR-based match below only
+	// if this doesn't resolve (e.g. a testimonial that was recreated under a
+	// new ID for some reason).
+	$direct = get_post( $legacy_id );
+	if ( $direct && MOMENTIVE_SOL_TESTIMONIAL_TYPE === $direct->post_type ) {
+		return $legacy_id;
+	}
+
 	if ( ! isset( $legacy_testimonials[ $legacy_id ] ) ) {
 		return 0;
 	}
@@ -577,9 +707,14 @@ function momentive_sol_breadcrumb_block(): string {
 /**
  * Hero. Legacy headline is 3 parts (preanimated / animated / postanimated)
  * reassembled as "{pre} <strong>{animated}</strong> {post}" into the
- * existing "is-style-has-swoop tucked" heading. The H1 uses the post's own
- * title (not the legacy hero fields, which are mostly reused sitewide
- * boilerplate copy).
+ * existing "is-style-has-swoop tucked" heading. The H1 uses
+ * `solutions_sub_hero_title_kicker_text` (a short/singular label, e.g.
+ * "Event App"), falling back to the post's own title on the 7/88 posts
+ * where that field is empty — confirmed against a real hand-rebuilt
+ * reference page (Daniel, 2026-07-22). CORRECTED 2026-07-22: this used to
+ * render the kicker as a separate `<p class="is-style-eyebrow">` AND the
+ * H1 as $post_title — two different source fields both visible at once,
+ * producing a duplicated eyebrow line. There is only ever one heading here.
  */
 function momentive_sol_hero_block( array $legacy, string $post_title, array $attach_map, int $post_id, bool $dry ): string {
 	$kicker  = momentive_sol_str( $legacy, 'solutions_sub_hero_title_kicker_text' );
@@ -594,11 +729,15 @@ function momentive_sol_hero_block( array $legacy, string $post_title, array $att
 	$swoop_parts = array_filter( array( esc_html( $pre ), $mid ? '<strong>' . esc_html( $mid ) . '</strong>' : '', esc_html( $post ) ) );
 	$swoop = trim( implode( ' ', $swoop_parts ) );
 
-	$kicker_block = '';
-	if ( '' !== $kicker ) {
-		$kicker_block = '<!-- wp:paragraph {"className":"is-style-eyebrow"} --><p class="is-style-eyebrow">'
-			. esc_html( $kicker ) . '</p><!-- /wp:paragraph -->';
-	}
+	// H1 text: the kicker field ("Event App", singular/short form) matches
+	// the rebuilt reference exactly — confirmed against event-apps-rebuilt.html
+	// (Daniel, 2026-07-22). Falls back to the post's own title on the 7/88
+	// posts where the kicker field is empty. Previously this was rendered
+	// TWICE — once as a separate <p class="is-style-eyebrow"> from this same
+	// kicker field, and again as the H1 using $post_title (a different,
+	// often-pluralized source) — producing a visibly duplicated eyebrow line.
+	// The rebuilt reference has only the single H1, no separate paragraph.
+	$h1_text = '' !== $kicker ? $kicker : $post_title;
 
 	$rebuilt_img_id = momentive_sol_sideload_id( $img_id, $attach_map, $post_id, $dry );
 	$image_block = '<!-- wp:image {"sizeSlug":"large","linkDestination":"none"} --><figure class="wp-block-image size-large"><img src="" alt="" /></figure><!-- /wp:image -->';
@@ -610,13 +749,12 @@ function momentive_sol_hero_block( array $legacy, string $post_title, array $att
 		);
 	}
 
-	return '<!-- wp:group {"className":"is-style-bg-dots hero-background","layout":{"type":"constrained"}} -->'
-		. '<div class="wp-block-group is-style-bg-dots hero-background"><!-- wp:group {"className":"hero","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"layout":{"type":"constrained"}} -->'
+	return '<!-- wp:group {"className":"hero-background","gradient":"vertical","layout":{"type":"constrained"}} -->'
+		. '<div class="wp-block-group hero-background has-vertical-gradient-background has-background"><!-- wp:group {"className":"hero","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"layout":{"type":"constrained"}} -->'
 		. '<div class="wp-block-group hero" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:columns -->'
 		. '<div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center"} -->'
 		. '<div class="wp-block-column is-vertically-aligned-center">'
-		. $kicker_block
-		. '<!-- wp:heading {"level":1,"style":{"typography":{"textAlign":"left"}}} --><h1 class="wp-block-heading has-text-align-left">' . esc_html( $post_title ) . '</h1><!-- /wp:heading -->'
+		. '<!-- wp:heading {"level":1,"style":{"typography":{"textAlign":"left"}}} --><h1 class="wp-block-heading has-text-align-left">' . esc_html( $h1_text ) . '</h1><!-- /wp:heading -->'
 		. '<!-- wp:heading {"className":"is-style-has-swoop tucked","style":{"typography":{"textAlign":"left"}},"fontSize":"xxx-large"} --><h2 class="wp-block-heading has-text-align-left is-style-has-swoop tucked has-xxx-large-font-size">' . $swoop . '</h2><!-- /wp:heading -->'
 		. ( '' !== $desc ? '<!-- wp:paragraph {"className":"narrow balance","style":{"typography":{"textAlign":"left"}}} --><p class="has-text-align-left narrow balance">' . esc_html( $desc ) . '</p><!-- /wp:paragraph -->' : '' )
 		. '<!-- wp:buttons {"layout":{"type":"flex"}} --><div class="wp-block-buttons"><!-- wp:button {"style":{"typography":{"textAlign":"center"}}} --><div class="wp-block-button"><a class="wp-block-button__link has-text-align-center wp-element-button" href="' . esc_url( $btn_url ) . '">' . esc_html( $btn_lbl ) . '</a></div><!-- /wp:button --></div><!-- /wp:buttons -->'
@@ -698,38 +836,96 @@ function momentive_sol_features_block( array $legacy, array $attach_map, int $po
 			continue;
 		}
 		$att_id = momentive_sol_sideload_id( $r_img, $attach_map, $post_id, $dry );
-		$media_attrs = array(
-			'linkDestination' => 'none',
-			'mediaType'       => 'image',
-			'className'       => 'is-style-stacked',
-		);
+		$is_left = 'right' !== $position;
+
+		// className "no-shadow" (plain side-by-side layout, shadow removed),
+		// not "is-style-stacked" (forces a stacked/grid layout) — matches the
+		// convention every hand-rebuilt page actually uses (Daniel, 2026-07-22).
+		$media_attrs = array();
+		if ( ! $is_left ) {
+			// Without this, the "has-media-on-the-right" class below is
+			// baked into the raw HTML but the block's own attributes still
+			// say "left" (the schema default) — an attrs/markup mismatch
+			// that makes Gutenberg flag the block as invalid content on
+			// open (confirmed against a real migrated post, Daniel 2026-07-22).
+			$media_attrs['mediaPosition'] = 'right';
+		}
 		if ( $att_id > 0 ) {
 			$media_attrs['mediaId'] = $att_id;
 		}
-		$is_left = 'right' !== $position;
+		$media_attrs['linkDestination'] = 'none';
+		$media_attrs['mediaType']       = 'image';
+		$media_attrs['className']       = 'no-shadow';
+		$media_attrs['style']           = array(
+			'spacing' => array(
+				'padding' => array(
+					'top'    => 'var:preset|spacing|medium',
+					'bottom' => 'var:preset|spacing|medium',
+				),
+			),
+		);
+
 		$img_tag = $att_id > 0
-			? '<img src="' . esc_url( wp_get_attachment_url( $att_id ) ?: '' ) . '" alt="" class="wp-image-' . $att_id . '"/>'
+			? '<img src="' . esc_url( wp_get_attachment_url( $att_id ) ?: '' ) . '" alt="" class="wp-image-' . $att_id . ' size-full"/>'
 			: '<img src="" alt="" />';
 
-		$pairs .= '<!-- wp:media-text ' . momentive_sol_json( $media_attrs ) . ' -->'
-			. '<div class="wp-block-media-text is-stacked-on-mobile is-style-stacked' . ( $is_left ? '' : ' has-media-on-the-right' ) . '">'
+		$row_html = '<!-- wp:media-text ' . momentive_sol_json( $media_attrs ) . ' -->'
+			. '<div class="wp-block-media-text is-stacked-on-mobile no-shadow' . ( $is_left ? '' : ' has-media-on-the-right' ) . '" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)">'
 			. '<figure class="wp-block-media-text__media">' . $img_tag . '</figure>'
 			. '<div class="wp-block-media-text__content">'
 			. ( '' !== $r_kicker ? '<!-- wp:paragraph {"className":"is-style-eyebrow"} --><p class="is-style-eyebrow">' . esc_html( $r_kicker ) . '</p><!-- /wp:paragraph -->' : '' )
 			. ( '' !== $r_title ? '<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">' . esc_html( $r_title ) . '</h3><!-- /wp:heading -->' : '' )
 			. ( '' !== $r_desc ? '<!-- wp:paragraph {"fontSize":"medium"} --><p class="has-medium-font-size">' . esc_html( $r_desc ) . '</p><!-- /wp:paragraph -->' : '' )
 			. '</div></div><!-- /wp:media-text -->';
+
+		// Every row gets wrapped in its own "to-edge" group — even the ones
+		// with no background color — so a full-bleed background can be
+		// added or removed by hand later without also having to add the
+		// wrapper itself (Daniel, 2026-07-22: "better to have it and not
+		// need it than to need it and not have it"). Alternates a neutral
+		// background onto right-positioned rows, matching the pattern
+		// already established on the Event Apps hand-rebuild (left rows
+		// plain, right rows neutral-tinted) — freely adjustable per post.
+		$group_attrs = $is_left
+			? array( 'className' => 'to-edge', 'layout' => array( 'type' => 'constrained' ) )
+			: array( 'className' => 'to-edge', 'backgroundColor' => 'neutral', 'layout' => array( 'type' => 'constrained' ) );
+		$group_class = 'wp-block-group to-edge' . ( $is_left ? '' : ' has-neutral-background-color has-background' );
+
+		$pairs .= '<!-- wp:group ' . momentive_sol_json( $group_attrs ) . ' --><div class="' . $group_class . '">'
+			. $row_html
+			. '</div><!-- /wp:group -->';
 	}
 
 	if ( '' === $pairs ) {
 		return $intro; // heading-only, no usable rows
 	}
 
-	return '<!-- wp:group {"layout":{"type":"constrained"}} --><div class="wp-block-group">' . $intro . $pairs . '</div><!-- /wp:group -->';
+	return $intro . $pairs;
 }
 
-/** Benefits media collage (benefits_-_* — 19/87). */
+/**
+ * Benefits media collage (benefits_-_* — flagged "enabled" on 17/87 legacy
+ * children, but DISABLED here — see below).
+ *
+ * DISABLED 2026-07-21: `benefits_-_enable_benefits_media_section` is true
+ * on 17 legacy children, but the section does not actually appear on ANY of
+ * their live legacy pages — checked two (Career Center - Career Development
+ * Tools 6588, Fundraising - Campaign and Event Management 6892), both from
+ * different families, neither shows a media collage; both show the
+ * accordion-style Benefits/Approach section instead (approach_-_* — the
+ * section that's actually always visible). Confirmed as stale/boilerplate
+ * data, not per-post content: benefits_-_title, benefits_-_description,
+ * benefits_-_floating_image_1, and benefits_-_floating_image_2 are BYTE-
+ * IDENTICAL across all 17 posts regardless of family — a template default
+ * that was apparently never customized per-post, not evidence the section
+ * was actually turned on for any child page. The real "collage" layout
+ * appears to be a hub-page-only design element (see the rebuilt Fundraising
+ * hub page), not something child pages ever used. Left in place (disabled)
+ * rather than deleted, in case a specific child post is later found to
+ * genuinely need it — verify against that post's own live legacy URL first.
+ */
 function momentive_sol_benefits_media_block( array $legacy, array $attach_map, int $post_id, bool $dry ): string {
+	return ''; // see docblock — do not re-enable on the enable flag alone.
 	if ( ! momentive_sol_bool( $legacy, 'benefits_-_enable_benefits_media_section' ) ) {
 		return '';
 	}
@@ -853,22 +1049,25 @@ function momentive_sol_testimonial_block( array $legacy, array $legacy_testimoni
 	if ( empty( $ids ) ) {
 		return '';
 	}
-	if ( empty( $legacy_testimonials ) ) {
-		$log[] = sprintf( '%s: testimonial section enabled (legacy IDs: %s) — no legacy testimonials WXR yet, skipped.', $title, implode( ',', $ids ) );
-		return '';
-	}
+	// NOTE: no longer bails out here just because no legacy testimonials WXR
+	// was found — momentive_sol_resolve_testimonial() tries a direct ID
+	// lookup against the rebuilt `testimonials` CPT first (IDs are
+	// preserved across the bulk import, same as Solutions), which resolves
+	// the large majority of references without needing the WXR at all.
 	$legacy_id = (int) $ids[0]; // one testimonial per section in the rebuilt block.
 	$tid = momentive_sol_resolve_testimonial( $legacy_id, $legacy_testimonials, $t_index );
 	if ( $tid <= 0 ) {
 		$log[] = sprintf( '%s: testimonial legacy ID %d could not be matched to a rebuilt testimonial post.', $title, $legacy_id );
 		return '';
 	}
-	$attrs = momentive_sol_json( array( 'testimonialId' => $tid, 'showCaseStudyButton' => false ) );
-	return '<!-- wp:group {"className":"alignfull no-margin","gradient":"vertical"} --><div class="wp-block-group alignfull no-margin has-vertical-gradient-background has-background">'
-		. '<!-- wp:columns {"className":"content-width","style":{"spacing":{"padding":{"top":"var:preset|spacing|large","bottom":"var:preset|spacing|large"}}}} --><div class="wp-block-columns content-width" style="padding-top:var(--wp--preset--spacing--large);padding-bottom:var(--wp--preset--spacing--large)">'
-		. '<!-- wp:column {"width":"66.66%","className":"no-padding"} --><div class="wp-block-column no-padding" style="flex-basis:66.66%"><!-- wp:momentive/testimonial ' . $attrs . ' /--></div><!-- /wp:column -->'
-		. '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%"></div><!-- /wp:column -->'
-		. '</div><!-- /wp:columns --></div><!-- /wp:group -->';
+	// Single-testimonial case: a "large" class on the testimonial block
+	// itself controls its own width, so no columns wrapper is needed to
+	// fake a 2/3-width layout (Daniel, 2026-07-27) — was a two-column
+	// wrapper with an empty spacer column.
+	$attrs = momentive_sol_json( array( 'testimonialId' => $tid, 'showCaseStudyButton' => false, 'className' => 'large' ) );
+	return '<!-- wp:group {"className":"alignfull no-margin","style":{"spacing":{"padding":{"top":"var:preset|spacing|large","bottom":"var:preset|spacing|large"}}},"gradient":"vertical"} -->'
+		. '<div class="wp-block-group alignfull no-margin has-vertical-gradient-background has-background" style="padding-top:var(--wp--preset--spacing--large);padding-bottom:var(--wp--preset--spacing--large)"><!-- wp:momentive/testimonial ' . $attrs . ' /--></div>'
+		. '<!-- /wp:group -->';
 }
 
 /** Image + text, 2 columns (image__text_2_cols_-_* — 18/87). */
@@ -965,6 +1164,80 @@ function momentive_sol_related_solutions_block( array $legacy, int $rebuilt_pare
 		. '</div><!-- /wp:group -->';
 }
 
+/**
+ * "Explore more {family} solutions" sibling slider — added 2026-07-22.
+ *
+ * NOT gated by any legacy field (unlike momentive_sol_related_solutions_block()
+ * above, which is a distinct, legacy-flag-driven "Related Solutions" grid
+ * that only 28/87 posts have enabled). This is a separate, always-present
+ * section confirmed against a real hand-rebuilt reference page
+ * (event-apps-rebuilt.html, Daniel 2026-07-22): every child page gets a
+ * dynamic, family-scoped slider regardless of legacy data, built from the
+ * `siblings` Query Loop convention (functions.php's `siblings`-class
+ * query_loop_block_query_vars filter, which resolves the current page's
+ * parent at render time) plus the existing acf/solution-slide card block —
+ * no per-post curation needed, same "query once, let the theme do it"
+ * shape as product-solution-tabs.
+ *
+ * The heading ("Explore more event management solutions") is built from
+ * MOMENTIVE_SOL_FAMILY_TO_CAT_SLUG rather than any legacy field — the slug
+ * ("event-management") matches the visible phrase exactly once hyphens are
+ * replaced with spaces. Returns '' for the 2 families with no slug in that
+ * map yet (MomentiveIQ, Data & Analytics) rather than guess a name.
+ */
+function momentive_sol_explore_more_block( int $legacy_parent ): string {
+	$cat_slug = MOMENTIVE_SOL_FAMILY_TO_CAT_SLUG[ $legacy_parent ] ?? '';
+	if ( '' === $cat_slug ) {
+		return '';
+	}
+	$family_name = str_replace( '-', ' ', $cat_slug );
+	$heading = 'Explore more ' . $family_name . ' solutions';
+
+	// Exclude "product-as-solution" posts — legacy AMS product pages built
+	// as `solutions` CPT posts before a real `product` CPT existed, hand-
+	// tagged with the `solution_tag` term "products" on the rebuilt site
+	// (see CLAUDE.md's "product-as-solution" writeup). They're siblings in
+	// the post hierarchy but shouldn't appear in this "explore more" slider
+	// next to real sibling solutions (Daniel, 2026-07-27). Resolved by slug
+	// at run time rather than a hardcoded term ID, since that can differ
+	// between environments; logged once (not per-post) if it can't be found.
+	static $products_term_id = null;
+	static $warned_missing_term = false;
+	if ( null === $products_term_id ) {
+		$term = get_term_by( 'slug', 'products', 'solution_tag' ) ?: get_term_by( 'slug', 'product', 'solution_tag' );
+		$products_term_id = $term ? (int) $term->term_id : 0;
+		if ( ! $products_term_id && ! $warned_missing_term ) {
+			WP_CLI::warning( '    momentive_sol_explore_more_block(): no "products" term found in the solution_tag taxonomy — "Explore more" sliders will NOT exclude product-as-solution posts until that term exists.' );
+			$warned_missing_term = true;
+		}
+	}
+	$query_data = array(
+		'perPage'  => 10,
+		'postType' => 'solutions',
+		'order'    => 'asc',
+		'orderBy'  => 'menu_order',
+		'inherit'  => false,
+	);
+	if ( $products_term_id ) {
+		$query_data['taxQuery'] = array( 'exclude' => array( 'solution_tag' => array( $products_term_id ) ) );
+	}
+	$query_attrs = momentive_sol_json( array( 'queryId' => 0, 'query' => $query_data ) );
+
+	return '<!-- wp:group {"align":"full","className":"solutions-wrapper ","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"backgroundColor":"extralight-accent","layout":{"inherit":true,"type":"constrained"}} -->'
+		. '<div class="wp-block-group alignfull solutions-wrapper has-extralight-accent-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)"><!-- wp:group {"layout":{"type":"constrained"}} -->'
+		. '<div class="wp-block-group"><!-- wp:heading {"style":{"spacing":{"padding":{"top":"var:preset|spacing|small","bottom":"var:preset|spacing|small"}}},"fontSize":"xxx-large"} --><h2 class="wp-block-heading has-xxx-large-font-size" style="padding-top:var(--wp--preset--spacing--small);padding-bottom:var(--wp--preset--spacing--small)">' . esc_html( $heading ) . '</h2><!-- /wp:heading --></div>'
+		. '<!-- /wp:group -->'
+		. '<!-- wp:group {"align":"full","className":"solutions-slider left-offset is-style-light is-style-boxed","layout":{"type":"constrained"}} -->'
+		. '<div class="wp-block-group alignfull solutions-slider left-offset is-style-light is-style-boxed"><!-- wp:query ' . $query_attrs . ' -->'
+		. '<div class="wp-block-query"><!-- wp:post-template {"className":"siblings"} -->'
+		. '<!-- wp:acf/solution-slide {"name":"acf/solution-slide","mode":"preview"} /-->'
+		. '<!-- /wp:post-template --></div>'
+		. '<!-- /wp:query --></div>'
+		. '<!-- /wp:group -->'
+		. '<!-- wp:buttons --><div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/solutions/">View All</a></div><!-- /wp:button --></div><!-- /wp:buttons -->'
+		. '</div><!-- /wp:group -->';
+}
+
 /** Whitepaper promo card (whitepaper_-_* — 6/87). Links out; no CPT relation attempted. */
 function momentive_sol_whitepaper_block( array $legacy, array $attach_map, int $post_id, bool $dry ): string {
 	if ( ! momentive_sol_bool( $legacy, 'whitepaper_-_enable_section' ) ) {
@@ -1017,21 +1290,40 @@ function momentive_sol_purple_cta_block( array $legacy ): string {
 }
 
 /**
- * "Resources" placeholder (event_sub_resources_-_enable_section — 44/87).
- * The legacy export carries NO content fields for this section at all — it
- * appears to auto-pull related content by category, which this theme has no
- * cross-CPT block for yet (CLAUDE.md "Known limitations: Resource filters").
- * Heading-only placeholder so the section's presence isn't silently dropped.
+ * "Resources" (event_sub_resources_-_enable_section — 44/87).
+ *
+ * CORRECTED 2026-07-22: this used to emit a heading-only TODO placeholder,
+ * on the assumption the theme had no cross-CPT resources block yet. That
+ * block now exists (momentive/solution-resources, inc/resources.php +
+ * inc/resource-relevance.php — see CLAUDE.md "Resources (cross-CPT query
+ * layer)") and needs no per-post metadata to function: it resolves its own
+ * grid from the host Solution via the ACF-provided $post_id at render time
+ * (two-tier: AI-tagged direct matches, falling back to the category-term
+ * match). So there's no reason to exclude it from the migration — omitting
+ * it here just left every migrated child page's Resources section empty
+ * until someone added the block by hand. The block's field keys must be
+ * present in the block comment's `data` object or ACF can't bind them and
+ * the block renders blank on the front end (the same gotcha documented in
+ * CLAUDE.md for every other ACF block this migration emits).
  */
-function momentive_sol_resources_placeholder_block( array $legacy ): string {
+function momentive_sol_resources_block( array $legacy ): string {
 	if ( ! momentive_sol_bool( $legacy, 'event_sub_resources_-_enable_section' ) ) {
 		return '';
 	}
-	$title = momentive_sol_str( $legacy, 'event_sub_resources_-_custom_title' ) ?: 'Related Resources';
-	return '<!-- wp:group {"className":"featured-blog-wrapper space-around","layout":{"type":"constrained"}} --><div class="wp-block-group featured-blog-wrapper space-around">'
-		. '<!-- wp:heading --><h2 class="wp-block-heading">' . esc_html( $title ) . '</h2><!-- /wp:heading -->'
-		. '<!-- wp:paragraph --><p><em>TODO: no cross-CPT resources block exists yet — wire up manually (see CLAUDE.md "Known limitations: Resource filters").</em></p><!-- /wp:paragraph -->'
-		. '</div><!-- /wp:group -->';
+	// "Featured resources" / 3 — matches the convention on hand-rebuilt pages
+	// (Daniel, 2026-07-22), not the block's own field defaults ("Resources" / 6).
+	$title = momentive_sol_str( $legacy, 'event_sub_resources_-_custom_title' ) ?: 'Featured resources';
+	$attrs = momentive_sol_json( array(
+		'name' => 'momentive/solution-resources',
+		'data' => array(
+			'heading' => $title,
+			'_heading' => MOMENTIVE_SOL_FK_RESOURCES_HEADING,
+			'count' => '3',
+			'_count' => MOMENTIVE_SOL_FK_RESOURCES_COUNT,
+		),
+		'mode' => 'preview',
+	) );
+	return '<!-- wp:momentive/solution-resources ' . $attrs . ' /-->';
 }
 
 /**
@@ -1053,13 +1345,17 @@ function momentive_sol_list_block( array $legacy ): string {
 	}
 	$kicker = momentive_sol_str( $legacy, 'event_sub_list_-_kicker_text' );
 	$title = momentive_sol_str( $legacy, 'event_sub_list_-_title' );
+	// Oddly-named relative to the rest of this section's event_sub_list_-_*
+	// fields (a legacy naming inconsistency, confirmed against the WXR — not
+	// a typo), but this is the correct meta key for the intro copy that goes
+	// below the headline. Was missing entirely before (Daniel, 2026-07-27).
+	$description = momentive_sol_str( $legacy, 'solutions_sub_list_description' );
 	$content = momentive_sol_str( $legacy, 'event_sub_list_-_list_content' );
 	$footnote = momentive_sol_str( $legacy, 'event_sub_list_-_list_footnote' );
 
 	$list_block = '';
 	if ( preg_match( '#<(ul|ol)\b[^>]*>(.*?)</\1>#is', $content, $lm ) ) {
 		$tag = strtolower( $lm[1] );
-		$ordered = 'ol' === $tag ? ' {"ordered":true}' : '';
 		$lis = '';
 		if ( preg_match_all( '#<li\b[^>]*>(.*?)</li>#is', $lm[2], $lim ) ) {
 			foreach ( $lim[1] as $li ) {
@@ -1071,16 +1367,53 @@ function momentive_sol_list_block( array $legacy ): string {
 			}
 		}
 		if ( '' !== $lis ) {
-			$list_block = '<!-- wp:list' . $ordered . ' --><' . $tag . ' class="wp-block-list">' . $lis . '</' . $tag . '><!-- /wp:list -->';
+			// "is-style-column-checks two-columns" + small top/bottom margin
+			// matches the hand-rebuilt convention (Daniel, 2026-07-27) —
+			// checkmark bullets laid out in two columns, with breathing room
+			// against the intro copy above instead of sitting flush under it.
+			$list_attrs = momentive_sol_json( array_filter( array(
+				'ordered'   => 'ol' === $tag ? true : null,
+				'className' => 'is-style-column-checks two-columns',
+				'style'     => array(
+					'spacing' => array(
+						'margin' => array(
+							'top'    => 'var:preset|spacing|small',
+							'bottom' => 'var:preset|spacing|small',
+						),
+					),
+				),
+			) ) );
+			$list_style = 'margin-top:var(--wp--preset--spacing--small);margin-bottom:var(--wp--preset--spacing--small)';
+			$list_block = '<!-- wp:list ' . $list_attrs . ' --><' . $tag . ' style="' . $list_style . '" class="wp-block-list is-style-column-checks two-columns">' . $lis . '</' . $tag . '><!-- /wp:list -->';
 		}
 	}
 	if ( '' === $list_block && '' === $title ) {
 		return '';
 	}
 
-	return '<!-- wp:group {"layout":{"type":"constrained"}} --><div class="wp-block-group">'
-		. ( '' !== $kicker ? '<!-- wp:paragraph {"className":"is-style-eyebrow"} --><p class="is-style-eyebrow">' . esc_html( $kicker ) . '</p><!-- /wp:paragraph -->' : '' )
-		. ( '' !== $title ? '<!-- wp:heading --><h2 class="wp-block-heading">' . esc_html( $title ) . '</h2><!-- /wp:heading -->' : '' )
+	// Centered intro copy (eyebrow/heading/description) lives in its own
+	// "narrow" inner group so the paragraph doesn't stretch full width,
+	// while the neutral-tinted outer group itself spans full width
+	// ("alignfull"). Matches the hand-rebuilt convention (Daniel,
+	// 2026-07-27) — the intro was previously left-aligned with no width
+	// constraint, and the description field was missing entirely.
+	$intro = '';
+	if ( '' !== $kicker ) {
+		$intro .= '<!-- wp:paragraph {"className":"is-style-eyebrow","style":{"typography":{"textAlign":"center"}}} --><p class="has-text-align-center is-style-eyebrow">' . esc_html( $kicker ) . '</p><!-- /wp:paragraph -->';
+	}
+	if ( '' !== $title ) {
+		$intro .= '<!-- wp:heading {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|xx-small"}},"typography":{"textAlign":"center"}}} --><h2 class="wp-block-heading has-text-align-center" style="margin-bottom:var(--wp--preset--spacing--xx-small)">' . esc_html( $title ) . '</h2><!-- /wp:heading -->';
+	}
+	if ( '' !== $description ) {
+		$intro .= '<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}},"fontSize":"medium"} --><p class="has-text-align-center has-medium-font-size">' . esc_html( $description ) . '</p><!-- /wp:paragraph -->';
+	}
+	if ( '' !== $intro ) {
+		$intro = '<!-- wp:group {"className":"narrow","layout":{"type":"constrained"}} --><div class="wp-block-group narrow">' . $intro . '</div><!-- /wp:group -->';
+	}
+
+	return '<!-- wp:group {"className":"alignfull","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|medium"}}},"backgroundColor":"neutral","layout":{"type":"constrained"}} -->'
+		. '<div class="wp-block-group alignfull has-neutral-background-color has-background" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)">'
+		. $intro
 		. $list_block
 		. ( '' !== $footnote ? '<!-- wp:paragraph {"style":{"typography":{"fontStyle":"italic"}}} --><p style="font-style:italic">' . esc_html( $footnote ) . '</p><!-- /wp:paragraph -->' : '' )
 		. '</div><!-- /wp:group -->';
@@ -1177,29 +1510,56 @@ function momentive_sol_cta_block( array $legacy ): string {
 	if ( $btn2_txt ) {
 		$buttons .= '<!-- wp:button {"className":"is-style-outline"} --><div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="' . esc_url( $btn2_url ?: '/contact-us/' ) . '">' . esc_html( $btn2_txt ) . '</a></div><!-- /wp:button -->';
 	}
-	return '<!-- wp:group {"className":"alignfull is-style-bg-gradient","style":{"spacing":{"padding":{"top":"var:preset|spacing|large","bottom":"var:preset|spacing|large"}}},"layout":{"type":"constrained"}} -->'
-		. '<div class="wp-block-group alignfull is-style-bg-gradient" style="padding-top:var(--wp--preset--spacing--large);padding-bottom:var(--wp--preset--spacing--large)">'
-		. '<!-- wp:heading {"style":{"typography":{"textAlign":"center"}}} --><h2 class="wp-block-heading has-text-align-center">' . esc_html( $title ) . '</h2><!-- /wp:heading -->'
+	// "prefooter is-style-bg-rings", not "alignfull is-style-bg-gradient" —
+	// matches the convention on hand-rebuilt pages (Daniel, 2026-07-22).
+	// Also moved to the very end of the assemble sequence — see the
+	// assemble function below, this block always closes out the page now
+	// rather than appearing wherever cta_-_* happens to sit in the loop.
+	return '<!-- wp:group {"className":"prefooter is-style-bg-rings","layout":{"type":"default"}} -->'
+		. '<div class="wp-block-group prefooter is-style-bg-rings">'
+		. '<!-- wp:heading {"style":{"typography":{"textAlign":"center"},"spacing":{"padding":{"top":"var:preset|spacing|medium","bottom":"var:preset|spacing|x-small"}}},"fontSize":"xl"} --><h2 class="wp-block-heading has-text-align-center has-xl-font-size" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--x-small)">' . esc_html( $title ) . '</h2><!-- /wp:heading -->'
 		. ( '' !== $desc ? '<!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}}} --><p class="has-text-align-center">' . esc_html( $desc ) . '</p><!-- /wp:paragraph -->' : '' )
-		. ( $buttons ? '<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} --><div class="wp-block-buttons">' . $buttons . '</div><!-- /wp:buttons -->' : '' )
+		. ( $buttons ? '<!-- wp:buttons --><div class="wp-block-buttons">' . $buttons . '</div><!-- /wp:buttons -->' : '' )
 		. '</div><!-- /wp:group -->';
 }
 
 /** Demo form (request_a_demo_-_* — always on). Uses this page's own copy + HubSpot embed. */
-function momentive_sol_demo_form_block( array $legacy, array $attach_map, int $post_id, bool $dry ): string {
+function momentive_sol_demo_form_block( array $legacy, array $attach_map, int $post_id, bool $dry, int $legacy_parent = 0 ): string {
 	$kicker = momentive_sol_str( $legacy, 'request_a_demo_-_kicker_text' ) ?: 'Request a Demo';
 	$title = momentive_sol_str( $legacy, 'request_a_demo_-_title' );
 	$desc = momentive_sol_str( $legacy, 'request_a_demo_-_description' );
 	$img_id = momentive_sol_sideload_id( (int) momentive_sol_str( $legacy, 'request_a_demo_-_image' ), $attach_map, $post_id, $dry );
-	$embed = momentive_sol_str( $legacy, 'request_a_demo_-_hubspot_form_script' );
+
+	// Kicker/title/description/image stay per-child, straight from this
+	// child's own legacy fields, exactly as before — only the HubSpot embed
+	// itself is swapped for the family-wide canonical value when one of
+	// Daniel's hand-built synced patterns (MOMENTIVE_SOL_DEMO_FORM_OVERRIDE)
+	// exists for this hub. Synced patterns are atomic (no partial reference
+	// to just the form), so this is the "split and keep copy" approach
+	// applied at the PHP level instead of via a live wp:block {ref} — see
+	// the constant's docblock for the full rationale. Families with no
+	// override entry (currently only Data & Analytics, which has zero
+	// children) fall back to this child's own legacy field, unchanged.
+	$override = MOMENTIVE_SOL_DEMO_FORM_OVERRIDE[ $legacy_parent ] ?? null;
+	$embed    = $override['embed'] ?? momentive_sol_str( $legacy, 'request_a_demo_-_hubspot_form_script' );
+	$two_step = $override['two_step'] ?? '0';
 
 	$img_tag = $img_id > 0
 		? '<img src="' . esc_url( wp_get_attachment_url( $img_id ) ?: '' ) . '" alt="" class="wp-image-' . $img_id . '"/>'
 		: '<img src="" alt="" />';
 
+	// Field-KEY-direct format (not field-name + underscore-prefixed key) —
+	// this is the format ACF actually reads block field values from before
+	// they've ever been saved through the visual editor. Using the field
+	// NAME as the data key here (the bug this replaces) silently renders the
+	// form BLANK on the front end while still looking fine in the editor
+	// preview — the same "ACF block render gotcha" already documented
+	// elsewhere in CLAUDE.md, and the same bug already fixed once for
+	// whitepapers via patch-whitepaper-hubspot-forms.php. Confirmed broken
+	// on a real already-migrated post (Daniel 2026-07-22).
 	$hs_data = array(
-		'hubspot_embed_code'  => $embed,
-		'_hubspot_embed_code' => MOMENTIVE_SOL_FK_HUBSPOT_EMBED,
+		MOMENTIVE_SOL_FK_HUBSPOT_EMBED   => $embed,
+		MOMENTIVE_SOL_FK_HUBSPOT_TWOSTEP => $two_step,
 	);
 	$hs_attrs = momentive_sol_json( array( 'name' => 'acf/hubspot-form', 'data' => $hs_data, 'mode' => 'preview' ) );
 
@@ -1209,7 +1569,7 @@ function momentive_sol_demo_form_block( array $legacy, array $attach_map, int $p
 		. '<!-- wp:paragraph {"className":"is-style-eyebrow"} --><p class="is-style-eyebrow">' . esc_html( $kicker ) . '</p><!-- /wp:paragraph -->'
 		. ( '' !== $title ? '<!-- wp:heading --><h2 class="wp-block-heading">' . esc_html( $title ) . '</h2><!-- /wp:heading -->' : '' )
 		. ( '' !== $desc ? '<!-- wp:paragraph --><p>' . esc_html( $desc ) . '</p><!-- /wp:paragraph -->' : '' )
-		. '<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"is-style-rounder"} --><figure class="wp-block-image size-large is-style-rounder">' . $img_tag . '</figure><!-- /wp:image -->'
+		. '<!-- wp:image ' . momentive_sol_json( array_filter( array( 'id' => $img_id > 0 ? $img_id : null, 'sizeSlug' => 'large', 'linkDestination' => 'none', 'className' => 'is-style-rounder' ) ) ) . ' --><figure class="wp-block-image size-large is-style-rounder">' . $img_tag . '</figure><!-- /wp:image -->'
 		. '</div><!-- /wp:column -->'
 		. '<!-- wp:column --><div class="wp-block-column"><!-- wp:acf/hubspot-form ' . $hs_attrs . ' /--></div><!-- /wp:column -->'
 		. '</div><!-- /wp:columns --></div><!-- /wp:group -->';
@@ -1226,6 +1586,7 @@ function momentive_sol_get_flags( array $argv = array() ): array {
 		'limit'         => 0,
 		'hubs_only'     => false,
 		'children_only' => false,
+		'force'         => false,
 	);
 	foreach ( $argv as $tok ) {
 		$tok = ltrim( (string) $tok, '-' );
@@ -1241,6 +1602,8 @@ function momentive_sol_get_flags( array $argv = array() ): array {
 			$flags['hubs_only'] = true;
 		} elseif ( 'children-only' === $tok || 'children_only' === $tok ) {
 			$flags['children_only'] = true;
+		} elseif ( 'force' === $tok ) {
+			$flags['force'] = true;
 		}
 	}
 	if ( getenv( 'MOMENTIVE_LIVE' ) ) { $flags['dry_run'] = false; }
@@ -1248,11 +1611,55 @@ function momentive_sol_get_flags( array $argv = array() ): array {
 	return $flags;
 }
 
+/**
+ * A single empty paragraph block — the block editor adds this by default
+ * the first time a post with no blocks yet is opened and saved, even with
+ * no real edits made. Present alone (no other block markup), it's not
+ * evidence a post was actually rebuilt — stripped before checking for real
+ * content below. Same heuristic as report-rebuild-progress.php's
+ * MOMENTIVE_REBUILD_TRIVIAL_EMPTY_BLOCK, duplicated here since these are
+ * two independent `wp eval-file` scripts.
+ */
+const MOMENTIVE_SOL_TRIVIAL_EMPTY_BLOCK = '#<!--\s*wp:paragraph\s*-->\s*<p>\s*</p>\s*<!--\s*/wp:paragraph\s*-->\s*#i';
+
+/**
+ * Whether a child post already has real content that THIS SCRIPT did not
+ * write — i.e. whether running the migration would silently overwrite
+ * someone's manual work. Checked before every child write; skipped unless
+ * `force` or `only=<this id>` is passed.
+ *
+ * Deliberately does NOT protect a post the script itself wrote on an
+ * earlier run (detected via MOMENTIVE_SOL_RUN_META) — those are safe, and
+ * necessary, to regenerate. momentive_sol_related_solutions_block() queries
+ * *currently published* siblings under the same parent to build its grid;
+ * in a single pass over $legacy_all, a child processed early can't see
+ * siblings that are created later in that same run, so its "Related
+ * Solutions" grid will be incomplete. Running the full batch a second time
+ * tops those up once every sibling exists — that only works if
+ * script-written posts stay eligible for a refresh, unlike genuinely
+ * hand-built ones (9 as of 2026-07-21: abstract-management,
+ * course-creation, events, financial-management-operations,
+ * learner-engagement, member-management,
+ * fundraising-online-giving-and-payments, text-to-donate, ticketing —
+ * none of which carry MOMENTIVE_SOL_RUN_META, since a human wrote them).
+ */
+function momentive_sol_post_already_rebuilt( int $post_id ): bool {
+	if ( ! $post_id ) {
+		return false;
+	}
+	if ( get_post_meta( $post_id, MOMENTIVE_SOL_RUN_META, true ) ) {
+		return false; // this script wrote it before — safe (and needed) to refresh
+	}
+	$content = (string) get_post_field( 'post_content', $post_id );
+	$significant = preg_replace( MOMENTIVE_SOL_TRIVIAL_EMPTY_BLOCK, '', $content );
+	return str_contains( $significant, '<!-- wp:' );
+}
+
 /** Assemble the full post_content for a child page from its section builders. */
 function momentive_sol_assemble_child_content(
 	array $legacy, string $post_title, array $attach_map, int $post_id, bool $dry,
 	array &$unresolved_icons, array &$testimonial_log, array $legacy_testimonials, array $t_index,
-	int $rebuilt_parent_id
+	int $rebuilt_parent_id, int $legacy_parent
 ): string {
 	$parts = array(
 		momentive_sol_breadcrumb_block(),
@@ -1268,16 +1675,69 @@ function momentive_sol_assemble_child_content(
 		momentive_sol_related_solutions_block( $legacy, $rebuilt_parent_id ),
 		momentive_sol_whitepaper_block( $legacy, $attach_map, $post_id, $dry ),
 		momentive_sol_purple_cta_block( $legacy ),
-		momentive_sol_resources_placeholder_block( $legacy ),
+		momentive_sol_resources_block( $legacy ),
 		momentive_sol_faqs_block( $legacy ),
+		momentive_sol_demo_form_block( $legacy, $attach_map, $post_id, $dry, $legacy_parent ),
+		momentive_sol_explore_more_block( $legacy_parent ),
+		// Always last, regardless of where cta_-_* sits in the legacy field
+		// order — the prefooter closes out the page (Daniel, 2026-07-22).
 		momentive_sol_cta_block( $legacy ),
-		momentive_sol_demo_form_block( $legacy, $attach_map, $post_id, $dry ),
 	);
 	return implode( "\n\n", array_filter( $parts ) );
 }
 
 /** Find (or, live-mode, create) the rebuilt post for a legacy slug/title. */
-function momentive_sol_find_or_create_post( string $slug, string $title, string $status, int $parent_id, bool $dry ): int {
+/**
+ * Elementor postmeta keys the original bulk WP Import carried over from the
+ * legacy Elementor/JetEngine build. Rebuilding a post's post_content in the
+ * block editor (or programmatically, as this script does) never clears
+ * these — found via report-rebuild-progress.php misclassifying several
+ * genuinely-rebuilt posts as "import_remnant" because this meta lingered.
+ * Cleared on every child post this script writes so a subsequent progress
+ * report reflects reality.
+ */
+const MOMENTIVE_SOL_ELEMENTOR_META_KEYS = array(
+	'_elementor_data',
+	'_elementor_edit_mode',
+	'_elementor_template_type',
+	'_elementor_version',
+	'_elementor_page_settings',
+	'_elementor_controls_usage',
+	'_elementor_css',
+);
+
+function momentive_sol_clear_elementor_meta( int $post_id ): void {
+	foreach ( MOMENTIVE_SOL_ELEMENTOR_META_KEYS as $key ) {
+		delete_post_meta( $post_id, $key );
+	}
+}
+
+/**
+ * @param int $legacy_id Legacy post ID (wp:post_id from the WXR) — the
+ *                        original bulk WP Import preserves this as the
+ *                        rebuilt post's own ID (confirmed: 70 of 88 legacy
+ *                        children already exist in the rebuilt DB under the
+ *                        same numeric ID), so this is the primary lookup —
+ *                        NOT slug, which is frequently corrected from the
+ *                        legacy wp:post_name (see momentive_sol_slug_from_link()).
+ *                        Looking up an already-imported post by its
+ *                        (now-corrected) slug would miss it, since the
+ *                        existing row's post_name in the DB is still
+ *                        whatever the original import wrote — that would
+ *                        create a duplicate post instead of updating the
+ *                        existing one.
+ */
+function momentive_sol_find_or_create_post( int $legacy_id, string $slug, string $title, string $status, int $parent_id, bool $dry ): int {
+	$existing = get_post( $legacy_id );
+	if ( $existing && MOMENTIVE_SOL_TYPE === $existing->post_type ) {
+		if ( $existing->post_name !== $slug && ! $dry ) {
+			wp_update_post( array( 'ID' => $legacy_id, 'post_name' => $slug ) );
+		}
+		return $legacy_id;
+	}
+
+	// Fall back to slug lookup, in case a post was ever recreated under a
+	// different ID than its legacy original.
 	$existing = get_page_by_path( $slug, OBJECT, MOMENTIVE_SOL_TYPE );
 	if ( $existing ) {
 		return (int) $existing->ID;
@@ -1291,6 +1751,7 @@ function momentive_sol_find_or_create_post( string $slug, string $title, string 
 		'post_name'   => $slug,
 		'post_status' => 'publish' === $status ? 'publish' : 'draft',
 		'post_parent' => $parent_id,
+		'import_id'   => $legacy_id, // preserve the legacy ID, matching every other already-imported post
 	), true );
 	if ( is_wp_error( $id ) ) {
 		WP_CLI::warning( "    failed to create post for slug {$slug}: " . $id->get_error_message() );
@@ -1314,15 +1775,31 @@ function momentive_sol_run( array $argv = array() ): void {
 
 	$legacy_all  = momentive_sol_load_legacy_posts();
 	WP_CLI::log( sprintf( 'Legacy WXR: %d solutions items parsed.', count( $legacy_all ) ) );
+
+	$slug_corrections = array_filter( $legacy_all, static fn( $p ) => $p['slug'] !== $p['legacy_post_name'] );
+	if ( ! empty( $slug_corrections ) ) {
+		WP_CLI::log( sprintf(
+			'Slug correction: %d of %d posts had a wp:post_name that didn\'t match their <link>\'s actual path — using the <link>-derived slug for those (see momentive_sol_slug_from_link()).',
+			count( $slug_corrections ), count( $legacy_all )
+		) );
+	}
 	$attach_map  = momentive_sol_build_attachment_map();
 	$cct         = momentive_sol_load_cct();
 	$legacy_testimonials = momentive_sol_load_legacy_testimonials();
 	$t_index     = empty( $legacy_testimonials ) ? array( 'by_norm' => array() ) : momentive_sol_build_testimonial_index();
 	if ( empty( $legacy_testimonials ) ) {
-		WP_CLI::warning( 'No legacy testimonials WXR found — testimonial sections will be logged and skipped. Set MOMENTIVE_SOL_TESTIMONIALS_WXR once the export is added.' );
+		WP_CLI::log( 'No legacy testimonials WXR found — falling back to direct ID lookup only (testimonials were bulk-imported preserving their legacy IDs, so this resolves the large majority of references without needing the WXR at all; only a testimonial that was recreated under a new ID would need it — set MOMENTIVE_SOL_TESTIMONIALS_WXR if that turns out to matter).' );
 	} else {
-		WP_CLI::log( sprintf( 'Legacy testimonials: %d parsed. Rebuilt testimonial corpus: %d indexed.', count( $legacy_testimonials ), count( $t_index['by_norm'] ) ) );
+		WP_CLI::log( sprintf( 'Legacy testimonials: %d parsed. Rebuilt testimonial corpus: %d indexed. (Direct ID lookup is tried first regardless; this WXR only backs up the rare case where that fails.)', count( $legacy_testimonials ), count( $t_index['by_norm'] ) ) );
 	}
+
+	// Keep an unfiltered copy for parent-hub lookups below — `only=`/`limit=`
+	// narrow $legacy_all to the requested child post(s), which means a
+	// child's own hub parent (e.g. `only=6369`'s parent, hub 6000) is often
+	// no longer present in $legacy_all at all. The parent-resolution
+	// fallback needs the full legacy corpus regardless of what's being
+	// migrated in this run.
+	$legacy_all_full = $legacy_all;
 
 	if ( $flags['only'] > 0 ) {
 		$legacy_all = array_values( array_filter( $legacy_all, static function ( $p ) use ( $flags ) {
@@ -1342,6 +1819,7 @@ function momentive_sol_run( array $argv = array() ): void {
 		'hub_missing'     => 0,
 		'child_created'   => 0,
 		'child_updated'   => 0,
+		'child_skipped_already_rebuilt' => 0,
 	);
 	$unresolved_icons  = array();
 	$testimonial_log   = array();
@@ -1433,9 +1911,31 @@ function momentive_sol_run( array $argv = array() ): void {
 			}
 
 			$rebuilt_parent_id = $rebuilt_parent_map[ $legacy_parent ] ?? 0;
+
+			// Hub (and every other Solutions) post IDs are preserved 1:1 from
+			// legacy via 'import_id' on the original bulk import — the same
+			// convention momentive_sol_find_or_create_post() relies on for
+			// children. So the hub post almost always already lives at
+			// get_post( $legacy_parent ), regardless of whether THIS run's
+			// Pass 1 processed it (e.g. `only=<child id>` never touches the
+			// hub loop at all, since the hub's legacy ID is filtered out of
+			// $legacy_all before Pass 1 runs). Try the direct ID match first.
+			if ( ! $rebuilt_parent_id ) {
+				$by_id = get_post( $legacy_parent );
+				if ( $by_id && MOMENTIVE_SOL_TYPE === $by_id->post_type ) {
+					$rebuilt_parent_id = (int) $by_id->ID;
+					$rebuilt_parent_map[ $legacy_parent ] = $rebuilt_parent_id;
+				}
+			}
+
+			// Fallback: slug-based lookup, in case the hub's ID was ever NOT
+			// preserved (e.g. it had to be recreated by hand under a new ID).
+			// Must search the FULL, unfiltered legacy corpus — $legacy_all
+			// itself may have already been narrowed by `only=`/`limit=` and
+			// no longer contain the parent's own legacy record at all.
 			if ( ! $rebuilt_parent_id ) {
 				$parent_legacy = null;
-				foreach ( $legacy_all as $lp ) {
+				foreach ( $legacy_all_full as $lp ) {
 					if ( $lp['id'] === $legacy_parent ) { $parent_legacy = $lp; break; }
 				}
 				if ( $parent_legacy ) {
@@ -1451,14 +1951,25 @@ function momentive_sol_run( array $argv = array() ): void {
 				continue;
 			}
 
-			$post_id = momentive_sol_find_or_create_post( $legacy['slug'], $legacy['title'], $legacy['status'], $rebuilt_parent_id, $dry );
+			$post_id = momentive_sol_find_or_create_post( $legacy['id'], $legacy['slug'], $legacy['title'], $legacy['status'], $rebuilt_parent_id, $dry );
 			if ( ! $post_id && ! $dry ) {
 				continue;
 			}
+
+			// Don't clobber a page that's already been hand-rebuilt — a
+			// handful of children are done ahead of this script (see
+			// momentive_sol_post_already_rebuilt()'s docblock). Overridable
+			// with `force`, or by targeting this exact post with `only=<id>`.
+			if ( $post_id && ! $flags['force'] && $flags['only'] !== $id && momentive_sol_post_already_rebuilt( $post_id ) ) {
+				WP_CLI::log( "    already has real hand-built content — skipping (pass 'force' or 'only={$id}' to overwrite anyway)." );
+				$summary['child_skipped_already_rebuilt'] = ( $summary['child_skipped_already_rebuilt'] ?? 0 ) + 1;
+				continue;
+			}
+
 			$content = momentive_sol_assemble_child_content(
 				$legacy, $legacy['title'], $attach_map, $post_id ?: -1, $dry,
 				$unresolved_icons, $testimonial_log, $legacy_testimonials, $t_index,
-				$rebuilt_parent_id
+				$rebuilt_parent_id, $legacy_parent
 			);
 
 			$breadcrumb_title = momentive_sol_str( $legacy, 'event_sub_-_breadcrumb_title' );
@@ -1481,6 +1992,8 @@ function momentive_sol_run( array $argv = array() ): void {
 				'post_content' => $content,
 			) ), true );
 
+			momentive_sol_clear_elementor_meta( $post_id );
+
 			if ( $breadcrumb_title ) {
 				update_field( MOMENTIVE_SOL_FK_BREADCRUMB_TITLE, $breadcrumb_title, $post_id );
 			}
@@ -1494,8 +2007,8 @@ function momentive_sol_run( array $argv = array() ): void {
 	}
 
 	WP_CLI::success( sprintf(
-		'Done. Hub posts updated: %d | Hub posts missing: %d | Child posts written: %d',
-		$summary['hub_updated'], $summary['hub_missing'], $summary['child_updated']
+		'Done. Hub posts updated: %d | Hub posts missing: %d | Child posts written: %d | Child posts skipped (already hand-rebuilt): %d',
+		$summary['hub_updated'], $summary['hub_missing'], $summary['child_updated'], $summary['child_skipped_already_rebuilt']
 	) );
 
 	WP_CLI::log( '' );

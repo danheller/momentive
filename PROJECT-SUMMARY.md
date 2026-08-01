@@ -95,9 +95,10 @@ These follow the same pattern as webinars: a registration form that swaps to a r
 - Guides & Research
 - Toolkits
 - Infographics
+- Product Overviews
 
 ### Product Overviews
-**Not a new CPT** — these will extend the existing `product` post type with a toggle that enables upcoming/on-demand fields (same pattern as webinars). On the legacy site they live under product URLs (e.g. `/solutions/career-centers-software/ym-careers/overview/`). Video embed comes from a corresponding `assets` post, same as webinars.
+**Is its own CPT**, in the gated-content family above — an earlier plan to extend `product` with a toggle instead has been superseded now that the legacy data confirms these work like a standalone gated post (same shape as whitepapers/infographics). A Post Object field links each overview to its Product, and that link determines the page's URL (nested under `/products/{slug}/overview/`) instead of the legacy site's stale, hand-typed nested permalinks. Recording video comes from the legacy `assets` post's embed (taking just the latest one — the legacy setup has several rotating monthly recordings per product), surfaced through the same `/recordings/{slug}` layer webinars already use. Full detail in `notes/product-overview-reference-sheet.md`.
 
 ### Videos
 Only 3 posts on the legacy site. No form — just a "watch now" button. Likely folds into webinars or a minimal standalone CPT.

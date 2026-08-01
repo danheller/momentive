@@ -11,7 +11,9 @@ h1 {
 
 .post-layout {
 	padding: 3rem 0;
-
+	.wp-block-button {
+		width: 100%;
+	}
 }
 body.single {
 	.post-content.wp-block-column {
@@ -19,9 +21,7 @@ body.single {
 		flex-basis: 0;
 	}
 
-	.wp-block-button {
-		width: 100%;
-	}
+
 	.testimonial {
 		@include round;
 		padding: var(--wp--preset--spacing--x-small);
@@ -69,9 +69,8 @@ body.single {
 				@include has-before;
 				@include has-after;
 				padding-left: 2.25rem;
-				
 				&:before {
-					top: .3rem;
+					top: .325em;
 					left: .675rem;
 					width: .3125rem;
 					height: .6rem;
@@ -81,7 +80,7 @@ body.single {
 					z-index: 1;
 				}
 				&:after {
-					top: 0;
+					top: .125em;
 					left: 0.2rem;
 					width: 1.25rem;
 					height: 1.25rem;
@@ -99,8 +98,8 @@ body.single {
 		box-shadow: var(--wp--preset--shadow--card);
 		padding: 3rem 1.5rem;
 		figure.wp-block-post-featured-image {
-			margin: -3rem -1.5rem 3rem;
-			&.has-hero-image {
+			margin: -3rem -1.5rem 1.5rem;
+			&.has-hero-image:not(.wider) {
 				margin: 0 0 3rem;
 				display: flex;
 				img {
@@ -130,5 +129,59 @@ body.single {
 }
 
 ul.is-style-column-checks {
-	margin-bottom: var(--wp--preset--spacing--large);	
+	margin-bottom: var(--wp--preset--spacing--large);
+}
+
+.post-layout {
+	ul, ol {
+		li {
+			margin: 0;
+		}
+	}
+}
+
+/*--------------------------------------------------------------
+ * Research-study chrome (fully-launched studies only)
+ *
+ * `.is-research-study` is added to <body> only when a `guide` post's
+ * `guide_type` field is exactly 'research-study' (inc/guides.php's
+ * body_class filter) — NOT for 'research-study-preview' or 'guides',
+ * both of which fall through to the plain chrome above (white page
+ * background, .post-sidebar's default superlight background a few
+ * rules up).
+ *
+ * This exists so the gradient hero / white sidebar treatment is fully
+ * automatic from that one field — no per-post Styles-panel gradient or
+ * backgroundColor choice needed on the `.hero-background` wrapper group
+ * or the `.post-sidebar` column. Flipping a post from Preview to
+ * Research Study updates the permalink prefix AND this chrome together.
+ *
+ * Gradient value referenced by its own preset custom property (the
+ * "vertical" gradient — Light Accent to White — registered in
+ * theme.json) rather than duplicating the raw color stops here, so it
+ * stays in sync if that preset ever changes.
+ *--------------------------------------------------------------*/
+body.is-research-study {
+	.hero-background {
+		background: var(--wp--preset--gradient--vertical, linear-gradient(rgb(226, 244, 252), rgb(255, 255, 255)));
+		padding-bottom: 0;
+	}
+	.wp-block-column.post-sidebar {
+		background: var(--light-color, #fff);
+	}
+
+	/*
+	 * The legacy site never showed the generic "Research Study" top label on
+	 * a fully-launched study — only previews kept it. Rather than omit the
+	 * wp:query-title block from these posts' content (which is what the
+	 * first 4 rebuilt research-study posts did, undocumented — every guide
+	 * post should carry the same block so the editor experience doesn't
+	 * silently branch per guide_type), this hides it with CSS instead. The
+	 * block stays in every post; the PHP filter in functions.php still
+	 * computes the correct guide_type-driven text either way, it's just not
+	 * shown here.
+	 */
+	.top-label {
+		display: none;
+	}
 }

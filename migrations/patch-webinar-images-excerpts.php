@@ -69,7 +69,7 @@ function momentive_patch_xml_items( string $path ): array {
 
 /* ---- Build legacy attachment-ID → URL map --------------------------------- */
 
-$wxr_path = __DIR__ . '/momentivesoftware.webinars.current.2026-07-01.xml';
+$wxr_path = __DIR__ . '/exports/momentivesoftware.webinars.current.2026-07-01.xml';
 $base_url  = 'https://momentivesoftware.com/wp-content/uploads/';
 
 $attach_map = [];

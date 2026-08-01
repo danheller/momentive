@@ -13,23 +13,128 @@
 	}
 }
 
-.wp-block-columns .wp-block-column {
+.testimonial {
+	--page-accent-color-border:      color-mix(in oklab, var(--page-accent-color) 50%, white);
+	--page-accent-color-bg-soft: color-mix(in oklab, var(--page-accent-color) 7%, white);
+	@include rounder;
+	background: var(--page-accent-color-bg-soft);
+	border: 1px solid var(--page-accent-color-border);
+	height: 100%;
+	width: calc(100vw - 5rem);
+	padding: clamp( 1.5rem, 4vw, 3rem );
+	font-size: clamp( 1.125rem, 1.5vw, 1.375rem );
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: start;
+	@media #{$medium-up} {
+		width: 80vw;
+	}
+	@media #{$largish-up} {
+		width: calc( ( var(--wp--style--global--content-size) / 2 ) - 0.75rem );
+	}
+
+	// Attribution block: photo + name + organization in a small grid.
 	.attribution {
-		.name {
-			font-weight: 600;
+		padding-top: 1rem;
+		margin: auto 1rem 0;
+		width: 100%;
+		display: grid;
+		gap: .25rem 1rem;
+		grid-template-columns: 4.5rem 1fr;
+		grid-template-areas:
+			"Image Name"
+			"Image Organization";
+		justify-content: start;
+		align-content: center;
+		&:has(.case-study-button) {
+			grid-template-areas:
+				"Image Name"
+				"Image Organization"
+				"Empty Button";	
+			.case-study-button {
+				grid-area: Button;
+				height: fit-content;
+				align-self: center;
+			}
+		}
+		figure {
+			border-radius: 50%;
+			overflow: hidden;
+			width: 4.5rem;
+			height: 4.5rem;
+			grid-area: Image;
 			margin: 0;
+			img {
+				width: 100%;
+				height: auto;
+				object-fit: cover;
+			}
+		}
+		p {
+			margin: 0;
+			width: 100%;
+			line-height: 1.2;
+			text-align: left;
+			align-self: end;
+		}
+		.name {
+			font-size: 1.5rem;
+			font-weight: 600;
+			grid-area: Name;
+			align-self: end;
 		}
 		.organization {
-			margin: 0;
+			font-size: 1rem;
+			grid-area: Organization;
+			align-self: start;
 		}
 	}
-	.testimonial-quote p {
-		font-size: var(--wp--preset--font-size--large);
-		margin-bottom: 1rem;
-		@media #{$medium-up} {
-			font-size: var(--wp--preset--font-size--x-large);
-		}
+	&.centered {
+		--page-accent-color-border:      color-mix(in oklab, var(--page-accent-color) 36%, white);
+		--page-accent-color-bg-soft: var(--superlight-accent-color);
+		margin-left: auto;
+		margin-right: auto;
+	
 	}
+
+	&.large {
+		background: transparent;
+		border: none;
+		position: relative;
+		width: 100%;
+		max-width: var(--wp--style--global--content-size) !important;
+		margin-left: auto;
+		margin-right: auto;
+		@media #{$large-up} {
+			.attribution:has(.case-study-button) {
+				grid-template-columns: 4.5rem 1fr 14rem;
+				grid-template-areas:
+					"Image Name Button"
+					"Image Organization Button"
+			}
+		}
+		.testimonial-quote p {
+			font-size: var(--wp--preset--font-size--large);
+			margin-bottom: 1rem;
+			@media #{$medium-up} {
+				font-size: var(--wp--preset--font-size--x-large);
+			}
+		}
+			&.centered {
+				padding: clamp( 1.5rem, 7vw, 6rem );
+				background: var(--page-accent-color-bg-soft);
+			}
+	}
+}
+
+.testimonial-quote {
+	margin: 0 0 1.5rem;
+	// Clamp quote to ~10 lines in the slider context
+	display: -webkit-box;
+	-webkit-line-clamp: 10;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .testimonials-wrapper,
@@ -126,85 +231,6 @@
 		}
 	}
 
-
-	.testimonial {
-		--page-accent-color-border:      color-mix(in oklab, var(--page-accent-color) 50%, white);
-		--page-accent-color-bg-soft: color-mix(in oklab, var(--page-accent-color) 7%, white);
-		@include rounder;
-		background: var(--page-accent-color-bg-soft);
-		height: 100%;
-		width: calc(100vw - 5rem);
-		padding: clamp( 1.5rem, 4vw, 3rem );
-		font-size: clamp( 1.125rem, 1.5vw, 1.375rem );
-		border: 1px solid var(--page-accent-color-border);
-		display: flex;
-		flex-direction: column;
-		justify-content: start;
-		align-items: start;
-		@media #{$medium-up} {
-			width: 80vw;
-		}
-		@media #{$largish-up} {
-			width: calc( ( var(--wp--style--global--content-size) / 2 ) - 0.75rem );
-		}
-	}
-	
-	.testimonial-quote {
-		margin: 0 0 1.5rem;
-		// Clamp quote to ~10 lines in the slider context
-		display: -webkit-box;
-		-webkit-line-clamp: 10;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	// Attribution block: photo + name + organization in a small grid.
-	.attribution {
-		padding-top: 1rem;
-		margin: auto 1rem 0;
-		width: 100%;
-		display: grid;
-		grid-template-columns: 4.5rem 1fr;
-		gap: .25rem 1rem;
-		grid-template-areas:
-			"Image Name"
-			"Image Organization";
-		justify-content: start;
-		align-content: center;
-
-		figure {
-			border-radius: 50%;
-			overflow: hidden;
-			width: 4.5rem;
-			height: 4.5rem;
-			grid-area: Image;
-			margin: 0;
-			img {
-				width: 100%;
-				height: auto;
-				object-fit: cover;
-			}
-		}
-		p {
-			margin: 0;
-			width: 100%;
-			line-height: 1.2;
-			text-align: left;
-			align-self: end;
-		}
-		.name {
-			font-size: 1.5rem;
-			font-weight: 600;
-			grid-area: Name;
-			align-self: end;
-		}
-		.organization {
-			font-size: 1rem;
-			grid-area: Organization;
-			align-self: start;
-		}
-	}
-
 	&.single-slide {
 		padding-bottom: 6.5rem;
 		.splide__list {
@@ -273,13 +299,27 @@
 		.attribution {
 			width: fit-content;
 			margin: 1rem auto;
-			grid-template-columns: 1fr;
 			.name, .organization {
 				font-size: var(--wp--preset--font-size--regular);
 				text-align: center;
 			}
-			figure {
-				display: none;
+			&:has(.case-study-button) {
+				width: 100%;
+				grid-template-areas:
+					"Image Name"
+					"Image Organization"
+					"Empty Button";	
+				.case-study-button {
+					grid-area: Button;
+					height: fit-content;
+					align-self: center;
+				}
+				@media #{$large-up} {
+					grid-template-columns: 4.5rem 1fr 14rem;
+					grid-template-areas:
+						"Image Name Button"
+						"Image Organization Button"
+				}
 			}
 		}
 		// Re-center arrows below the card rather than left-aligned

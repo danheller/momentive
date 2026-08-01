@@ -122,16 +122,16 @@ function momentive_testimonial_render( array $attributes, string $content, WP_Bl
 			<?php if ( $author_desc ) : ?>
 				<p class="organization"><?php echo esc_html( $author_desc ); ?></p>
 			<?php endif; ?>
-		</div>
 
-		<?php if ( $show_case_study_btn && $case_study_url ) : ?>
-			<a
-				href="<?php echo esc_url( $case_study_url ); ?>"
-				class="case-study-button wp-element-button"
-			>
-				<?php esc_html_e( 'Read the Case Study', 'momentive' ); ?>
-			</a>
-		<?php endif; ?>
+			<?php if ( $show_case_study_btn && $case_study_url ) : ?>
+				<a
+					href="<?php echo esc_url( $case_study_url ); ?>"
+					class="case-study-button wp-element-button"
+				>
+					<?php esc_html_e( 'Read the Case Study', 'momentive' ); ?>
+				</a>
+			<?php endif; ?>
+		</div>
 
 	</div>
 	<?php

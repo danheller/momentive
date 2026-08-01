@@ -1,0 +1,63 @@
+@use '../config' as *;
+
+/*--------------------------------------------------------------
+ * MIP Status styles
+--------------------------------------------------------------*/
+.mip-status {
+	@include rounder;
+	display: grid;
+	gap: 0;
+	border: 1px solid var(--menu-border-color);
+	.wp-block-group {
+		width: 100%;
+		p {
+			margin: 0;
+		}
+	}
+	@media #{$medium-up} {
+		grid-template-columns: 1fr 2fr;
+		grid-template-areas: "Headline Message"
+		"Headline Schedule";
+
+		.headline {
+			grid-row: 1 / -1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			.wp-block-heading {
+				margin: 0;
+			}
+		}
+	}
+}
+
+.is-style-segmented ul.is-style-circle-checks {
+	gap: 0;
+	li {
+		padding: var(--wp--preset--spacing--x-small);
+		padding-left: var(--wp--preset--spacing--medium);
+		border-top: 1px solid var(--menu-border-color);
+		margin: 0;
+		&:first-child {
+			border-top: 0;
+		}
+		&:before {
+			width: .5rem;
+			height: .875rem;
+			top: calc( var(--wp--preset--spacing--x-small) + .2rem );
+			left: calc( var(--wp--preset--spacing--x-small) + .3rem );
+			border-bottom: .125rem solid var(--page-accent-color);
+			border-right: .125rem solid var(--page-accent-color);
+		}
+		&:after {
+			width: 1.625rem;
+			height: 1.625rem;
+			top: calc( var(--wp--preset--spacing--x-small) - 0.125rem );
+			left: calc( var(--wp--preset--spacing--x-small) - 0.25rem );
+			background: var(--light-color);
+			border: .125rem solid var(--page-accent-color);
+		}
+	}
+}
+

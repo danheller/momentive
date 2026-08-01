@@ -7,18 +7,37 @@ import {
 	PanelBody,
 	TextControl,
 	RangeControl,
+	ToggleControl,
 	ColorPalette,
 } from '@wordpress/components';
 
 /**
  * Predefined accent colors drawn from the Momentive brand palette.
  * Editors can also enter a custom hex via the color picker.
+ *
+ * "Purple" and "Rose" reference the theme.json palette (`purple`/`rose`,
+ * added alongside this change) via CSS custom properties rather than
+ * hardcoded hex, so a future palette adjustment updates every impact-stat
+ * instance automatically instead of requiring a hex hunt across posts.
+ *
+ * "Sky" (formerly a hardcoded #61C6D2) was close enough to the existing
+ * "Brand Blue" theme.json color (rgb(110, 193, 228)) that having both as
+ * separate swatches just invited picking the wrong near-duplicate — it now
+ * points at that same preset instead of adding a second, barely-distinct
+ * blue to the design system.
+ *
+ * "Orange", "Teal", and "Blue" are left as their original hardcoded hex —
+ * they aren't near-duplicates of anything already in theme.json and haven't
+ * come up as needing consolidation, so there's no theme.json entry to point
+ * them at yet.
  */
 const ACCENT_COLORS = [
-	{ name: __( 'Orange', 'momentive' ),  color: '#E8611A' },
-	{ name: __( 'Purple', 'momentive' ),  color: '#7B61FF' },
-	{ name: __( 'Teal', 'momentive' ),    color: '#00C4B4' },
-	{ name: __( 'Blue', 'momentive' ),    color: '#3B82F6' },
+	{ name: __( 'Orange', 'momentive' ),      color: '#E8611A' },
+	{ name: __( 'Purple', 'momentive' ),      color: 'var(--wp--preset--color--purple)' },
+	{ name: __( 'Teal', 'momentive' ),        color: '#00C4B4' },
+	{ name: __( 'Blue', 'momentive' ),        color: '#3B82F6' },
+	{ name: __( 'Rose', 'momentive' ),        color: 'var(--wp--preset--color--rose)' },
+	{ name: __( 'Brand Blue', 'momentive' ),  color: 'var(--wp--preset--color--brand)' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -29,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		statLabel,
 		accentColor,
 		animationDuration,
+		animate,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -86,15 +106,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Animation', 'momentive' ) } initialOpen={ false }>
-					<RangeControl
-						label={ __( 'Duration (ms)', 'momentive' ) }
-						help={ __( 'How long the count-up animation takes', 'momentive' ) }
-						value={ animationDuration }
-						onChange={ ( val ) => setAttributes( { animationDuration: val } ) }
-						min={ 500 }
-						max={ 4000 }
-						step={ 100 }
+					<ToggleControl
+						label={ __( 'Count up', 'momentive' ) }
+						help={ __( 'Turn off for ordinals like "2nd" or "#1" — counting from 0 doesn\'t read well there.', 'momentive' ) }
+						checked={ animate }
+						onChange={ ( val ) => setAttributes( { animate: val } ) }
 					/>
+					{ animate && (
+						<RangeControl
+							label={ __( 'Duration (ms)', 'momentive' ) }
+							help={ __( 'How long the count-up animation takes', 'momentive' ) }
+							value={ animationDuration }
+							onChange={ ( val ) => setAttributes( { animationDuration: val } ) }
+							min={ 500 }
+							max={ 4000 }
+							step={ 100 }
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

@@ -62,7 +62,7 @@ $flags = array(
 	'skip-populated'      => false,
 	'apply-family-accent' => false,
 	'only'                => '',
-	'csv'                 => __DIR__ . '/export-product_settings.csv',
+	'csv'                 => __DIR__ . '/exports/export-product_settings.csv',
 );
 foreach ( (array) $args as $raw ) {
 	if ( strpos( $raw, '--' ) !== 0 ) { continue; }

@@ -112,7 +112,7 @@ foreach ( $products as $product ) {
 		continue; // skip non-products / drafts / trashed
 	}
 
-	$permalink = get_permalink( $pid );
+	$permalink = momentive_get_product_link( $pid );
 	$name      = get_the_title( $pid );
 
 	// Prefer the unendorsed logo (matches the ECS sidebar). Fall back through

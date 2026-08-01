@@ -312,7 +312,7 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 function momentive_render_product_card( int $product_id ): void {
 	$icon    = get_field( 'product_icon', $product_id );
 	$summary = get_field( 'product_summary', $product_id );
-	$link    = get_permalink( $product_id );
+	$link    = momentive_get_product_link( $product_id );
 
 	$css_var = '';
 	$color = get_field( 'accent_color', $product_id );

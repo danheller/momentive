@@ -21,6 +21,8 @@ Atomic custom block for a single animated statistic with a colored left border.
 | Purple | `#7B61FF` |
 | Teal   | `#00C4B4` |
 | Blue   | `#3B82F6` |
+| Rose   | `#D73F5D` |
+| Sky    | `#61C6D2` |
 
 Custom hex values are also accepted via the color picker.
 

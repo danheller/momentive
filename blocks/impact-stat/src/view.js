@@ -76,19 +76,33 @@ function animateStat( block ) {
 const blocks = document.querySelectorAll( '.wp-block-momentive-impact-stat' );
 
 if ( blocks.length > 0 ) {
-	// Respect prefers-reduced-motion: skip animation, show final value immediately.
+	// Respect prefers-reduced-motion, and the block's own "Count up" toggle
+	// (off by choice for values like "2nd" or "#1", where counting from 0
+	// doesn't make sense) — both skip animation and show the final value
+	// immediately.
 	const prefersReduced = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
-	if ( prefersReduced ) {
-		blocks.forEach( ( block ) => {
-			const targetNumber = parseFloat( block.dataset.statNumber ?? 0 );
-			const isInteger    = block.dataset.statInteger === 'true';
-			const numberEl     = block.querySelector( '.impact-stat__number' );
-			if ( numberEl ) {
-				numberEl.textContent = formatValue( targetNumber, isInteger );
-			}
-		} );
-	} else {
+	const setFinalValue = ( block ) => {
+		const targetNumber = parseFloat( block.dataset.statNumber ?? 0 );
+		const isInteger    = block.dataset.statInteger === 'true';
+		const numberEl     = block.querySelector( '.impact-stat__number' );
+		if ( numberEl ) {
+			numberEl.textContent = formatValue( targetNumber, isInteger );
+		}
+	};
+
+	const animatableBlocks = [];
+
+	blocks.forEach( ( block ) => {
+		const shouldAnimate = ! prefersReduced && block.dataset.animate !== 'false';
+		if ( shouldAnimate ) {
+			animatableBlocks.push( block );
+		} else {
+			setFinalValue( block );
+		}
+	} );
+
+	if ( animatableBlocks.length > 0 ) {
 		const observer = new IntersectionObserver(
 			( entries, obs ) => {
 				entries.forEach( ( entry ) => {
@@ -103,6 +117,6 @@ if ( blocks.length > 0 ) {
 			}
 		);
 
-		blocks.forEach( ( block ) => observer.observe( block ) );
+		animatableBlocks.forEach( ( block ) => observer.observe( block ) );
 	}
 }

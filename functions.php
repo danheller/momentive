@@ -141,9 +141,29 @@ add_filter( 'render_block', function( $content, $block ) {
 	) {
 		$content = preg_replace( '/^<h1([^>]*)>/', '<p$1>', $content );
 		$content = preg_replace( '/<\/h1>$/', '</p>', $content );
+
+		// Guides & Research: swap the generic post-type label for a
+		// guide_type-driven one ("Guides & Research" / "Research Study" /
+		// "Research Study Preview"), matching the legacy site's per-subtype
+		// top label. See momentive_guide_type_front_label() in inc/guides.php
+		// for why this overrides here rather than using a dedicated block.
+		if ( ( is_singular( 'guide' ) || is_archive( 'guide' ) ) && function_exists( 'momentive_guide_type_front_label' ) ) {
+			$label   = momentive_guide_type_front_label( (string) get_field( 'guide_type', get_the_ID() ) );
+			$content = preg_replace( '/(<p[^>]*>).*?(<\/p>\s*)$/s', '$1' . esc_html( $label ) . '$2', $content );
+		}
 	}
 	return $content;
 }, 10, 2 );
+
+// Defer non-critical, below-the-fold stylesheets (testimonial cards, solution
+// sliders, gated whitepaper layout) via preload + swap-on-load. See the file
+// for the handle list and why this rewrites style_loader_tag instead of a
+// hand-rolled wp_head() output.
+require get_template_directory() . '/inc/defer-styles.php';
+
+// Auto-discovered, per-page CSS for one-off Elementor-relic styling that
+// doesn't belong in the global stylesheet. See the file for the convention.
+require get_template_directory() . '/inc/page-styles.php';
 
 /*==============================================================================
   3.0 - Block System
@@ -189,6 +209,7 @@ function momentive_register_block_styles() {
 			'no-disc'              => __( 'No Disc',               'momentive' ),
 			'column-checks'        => __( 'Orange Checks',         'momentive' ),
 			'circle-checks'        => __( 'Circle Checks',         'momentive' ),
+			'simple-checks'        => __( 'Simple Checks',         'momentive' ),
 			'checkboxes'           => __( 'Checkboxes',            'momentive' ),
 		],
 
@@ -199,6 +220,10 @@ function momentive_register_block_styles() {
 		'core/paragraph' => [
 			'eyebrow'   => __( 'Eyebrow',         'momentive' ),
 			'uppercase' => __( 'Uppercase Label', 'momentive' ),
+		],
+
+		'core/table' => [
+			'shaded'    => __( 'Shaded',         'momentive' ),
 		],
 
 		'core/quote' => [
@@ -325,6 +350,8 @@ require get_template_directory() . '/blocks/person/block.php';
 require get_template_directory() . '/blocks/person-metadata/block.php';
 require get_template_directory() . '/blocks/linked-products/block.php';
 require get_template_directory() . '/blocks/icon-list/block.php';
+require get_template_directory() . '/blocks/solution-resources/block.php';
+require get_template_directory() . '/blocks/previous-studies/block.php';
 
 
 /*==============================================================================
@@ -344,6 +371,9 @@ require get_template_directory() . '/inc/recordings.php'; // not a post type, bu
 require get_template_directory() . '/inc/case-studies.php';
 require get_template_directory() . '/inc/whitepapers.php';
 require get_template_directory() . '/inc/infographics.php';
+require get_template_directory() . '/inc/guides.php';
+require get_template_directory() . '/inc/resources.php'; // cross-CPT "Resources" query layer + REST endpoint
+require get_template_directory() . '/inc/resource-relevance.php'; // AI-assisted per-child-Solution relevance tagging
 
 /*==============================================================================
   5.0 - Query & Content Filters
@@ -357,12 +387,21 @@ add_filter( 'get_the_excerpt', function ( $excerpt, $post ) {
 }, 10, 2 );
 
 
+/**
+ * Whether a Query Loop block instance carries a given CSS class in its
+ * Advanced-panel className. Shared by the query_loop_block_query_vars
+ * filters below so each one stays a single `if`, not a repeated strpos().
+ */
+function momentive_query_block_has_class( WP_Block $block, string $needle ): bool {
+	$class = $block->parsed_block['attrs']['className'] ?? '';
+	return false !== strpos( $class, $needle );
+}
+
 // Query Loop blocks with the class `has-featured-images-only` will only
 // show posts that have a featured image set. Add this class in the block
 // editor's Advanced panel to use this behavior on any Query Loop.
 add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
-	$class = $block->parsed_block['attrs']['className'] ?? '';
-	if ( strpos( $class, 'has-featured-images-only' ) !== false ) {
+	if ( momentive_query_block_has_class( $block, 'has-featured-images-only' ) ) {
 		$meta_query   = $query['meta_query'] ?? [];
 		$meta_query[] = [
 			'key'     => '_thumbnail_id',
@@ -373,7 +412,54 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 	return $query;
 }, 10, 2 );
 
+/* When a query template has the "order-by-modified" class, adjust the order accordingly.
+ * Note: make sure the class is added to the template block inside the query, not to the
+ * query itself.
+ */
+add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
+	if ( momentive_query_block_has_class( $block, 'order-by-modified' ) ) {
+		$query['orderby'] = 'modified';
+		$query['order']   = $query['order'] ?? 'DESC';
+	}
+	return $query;
+}, 10, 2 );
 
+// Query Loop blocks with the class `siblings` show the current page's
+// siblings (children of the same parent) instead of depending on a 
+// manually-applied term filter.
+add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
+	if ( ! momentive_query_block_has_class( $block, 'siblings' ) ) {
+		return $query;
+	}
+	// get_queried_object_id(), not get_the_ID() — more reliable here since
+	// this filter can run outside the main loop context where get_the_ID()
+	// is unreliable (the same FSE gotcha documented in CLAUDE.md for ACF
+	// render templates and the solutions-sibling-slider variant of this
+	// pattern).
+	$current_id = get_queried_object_id();
+	if ( ! $current_id ) {
+		return $query;
+	}
+	$parent_id = wp_get_post_parent_id( $current_id ) ?: $current_id;
+
+	$query['post_parent']  = $parent_id;
+	$query['post__not_in'] = [ $current_id ];
+	return $query;
+}, 10, 2 );
+
+// Query Loop blocks with the class `children` show the current page's
+// children.
+add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
+	if ( ! momentive_query_block_has_class( $block, 'children' ) ) {
+		return $query;
+	}
+	$current_id = get_the_ID();
+	if ( ! $current_id ) {
+		return $query;
+	}
+	$query['post_parent']  = $current_id;
+	return $query;
+}, 10, 2 );
 
 /*==============================================================================
   6.0 - Front-End Features

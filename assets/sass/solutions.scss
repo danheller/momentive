@@ -237,12 +237,17 @@
 		.solution-readmore {
 			display: flex;
 			align-items: center;
-			gap: .25rem;
 			font-weight: 600;
 			color: var(--dark-color);
 			margin-top: auto;
+			transition: color .2s ease-in-out;
 			&:after {
 				content: '\2192';
+				line-height: 1;
+				font-weight: 300;
+				font-size: 1.25rem;
+				transition: transform .3s ease;
+				margin-left: .25rem;
 			}
 		}
 
@@ -252,6 +257,12 @@
 			// No color changes on hover for light style
 			.solution-title,
 			p.solution-excerpt { color: var(--dark-color); }
+			.solution-readmore { 
+				color: var(--secondary-color); 
+				&:after {
+					transform: translateX(0.25rem);
+				}
+			}
 		}
 	}
 	li.splide__slide:first-child .solution {
@@ -269,29 +280,58 @@
 		.solution-body {
 			background: none;
 			padding: 0;
-			margin: var(--wp--preset--spacing--x-small);
+			margin: 1rem; //var(--wp--preset--spacing--x-small);
 		}
 		.solution-title {
 			font-size: var(--wp--preset--font-size--x-large);
 			margin-top: var(--wp--preset--spacing--xx-small);
+			letter-spacing: -0.02em;
 		}
 		p.solution-excerpt {
 			color: var(--light-text-color);
 		}
 	}
-	li.splide__slide, li.splide__slide:first-child {
-		.solution .solution-icon svg {
-			width: 3rem;
-			height: 3rem;
+	
+	.solution .solution-icon svg, li.splide__slide .solution .solution-icon svg, li.splide__slide:first-child .solution .solution-icon svg {
+		width: 3rem;
+		height: 3rem;
+	}
+	.solution .solution-icon, li.splide__slide .solution .solution-icon {
+		left: 1.25rem; //var(--wp--preset--spacing--x-small);
+		top: 1.25rem; //var(--wp--preset--spacing--x-small);
+		svg {
+			color: var(--secondary-color);
 		}
 	}
-	li.splide__slide {
-		.solution .solution-icon {
-			left: var(--wp--preset--spacing--x-small);
-			top: var(--wp--preset--spacing--x-small);
-			svg {
-				color: var(--secondary-color);
-			}
+}
+
+.boxed-columns ul {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2rem;
+	@media #{$medium-up} {
+		grid-template-columns: repeat( 2, 1fr );
+	}
+	@media #{$large-up} {
+		grid-template-columns: repeat( 3, 1fr );
+	}
+	.solution {
+		width: auto !important;
+	}
+	li, li .solution {
+		margin: 0;
+	}
+}
+
+.single-solutions {
+	h3.has-xx-large-font-size {
+		margin-top: 0;
+		margin-bottom: var(--wp--preset--spacing--xx-small);
+		line-height: 1.2;
+	}
+	.wp-block-media-text {
+		.wp-block-media-text__content {
+			padding-bottom: var(--wp--preset--spacing--small);
 		}
 	}
 }

@@ -1,0 +1,137 @@
+/**
+ * momentive/previous-studies
+ *
+ * "Explore Previous Studies" card grid. Visually similar to .story-card
+ * (border, radius, hover shadow) but self-contained since each card is a
+ * hand-entered snapshot, not a linked post — see block.php for why this
+ * isn't built on top of story-card.php or solution-resources.
+ *
+ * Spacing/typography use theme.json preset variables and the same brand
+ * custom properties (--menu-border-color, --light-color, --button-background,
+ * --alert-background) already defined in momentive.scss, so this stays in
+ * sync with sitewide color/spacing changes without redefining anything here.
+ */
+
+.previous-studies {
+	margin: var(--wp--preset--spacing--large, 3rem) 0;
+}
+
+.previous-studies__heading {
+	text-align: center;
+	margin-bottom: var(--wp--preset--spacing--medium, 2rem);
+}
+
+.previous-studies__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--wp--preset--spacing--small, 1.5rem);
+	list-style: none;
+	margin: 0 auto var(--wp--preset--spacing--medium, 2rem);
+	padding: 0;
+	justify-content: center;
+}
+
+@media screen and (max-width: 782px) {
+	.previous-studies__grid {
+		grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+	}
+}
+
+/*
+ * A single card shouldn't render at the same narrow column width a 3-up
+ * grid uses — the legacy site gives a lone card more room instead of
+ * leaving it looking like one column of an incomplete row. `data-count` is
+ * written by block.php from the actual (post-filtering) card count, so this
+ * targets exactly the 1-card case regardless of how many repeater rows were
+ * entered.
+ */
+.previous-studies__grid[data-count="1"] {
+	grid-template-columns: minmax(18rem, 40vw);
+}
+
+.previous-studies__card {
+	border: 1px solid var(--menu-border-color);
+	border-radius: 1rem;
+	overflow: hidden;
+	background: var(--light-color);
+	display: flex;
+	flex-direction: column;
+	transition: box-shadow .3s ease;
+}
+
+.previous-studies__card .wp-block-buttons, .previous-studies__card .wp-block-button {
+	width: 100%;
+}
+
+.previous-studies__card .wp-block-button a {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding: .625rem 2.5rem .625rem 1.5rem 
+}
+
+.previous-studies__card .wp-block-button a:after {
+	position: static !important;
+	margin-top: .125rem;
+	margin-left: .5rem;
+}
+
+
+.previous-studies__card:hover {
+	box-shadow: rgba(0, 0, 0, .125) 0 0 .75rem 0;
+}
+
+.previous-studies__media {
+	position: relative;
+	overflow: clip;
+}
+
+.previous-studies__image {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.previous-studies__pill {
+	position: absolute;
+	top: var(--wp--preset--spacing--x-small, 1rem);
+	left: var(--wp--preset--spacing--x-small, 1rem);
+	background: color-mix(in oklab, var(--alert-background) 85%, transparent);
+	color: #fff;
+	font-size: .8125rem;
+	font-weight: 600;
+	line-height: 1;
+	padding: .625rem 1rem;
+	border-radius: 999px;
+	z-index: 1;
+}
+
+.previous-studies__body {
+	padding: var(--wp--preset--spacing--x-small, 1.5rem);
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--x-small, 1rem);
+	flex: 1;
+}
+
+.previous-studies__title {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+	line-height: 1.4;
+}
+
+.previous-studies__description {
+	margin: 0;
+	color: var(--text-color);
+	line-height: 1.5;
+	flex: 1;
+}
+
+/* Editor placeholder when no cards are entered yet. */
+.previous-studies.is-placeholder {
+	padding: var(--wp--preset--spacing--x-small, 1rem);
+	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
+	border-radius: 0.5rem;
+	color: var(--wp--preset--color--contrast, #555);
+	text-align: center;
+}
