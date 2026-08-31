@@ -71,7 +71,7 @@
  * @return string[] Registered post type slugs.
  */
 function momentive_get_resource_post_types(): array {
-	$types = [ 'post', 'case-study', 'webinar', 'whitepaper', 'infographic', 'guide' ];
+	$types = [ 'post', 'case-study', 'webinar', 'whitepaper', 'infographic', 'guide', 'video', 'event', 'interactive-tool', 'toolkit' ];
 
 	// Only ever return types that actually exist — a filter adding a
 	// not-yet-built slug shouldn't be able to break the query below.

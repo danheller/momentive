@@ -1,0 +1,374 @@
+/* Integration List block styles */
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+
+.integration-list {
+	display: grid;
+	grid-template-columns: 18rem 1fr;
+	gap: var(--wp--preset--spacing--small, 2rem);
+	align-items: start;
+}
+
+@media (max-width: 768px) {
+	.integration-list {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+.integration-list__sidebar {
+	position: sticky;
+	top: 120px;
+	background: var(--wp--preset--color--superlight-accent, #f0f7ff);
+	border-radius: 12px;
+	padding: 1.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+@media (max-width: 768px) {
+	.integration-list__sidebar {
+		position: static;
+	}
+}
+
+.integration-list__filter-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.integration-list__filter-title {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--medium);
+
+}
+
+.integration-list__reset {
+	background: none;
+	border: none;
+	color: var(--light-text-color);
+	cursor: pointer;
+	font-size: 0.875rem;
+	font-weight: 600;
+	padding: 0;
+	text-decoration: underline;
+	text-underline-offset: .25rem;
+	text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+	line-height: 1;
+}
+
+.integration-list__filter-group {
+	display: flex;
+	flex-direction: column;
+}
+
+/* ── Type select — matches .filter-sort pill style, no icon ──────────────── */
+
+.il-type-select {
+	padding: 0.5rem 2rem 0.5rem 1rem;
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: .5rem;
+	font-weight: 400;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-family: inherit;
+	background: var(--wp--preset--color--base, #fff)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 4L6 8L10.5 4' stroke='%23222' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")
+		no-repeat right 0.75rem center;
+	appearance: none;
+	cursor: pointer;
+	width: 100%;
+	line-height: 1.6;
+}
+
+.il-type-select:focus {
+	outline: 0.125rem solid var(--accent-color, #0078ff);
+	border-color: var(--accent-color, #0078ff);
+}
+
+/* ── Capabilities dropdown — matches .filter-dropdown pattern ────────────── */
+
+.il-cap-dropdown {
+	position: relative;
+}
+
+.il-cap-dropdown__toggle {
+	display: inline-flex;
+	align-items: center;
+	width: 100%;
+	padding: 0.5rem 2rem 0.5rem 1rem;
+	line-height: 1.6;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-family: inherit;
+	font-weight: 400;
+	background: var(--wp--preset--color--base, #fff)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 4L6 8L10.5 4' stroke='%23222' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")
+		no-repeat right 0.75rem center;
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: .5rem;
+	cursor: pointer;
+	text-align: left;
+}
+
+.il-cap-dropdown__toggle[aria-expanded="true"] {
+	border-color: var(--accent-color, #0078ff);
+	outline: 0.065rem solid var(--accent-color, #0078ff);
+}
+
+.il-cap-dropdown__panel {
+	position: absolute;
+	top: calc(100% + 0.375rem);
+	left: 0;
+	right: 0;
+	z-index: 10;
+	padding: 0.875rem 1rem;
+	background: var(--wp--preset--color--base, #fff);
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: 1rem;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.il-cap-dropdown__panel[hidden] { display: none; }
+
+.il-cap-dropdown__panel .filter-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	padding: 0.25rem 0.375rem;
+	border-radius: 0.375rem;
+	cursor: pointer;
+	font-size: 0.9375rem;
+	line-height: 1.4;
+}
+
+.il-cap-dropdown__panel .filter-item:hover {
+	background: var(--extralight-accent-color, rgb(224, 243, 251));
+}
+
+.il-cap-dropdown__panel .filter-item input[type="checkbox"] {
+	width: 1rem;
+	height: 1rem;
+	accent-color: var(--accent-color, #0078ff);
+	flex-shrink: 0;
+	border: none;
+	padding: 0;
+	margin: 0.125rem 0 0;
+}
+
+/* ── CTA card (InnerBlocks slot above the grid) ──────────────────────────── */
+/* Content is free-form inner blocks — heading + paragraph + buttons are     */
+/* the default template but editors can use any blocks here.                 */
+
+.integration-list__cta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-bottom: var(--wp--preset--spacing--small, 1.5rem);
+	flex-wrap: wrap;
+}
+
+.integration-list__cta .is-style-highlight {
+	border: 1px solid var(--menu-border-color);
+	margin: 0;
+	padding-left: 8rem;
+	background: url(integrations.svg) 2rem center no-repeat;
+}
+
+@media only screen and (max-width: 70em) {
+	.integration-list__cta .is-style-highlight {
+		background-position: 2rem 2rem;
+		padding-left: 1.5rem;
+		padding-top: 8rem;
+	}
+}
+
+/* Inner blocks sit in a flex row: text content on the left, buttons on the right */
+.integration-list__cta > * {
+	margin: 0;
+}
+
+.integration-list__cta > :is(h1, h2, h3, h4, h5, h6) {
+	font-size: var(--wp--preset--font-size--large, 1.25rem);
+	font-weight: 700;
+	line-height: 1.3;
+	flex: 1 1 100%;
+}
+
+.integration-list__cta > p {
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	color: var(--light-text-color, #585858);
+	flex: 1 1 100%;
+}
+
+/* Buttons block sits on the right of the card */
+.integration-list__cta > .wp-block-buttons {
+	flex-shrink: 0;
+	margin-left: auto;
+}
+
+/* ── Card grid ───────────────────────────────────────────────────────────── */
+
+.integration-list__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--wp--preset--spacing--x-small, .75rem);
+}
+
+@media (max-width: 900px) {
+	.integration-list__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.integration-list__grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+.integration-card {
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	padding: var(--wp--preset--spacing--small, 1rem) var(--wp--preset--spacing--x-small, 1rem);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 6px;
+	transition: box-shadow 0.2s ease;
+}
+
+.integration-card:hover {
+	box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+.integration-card__logo {
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.integration-card__logo img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.integration-card__name {
+	font-weight: 600;
+	font-size: 0.9375rem;
+	margin: 2px 0 0;
+}
+
+.integration-card__type {
+	font-size: 0.8rem;
+	color: var(--wp--preset--color--primary, #0078ff);
+	margin: 0;
+}
+
+/* ── Capability icon badges ──────────────────────────────────────────────── */
+
+.integration-card__capabilities {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	justify-content: center;
+	margin-top: 2px;
+}
+
+.integration-cap-icon {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: var(--button-background, #f26522);
+	color: #fff;
+	cursor: default;
+}
+
+.integration-cap-icon svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	fill: currentColor;
+}
+
+/* Tooltip */
+.integration-cap-icon::before {
+	position: absolute;
+	top: calc(100% + .125rem);
+	width: 0;
+	height: 0;
+	border-left: .5rem solid transparent;
+	border-right: .5rem solid transparent;
+	border-bottom: .5rem solid #222;
+	content: '';
+	opacity: 0;
+	transition: opacity 0.15s ease;
+	z-index: 20;
+	pointer-events: none;
+}
+
+.integration-cap-icon::after {
+	content: attr(data-tooltip);
+	position: absolute;
+	top: calc(100% + .625rem);
+	left: 50%;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	background: #222;
+	color: #fff;
+	font-size: 0.75rem;
+	font-weight: 500;
+	padding: 4px 8px;
+	border-radius: 4px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+	z-index: 20;
+}
+
+.integration-cap-icon:hover::before,
+.integration-cap-icon:focus-within::before,
+.integration-cap-icon:hover::after,
+.integration-cap-icon:focus-within::after {
+	opacity: 1;
+}
+
+/* ── No-results message ──────────────────────────────────────────────────── */
+
+.integration-list__no-results {
+	text-align: center;
+	color: #888;
+	padding: var(--wp--preset--spacing--medium, 2rem);
+	grid-column: 1 / -1;
+}
+
+/* ── Truncated block style (is-style-truncated) ──────────────────────────── */
+/* Hides sidebar + cards after row 4. Apply via block Style Variations in the editor. */
+
+.integration-list.is-style-truncated .integration-list__sidebar {
+	display: none;
+}
+
+.integration-list.is-style-truncated {
+	grid-template-columns: 1fr;
+}
+
+.integration-list.is-style-truncated .integration-list__grid .integration-card:nth-child(n + 13) {
+	display: none;
+}
+
+/* Placeholder styles: see .momentive-block-placeholder in momentive.scss */

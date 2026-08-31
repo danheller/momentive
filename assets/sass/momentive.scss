@@ -300,11 +300,10 @@ textarea {
 .center { text-align: center; }
 .background-center { background-position: center center; }
 .balance { text-wrap: balance; }
-
+.shadow, figure.shadow {
+	box-shadow: var(--shadow);
+}
 figure {
-	&.shadow {
-		box-shadow: var(--shadow);
-	}
 	&.stretch {
 		img {
 			width: 100%;
@@ -417,7 +416,7 @@ figure {
 // NOTE: .round also sets overflow: hidden, which clips box-shadows on
 // child elements. If a child needs a visible shadow, use border-radius
 // directly on that element instead of extending .round.
-.round {
+.round, .is-style-round {
 	@include round;
 }
 
@@ -445,6 +444,15 @@ figure {
 		width: 1.75rem;
 		height: 1.75rem;
 	}
+}
+
+.shape-square {
+	aspect-ratio: 1 / 1;
+}
+
+.fit-content {
+	width: fit-content;
+	height: fit-content;
 }
 
 /*==============================================================
@@ -492,6 +500,18 @@ figure {
 				background: var(--button-outline-background);
 			}
 		}
+	}
+	&.is-style-light {
+		a, button {
+			border: 1px solid var(--menu-border-color);
+			background: var(--light-color);
+			transition: box-shadow .3s ease;
+			color: var(--text-color);
+			&:hover {
+				box-shadow: inset 0 0 0 .1rem var(--text-color);
+			}
+		}
+		
 	}
 	&.is-style-superlight {
 		a {
@@ -630,6 +650,10 @@ figure {
 	}
 }
 
+.wp-block-group.is-style-outline {
+	@include rounder;
+	border: 1px solid var(--menu-border-color);
+}
 
 /*==============================================================
   3.3 - Navigation
@@ -1075,7 +1099,9 @@ figure {
 				color: var(--secondary-color); 
 			}
 		}
-	
+	}
+	&.secondary a {
+		color: var(--secondary-color);	
 	}
 }
 
@@ -1345,7 +1371,7 @@ ul.is-style-column-checks {
 }
 
 ul.is-style-simple-checks {
-	gap: 1rem;
+	row-gap: 1rem;
 	li {
 		@include has-after;
 		padding-left: 2rem;
@@ -1365,13 +1391,13 @@ ul.is-style-simple-checks {
 
 
 ul.is-style-circle-checks {
-	gap: 1rem;
+	row-gap: 1rem;
 	li {
 		@include has-after;
 		padding-left: 2rem;
 		
 		&:before {
-			top: .3rem;
+			top: .25rem;
 			left: .475rem;
 			width: .3125rem;
 			height: .6rem;
@@ -1480,6 +1506,11 @@ ul.is-style-circle-checks {
 		figure {
 			box-shadow: none;
 		}
+	}
+	&.square-image {
+		figure {
+			border-radius: 0;
+		}	
 	}
 	&.is-style-stacked {
 		@include rounder;
@@ -1749,6 +1780,15 @@ ul.is-style-circle-checks {
 			background: none;
 			box-shadow: none;
 		}
+		&.center {
+			justify-content: center;
+		}
+		&.min-height {
+			min-height: 12rem;
+		}
+		&.middle {
+			align-items: center;
+		}
 		&:hover {
 			.read-more {
 				a {
@@ -1768,7 +1808,6 @@ ul.is-style-circle-checks {
 			}
 		}
 	}
-	
 	.wp-block-heading {
 		margin: 0;
 		font-size: var(--wp--preset--font-size--x-large);
@@ -1781,6 +1820,21 @@ ul.is-style-circle-checks {
 				position: absolute;
 				inset: 0;
 			}
+		}
+	}
+	&.separator {
+		.wp-block-column {
+			border: none;
+			padding: 0 1.25rem;
+			&:has(.wp-block-heading a) {
+				&:hover {
+					box-shadow: none;				
+				}
+			}
+		}
+		.wp-block-heading {
+			padding-bottom: 1rem;
+			border-bottom: .125rem solid var(--menu-border-color);
 		}
 	}
 	figure {
@@ -1932,10 +1986,10 @@ ul.is-style-circle-checks {
 		margin: 0 auto;
 		padding: .5rem 1rem;
 		@media #{$large-up} {
-			padding: .75rem 1rem;
+			padding: 0 1rem;
 		}
 		@media #{$largish-up} {
-			padding: .75rem 0;
+			padding: 0 0;
 		}
 		@media #{$xlarge-up} {
 			padding: 0;
@@ -2258,7 +2312,7 @@ main.site-content {
 	margin-bottom: 3rem;
 	padding-top: .375rem;
 	text-align: left;
-	border-bottom: 1px solid #0000001A;
+	border-bottom: 1px solid var(--menu-border-color);
 	@media #{$largish-below} {
 		padding: 0 2rem;
 	}
@@ -2307,8 +2361,8 @@ main.site-content {
 		text-indent: 0;
 		width: .425em;
 		height: .425em;
-		border-bottom: .075rem solid var(--dark-color);
-		border-right: .075rem solid var(--dark-color);
+		border-bottom: .075rem solid var(--light-color);
+		border-right: .075rem solid var(--light-color);
 		transform: rotate(-45deg);
 		left: .5em;
 		top: .6em;
@@ -3666,28 +3720,36 @@ body.single-solutions, body.single-product {
 	margin: var(--wp--preset--spacing--small) 0;
 
 	&.with-button {
-		grid-template-columns: 7fr 3fr;
-		grid-template-areas: "Blurb Button";
 		.wp-block-buttons {
-			grid-area: Button;
+			margin-top: var(--wp--preset--spacing--x-small);
 		}
-		.wp-block-paragraph {
-			margin-top: auto;
-			grid-area: Blurb;
-		}
-		&.with-heading {
-			grid-template-areas: "Headline Button"
-			"Blurb Button";
-			.wp-block-paragraph.heading {
-				grid-area: Headline;
-				margin-top: auto;
+		@media #{$large-up} {
+			grid-template-columns: 7fr 3fr;
+			grid-template-areas: "Blurb Button";
+			.wp-block-buttons {
+				grid-area: Button;
+				margin-top: 0;
 			}
-			.wp-block-paragraph.blurb {
+			.wp-block-paragraph {
+				margin-top: auto;
+				padding-bottom: 0;
 				grid-area: Blurb;
+			}
+			&.with-heading {
+				grid-template-areas:
+					"Headline Button"
+					"Blurb Button";
+				.wp-block-paragraph.heading {
+					grid-area: Headline;
+					margin-top: auto;
+				}
+				.wp-block-paragraph.blurb {
+					grid-area: Blurb;
+				}
 			}
 		}
 	}
-	
+
 	&.with-heading {
 		.wp-block-paragraph.blurb {
 			padding-top: .5rem;
@@ -3698,15 +3760,18 @@ body.single-solutions, body.single-product {
 		margin: 0;
 		max-width: 100%;
 	}
+
 	.wp-block-paragraph.heading {
 		flex-basis: 100%;
 		font-size: var(--wp--preset--font-size--medium);
 		font-weight: 600;
 	}
+
 	&.with-icon {
 		grid-template-columns: 3rem 1fr;
-		grid-template-areas: "Icon Headline"
-		"Blurb Blurb";
+		grid-template-areas:
+			"Icon Headline"
+			"Blurb Blurb";
 		row-gap: .5rem;
 		column-gap: .25rem;
 		.wp-block-paragraph.heading {
@@ -3714,34 +3779,36 @@ body.single-solutions, body.single-product {
 			align-self: center;
 		}
 		.svg-icon {
-			grid-area: Icon;		
+			grid-area: Icon;
 		}
 		.wp-block-paragraph.blurb {
 			grid-area: Blurb;
 		}
-		.svg-icon, .svg-icon svg {
+		.svg-icon,
+		.svg-icon svg {
 			height: 3rem;
 			width: 3rem;
 		}
 		&.hanging-indent {
 			grid-template-columns: 2.5rem 1fr 2.5rem;
-			grid-template-areas: "Icon Headline Blank"
-			"Empty Blurb Blank";
-			.svg-icon, .svg-icon svg {
+			grid-template-areas:
+				"Icon Headline Blank"
+				"Empty Blurb Blank";
+			.svg-icon,
+			.svg-icon svg {
 				height: 1.75rem;
 				width: 1.75rem;
 			}
 		}
 	}
+
 	&.with-image {
-		grid-template-columns: 3fr 2fr;
-		grid-template-areas: "Blurb Image"
-			"Button Image";
-		gap: 0 1.875rem;
-		.wp-block-buttons {
-			padding-top: .5rem;
-			margin-bottom: auto;
-		}
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"Image"
+			"Blurb"
+			"Button";
+
 		figure.wp-block-image {
 			border-radius: 1rem !important;
 			margin: 0;
@@ -3749,18 +3816,46 @@ body.single-solutions, body.single-product {
 				margin-left: 0 !important;
 			}
 		}
-		&.with-heading {
-			grid-template-areas: "Headline Image"
-				"Blurb Image"
-				"Button Image";
-		}
+
 		.wp-block-image {
 			grid-area: Image;
-			height: 100%;
-			aspect-ratio: 12 / 7;
+			aspect-ratio: 16 / 7;
 			img {
 				height: 100%;
-				object-fit: contain; //cover;
+				object-fit: contain;
+			}
+		}
+
+		.wp-block-buttons {
+			padding-top: .5rem;
+			margin-bottom: auto;
+		}
+
+		&.with-heading {
+			grid-template-areas:
+				"Image"
+				"Headline"
+				"Blurb"
+				"Button";
+		}
+
+		@media #{$large-up} {
+			grid-template-columns: 3fr 2fr;
+			grid-template-areas:
+				"Blurb Image"
+				"Button Image";
+			gap: 0 1.875rem;
+
+			.wp-block-image {
+				height: 100%;
+				aspect-ratio: 12 / 7;
+			}
+
+			&.with-heading {
+				grid-template-areas:
+					"Headline Image"
+					"Blurb Image"
+					"Button Image";
 			}
 		}
 	}
@@ -3809,4 +3904,78 @@ body.single-solutions, body.single-product {
 		}
 	}
 
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scroll-reveal utility
+// Add .animate-on-scroll to any block via Additional CSS class.
+// Add .animate-on-scroll--stagger to a wrapper whose direct children should
+// each animate in with a cascading delay.
+// JS (site-utils.js) adds .is-visible via IntersectionObserver.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.animate-on-scroll {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.45s ease, transform 0.45s ease;
+	transition-delay: var(--reveal-delay, 0ms);
+
+	&.is-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+// Stagger: apply to the wrapper; direct children become the observed elements
+// and receive an incremental --reveal-delay so they cascade in.
+.animate-on-scroll--stagger > * {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.45s ease, transform 0.45s ease;
+	transition-delay: var(--reveal-delay, 0ms);
+
+	&.is-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared editor placeholder — custom blocks
+// Used by: integration-list, donation-examples, stat-columns, linked-products,
+//          previous-studies, solution-resources, hubspot-form
+// ─────────────────────────────────────────────────────────────────────────────
+
+.momentive-block-placeholder {
+	padding: var(--wp--preset--spacing--small, 1.5rem);
+	border: 1.5px dashed var(--accent-color) !important;
+	border-radius: 1rem;
+	color: var(--wp--preset--color--contrast, #555);
+	text-align: center;
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.4;
+
+	strong {
+		display: block;
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+	}
+
+	p {
+		margin: 0;
+		font-size: var(--wp--preset--font-size--regular);
+		color: var(--wp--preset--color--primary-text, #666);
+	}
 }

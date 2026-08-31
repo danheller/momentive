@@ -89,8 +89,12 @@ function momentive_recording_is_available( $post_id ) {
 		return false;
 	}
 
-	// Webinars gate availability on the computed on-demand status.
-	if ( 'webinar' === get_post_type( $post_id ) && function_exists( 'momentive_webinar_status' ) ) {
+	// Webinars and product overviews gate availability on the computed on-demand
+	// status — both have a live-session date that must pass before the recording
+	// is accessible. momentive_webinar_status() reads webinar_date + webinar_type,
+	// which product overviews also carry (Product Overview Settings field group).
+	$date_gated_types = array( 'webinar', 'product-overview' );
+	if ( in_array( get_post_type( $post_id ), $date_gated_types, true ) && function_exists( 'momentive_webinar_status' ) ) {
 		return 'on-demand' === momentive_webinar_status( $post_id );
 	}
 

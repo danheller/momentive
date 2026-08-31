@@ -1,0 +1,17 @@
+@use '../config' as *;
+
+.success-message {
+	border-radius: 1.5rem;
+	border: 1px solid var(--menu-border-color);
+	background: var(--superlight-accent-color);
+	.svg-icon {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		svg {
+			width: 6rem;
+			height: auto;
+		}
+	}
+}

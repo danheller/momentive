@@ -1,0 +1,25 @@
+{
+    "apiVersion": 3,
+    "name": "momentive/reviews",
+    "title": "Reviews",
+    "description": "Filterable reviews list with solution family checkboxes, search, and load more.",
+    "category": "momentive",
+    "icon": "star-filled",
+    "keywords": ["reviews", "testimonials", "ratings", "G2", "Capterra"],
+    "supports": {
+        "anchor": true,
+        "html": false,
+        "align": ["wide", "full"]
+    },
+    "attributes": {
+        "perPage": {
+            "type": "number",
+            "default": 7
+        },
+        "insertAfter": {
+            "type": "number",
+            "default": 3
+        }
+    },
+    "editorScript": "file:./editor.js"
+}

@@ -1,0 +1,72 @@
+{
+    "key": "group_6b1f2a3c4e001",
+    "title": "Video Settings",
+    "fields": [
+        {
+            "key": "field_6b1f2a3c4e002",
+            "label": "Hero Image",
+            "name": "hero_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Optional hero image override for the singular video page. If empty, the featured image is used in both the archive card and the hero.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_6b1f2a3c4e003",
+            "label": "Video Embed Code",
+            "name": "video_embed_code",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Wistia embed code for this video. Store here so it can be surfaced on a thank-you page or revealed by JS after HubSpot form submission.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "rows": 4,
+            "placeholder": "Paste Wistia embed code here",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "new_lines": "br"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "video"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1755648000
+}

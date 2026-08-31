@@ -1,0 +1,274 @@
+// Reviews block — filterable review list.
+// Compiled as part of the directory-wide sass build.
+@use 'config' as *;
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
+
+.reviews-block {
+	display: grid;
+	grid-template-columns: 280px 1fr;
+	gap: var(--wp--preset--spacing--small);
+	align-items: start;
+
+	@media #{$medium-below} {
+		grid-template-columns: 1fr;
+	}
+}
+
+
+// ── Sidebar ────────────────────────────────────────────────────────────────────
+
+.reviews-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--x-small);
+	position: sticky;
+	top: 8rem;
+
+	@media #{$medium-below} {
+		position: static;
+	}
+}
+
+// Search box
+.reviews-search {
+	position: relative;
+
+	svg {
+		position: absolute;
+		inset-inline-start: 14px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 18px;
+		height: 18px;
+		fill: #999;
+		pointer-events: none;
+	}
+
+	input[type='search'] {
+		width: 100%;
+		padding: 10px 14px 10px 42px;
+		border: 1px solid var(--menu-border-color);
+		@include rounder;
+		background: #fff;
+		font-size: 0.9375rem;
+		outline: none;
+		appearance: none;
+		box-sizing: border-box;
+		font-family: inherit;
+		color: inherit;
+
+		&::placeholder { color: #aaa; }
+
+		&:focus {
+			border-color: var(--wp--preset--color--accent);
+			box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--accent) 15%, transparent);
+		}
+	}
+}
+
+// Checkbox filter list
+.reviews-filters {
+	@include round;
+	background: #fff;
+	border: 1px solid var(--menu-border-color);
+	padding: 12px 8px;
+	display: flex;
+	flex-direction: column;
+}
+
+.reviews-filter-option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 7px 10px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 0.9375rem;
+	transition: background 0.15s;
+
+	&:hover {
+		background: var(--wp--preset--color--superlight-accent);
+	}
+
+	input[type='checkbox'] {
+		width: 16px;
+		height: 16px;
+		accent-color: var(--wp--preset--color--accent);
+		flex-shrink: 0;
+		cursor: pointer;
+		margin: 0;
+	}
+}
+
+
+// ── Main area ──────────────────────────────────────────────────────────────────
+
+.reviews-main {
+	@include round;
+	background: #fff;
+	border: 1px solid var(--menu-border-color);
+	padding: var(--wp--preset--spacing--small);
+}
+
+.reviews-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	transition: opacity 0.2s;
+
+	&[aria-busy='true'] {
+		opacity: 0.45;
+		pointer-events: none;
+	}
+}
+
+
+// ── Review card ────────────────────────────────────────────────────────────────
+
+.review-card {
+	padding: var(--wp--preset--spacing--small) 0;
+	border-bottom: 1px solid #ebebeb;
+
+	&:first-child { padding-top: 0; }
+
+	// Last real card before load more — no border if it's the last child
+	// (the insert may be the last item; let CSS handle both cases).
+	&:last-child { border-bottom: none; }
+}
+
+// Header: name + meta row
+.review-card-header {
+	margin-bottom: 10px;
+}
+
+.review-author {
+	display: block;
+	font-weight: 700;
+	font-size: 1rem;
+	margin-bottom: 4px;
+	color: var(--dark-color, #000);
+}
+
+.review-meta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+	font-size: 0.875rem;
+	color: #555;
+}
+
+// Five gold stars
+.review-stars {
+	display: flex;
+	gap: 1px;
+
+	svg {
+		width: 16px;
+		height: 16px;
+		fill: #F5A623;
+	}
+}
+
+.review-sep { color: #bbb; }
+
+// Source name link (G2, Capterra, etc.)
+a.review-source-link,
+span.review-source {
+	color: var(--wp--preset--color--accent);
+	text-decoration: none;
+	font-weight: 500;
+
+	&:hover { text-decoration: underline; }
+}
+
+.review-time { color: #888; }
+
+// Solution family pill tag
+.review-family-tag {
+	display: inline-block;
+	margin-bottom: 10px;
+	padding: 3px 12px;
+	border-radius: 20px;
+	font-size: 0.8125rem;
+	// Light tint from the solution's accent color; falls back to light-accent.
+	background: color-mix(in srgb, var(--term-color, var(--wp--preset--color--light-accent)) 14%, #fff);
+	color: #333;
+}
+
+// Review headline in quotes
+.review-headline {
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--medium);
+	margin: 0 0 8px;
+	color: var(--dark-color, #000);
+	line-height: 1.4;
+}
+
+// Excerpt text
+.review-excerpt {
+	color: #444;
+	font-size: 0.9375rem;
+	margin: 0 0 12px;
+	line-height: 1.65;
+}
+
+// "Read Full Review >" link
+a.review-read-more {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--button-background, #f26522);
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 600;
+	transition: opacity 0.15s;
+
+	svg {
+		width: 14px;
+		height: 14px;
+		fill: currentColor;
+		flex-shrink: 0;
+	}
+
+	&:hover { opacity: 0.8; }
+}
+
+
+// ── InnerBlocks CTA insert ─────────────────────────────────────────────────────
+
+.reviews-list-insert {
+	list-style: none;
+	padding: var(--wp--preset--spacing--small) 0;
+	border-bottom: 1px solid #ebebeb;
+	@media #{$medium-up} {
+		.wp-block-media-text {
+			grid-template-columns: 1fr 1fr;
+			gap: 1rem;
+			figure {
+				width: 100%;
+			}
+		}
+	}
+}
+
+
+// ── Load more ──────────────────────────────────────────────────────────────────
+
+.reviews-load-more-wrap {
+	text-align: center;
+	margin-top: var(--wp--preset--spacing--medium);
+}
+
+// .reviews-load-more inherits pill styles from .wp-element-button via class.
+
+
+// ── Editor preview ─────────────────────────────────────────────────────────────
+
+.reviews-editor-preview {
+	border: 1.5px solid #dde1e7;
+	border-radius: 8px;
+	padding: 16px;
+	background: #fafbfc;
+}

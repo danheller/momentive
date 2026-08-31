@@ -1,0 +1,34 @@
+@use '../config' as *;
+
+/*--------------------------------------------------------------
+ * Request a Demo styles
+--------------------------------------------------------------*/
+
+.wp-block-momentive-icon-list {
+	font-size: var(--wp--preset--font-size--medium);
+	.icon-list__item {
+		gap: .875rem;
+	}
+	.icon-list__icon {
+		width: 1.75rem;
+		height: 1.75rem;
+		svg {
+			width: 1.75rem;
+			height: 1.75rem;
+		}
+	}
+	&.pills {
+		margin: 0;
+		ul {
+			gap: .5rem;
+			li {
+				padding: 1rem 1.75rem;
+				border-radius: 6rem;
+				background: color-mix(in oklab, var(--secondary-color) 8%, white);
+				font-weight: 600;
+				width: fit-content;
+			}
+		}	
+	}
+
+}

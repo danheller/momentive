@@ -3,26 +3,6 @@
     "title": "Solution Resources Block Settings",
     "fields": [
         {
-            "key": "field_6a7c1e304a002",
-            "label": "Heading",
-            "name": "heading",
-            "aria-label": "",
-            "type": "text",
-            "instructions": "Heading shown above the grid. Defaults to \"Resources\".",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "maxlength": "",
-            "placeholder": "Resources",
-            "prepend": "",
-            "append": ""
-        },
-        {
             "key": "field_6a7c1e324a003",
             "label": "Number to Show",
             "name": "count",
@@ -43,6 +23,52 @@
             "step": 1,
             "prepend": "",
             "append": ""
+        },
+        {
+            "key": "field_6a7c1e354a005",
+            "label": "Show as Slider",
+            "name": "as_slider",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Show resources in a paginated slider instead of a static grid.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6a7c1e334a004",
+            "label": "Category Filter",
+            "name": "filter_category",
+            "aria-label": "",
+            "type": "taxonomy",
+            "instructions": "Optional. When set, resources are filtered by this category term instead of the automatic solution-based query. Use this when placing the block on a non-Solution page (e.g. a Product Overview).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "category",
+            "add_term": 0,
+            "save_terms": 0,
+            "load_terms": 0,
+            "return_format": "id",
+            "field_type": "select",
+            "allow_null": 1,
+            "multiple": 0,
+            "bidirectional": 0,
+            "bidirectional_target": []
         }
     ],
     "location": [
@@ -66,5 +92,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1784275200
+    "modified": 1787270400
 }

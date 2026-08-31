@@ -30,6 +30,10 @@
 	align-items: stretch;
 	gap: 0;
 	position: relative;
+	// Default to light text so existing blocks on dark backgrounds stay white.
+	// When an editor sets a text color via the sidebar, WP adds has-text-color
+	// plus an inline color style on this element, which overrides this default.
+	color: var(--light-color);
 
 	// Thick colored left border
 	&__border {
@@ -51,7 +55,7 @@
 		font-size: var(--wp--preset--font-size--display-large);
 		font-weight: 600;
 		line-height: 1.1;
-		color: var(--light-color);
+		color: inherit; // inherits from block wrapper, which WP controls via has-text-color
 		letter-spacing: -0.02em;
 	}
 
@@ -69,4 +73,24 @@
 		line-height: 1.4;
 		max-width: 20rem;
 	}
+
 }
+
+.span-all {
+	grid-column: 1 / -1;
+}
+
+.no-border.impact-stat, .wp-block-columns .wp-block-column .no-border.impact-stat {
+	.impact-stat__border {
+		display: none;
+	}
+}
+
+.regular.impact-stat, .wp-block-columns .wp-block-column .regular.impact-stat {
+	p.impact-stat__label {
+		font-size: var(--wp--preset--font-size--regular);
+		font-weight: normal;
+	}
+}
+
+

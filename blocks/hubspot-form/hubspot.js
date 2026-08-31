@@ -125,7 +125,90 @@
 	}
 
 	// -------------------------------------------------------------------------
-	// Per-block initialisation
+	// Shared helpers (used by both modal modes)
+	// -------------------------------------------------------------------------
+
+	function visibleInputs( container ) {
+		return Array.from(
+			container.querySelectorAll( 'input:not([type="hidden"]), textarea, select' )
+		).filter( el => el.offsetParent !== null );
+	}
+
+	function focusFirstInput( container ) {
+		const first = visibleInputs( container )[ 0 ];
+		if ( first ) first.focus();
+	}
+
+	// -------------------------------------------------------------------------
+	// Button-modal mode: single button → opens full form in modal, no email step
+	// -------------------------------------------------------------------------
+
+	function initButtonModal( block ) {
+		const portalId  = block.dataset.portalId;
+		const formId    = block.dataset.formId;
+		if ( ! portalId || ! formId ) return;
+
+		const btn       = block.querySelector( '.hubspot-form__modal-btn' );
+		const modal     = block.querySelector( '.hubspot-form__modal' );
+		const modalBody = block.querySelector( '.hubspot-form__modal-body' );
+		const closeBtn  = block.querySelector( '.hubspot-form__modal-close' );
+		if ( ! btn || ! modal || ! modalBody ) return;
+
+		document.body.appendChild( modal );
+
+		let formRendered = false;
+
+		function renderForm() {
+			if ( formRendered ) return;
+			formRendered = true;
+			loadHubSpotScript().then( () => {
+				window.hbspt.forms.create( {
+					region:   'na1',
+					portalId: portalId,
+					formId:   formId,
+					target:   '#' + modal.id + ' .hubspot-form__modal-body',
+					onFormReady: function () {
+						setUtmContentFromTitle();
+						populateUtmFields();
+					},
+					onFormSubmit: function () {
+						gtagEvent( 'form_submitted', {
+							event_category: 'HubSpot Form',
+							event_label:    formId,
+						} );
+					},
+				} );
+			} ).catch( ( err ) => {
+				console.warn( '[momentive/hubspot-form] Failed to load HubSpot script:', err );
+			} );
+		}
+
+		function openModal() {
+			renderForm();
+			modal.removeAttribute( 'hidden' );
+			modal.classList.add( 'is-open' );
+			document.body.classList.add( 'hubspot-modal-open' );
+			// Give the form a moment to render before stealing focus.
+			setTimeout( () => focusFirstInput( modalBody ), 300 );
+		}
+
+		function closeModal() {
+			modal.setAttribute( 'hidden', '' );
+			modal.classList.remove( 'is-open' );
+			document.body.classList.remove( 'hubspot-modal-open' );
+			btn.focus();
+		}
+
+		btn.addEventListener( 'click', openModal );
+		closeBtn && closeBtn.addEventListener( 'click', closeModal );
+		modal.addEventListener( 'click', ( e ) => { if ( e.target === modal ) closeModal(); } );
+		document.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'Escape' && modal.classList.contains( 'is-open' ) ) closeModal();
+		} );
+	}
+
+	// -------------------------------------------------------------------------
+	// Per-block initialisation (two-step mode)
 	// -------------------------------------------------------------------------
 
 	function initBlock( block ) {
@@ -252,17 +335,6 @@
 			attempt( 15 ); // polls up to ~1.5 s; preload gives a head start
 		}
 
-		function visibleInputs( container ) {
-			return Array.from(
-				container.querySelectorAll( 'input:not([type="hidden"]), textarea, select' )
-			).filter( el => el.offsetParent !== null );
-		}
-
-		function focusFirstInput( container ) {
-			const first = visibleInputs( container )[ 0 ];
-			if ( first ) first.focus();
-		}
-
 		// -- Close modal ----------------------------------------------------
 
 		function closeModal() {
@@ -297,9 +369,10 @@
 	}
 
 	// -------------------------------------------------------------------------
-	// Boot — initialize every two-step block on the page
+	// Boot — initialize all modal-mode blocks on the page
 	// -------------------------------------------------------------------------
 
+	document.querySelectorAll( '[data-button-modal="true"]' ).forEach( initButtonModal );
 	document.querySelectorAll( '[data-two-step="true"]' ).forEach( initBlock );
 
 } )();

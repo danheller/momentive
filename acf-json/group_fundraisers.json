@@ -1,0 +1,61 @@
+{
+    "key": "group_donation_examples",
+    "title": "Fundraiser Settings",
+    "fields": [
+        {
+            "key": "field_donation_org_name",
+            "label": "Organization Name",
+            "name": "organization_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "The name of the nonprofit organization running this campaign (e.g. “ICU Baby”, “Meals on Wheels New Mexico”).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_donation_campaign_link",
+            "label": "Campaign Link",
+            "name": "campaign_link",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "The external GiveSmart URL this card links to.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https://fundraise.givesmart.com/…"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "fundraiser"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Core fields for a Donation Example post: the nonprofit’s name and the GiveSmart campaign URL.",
+    "show_in_rest": 0
+}

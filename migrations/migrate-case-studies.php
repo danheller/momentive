@@ -860,24 +860,48 @@ function momentive_cs_find_testimonial( string $quote, array $index ): int {
 /**
  * Create a new testimonial CPT post from legacy author fields.
  * Returns the new post ID (0 on dry-run).
+ *
+ * $legacy['category_term_ids'] (optional, int[]): the Solution-scoped category
+ * term(s) already resolved for the HOST post (the case study this testimonial
+ * is quoted on). Applied to the new testimonial via the native `category`
+ * taxonomy — the same mechanism the (currently missing, see
+ * notes/reference-sheets/testimonial-merge-plan.md) `testimonial_solution` ACF
+ * field writes to. Added 2026-08-19: testimonials created by this
+ * create-and-reference step previously got no category at all, which Daniel
+ * flagged as a likely major contributor to the low (98/275) category coverage
+ * found while troubleshooting the missing Solution-tint field. A testimonial
+ * quoted on a case study almost always belongs to that case study's own
+ * Solution family, so inheriting it here is a reasonable default — it can
+ * always be corrected by hand later if a specific quote genuinely spans more
+ * than one family.
  */
 function momentive_cs_create_testimonial( array $legacy, bool $dry_run ): int {
-	$quote = (string) $legacy['quote'];
-	$name  = momentive_cs_shorten_name( (string) $legacy['name'] );
-	$desc  = (string) $legacy['desc'];
+	$quote      = (string) $legacy['quote'];
+	$name       = momentive_cs_shorten_name( (string) $legacy['name'] );
+	$desc       = (string) $legacy['desc'];
+	$cat_ids    = array_map( 'intval', (array) ( $legacy['category_term_ids'] ?? array() ) );
 
 	if ( $dry_run ) {
 		WP_CLI::log( sprintf(
-			'    [dry-run] would CREATE testimonial: name=%s | desc=%s | quote=%.40s…',
-			'' !== $name ? $name : '(empty)', $desc, $quote
+			'    [dry-run] would CREATE testimonial: name=%s | desc=%s | category_ids=%s | quote=%.40s…',
+			'' !== $name ? $name : '(empty)', $desc, $cat_ids ? implode( ',', $cat_ids ) : '(none)', $quote
 		) );
 		return 0;
 	}
 
 	$post_id = wp_insert_post( array(
-		'post_type'   => MOMENTIVE_TESTIMONIAL_TYPE,
-		'post_status' => 'publish',
-		'post_title'  => '' !== $name ? $name : wp_trim_words( wp_strip_all_tags( $quote ), 8, '…' ),
+		'post_type'    => MOMENTIVE_TESTIMONIAL_TYPE,
+		'post_status'  => 'publish',
+		'post_title'   => '' !== $name ? $name : wp_trim_words( wp_strip_all_tags( $quote ), 8, '…' ),
+		// The block renderer (blocks/testimonial/block.php) reads the quote from
+		// post_content directly — it never reads a `testimonial_content` field/meta.
+		// Setting it here at insert time (not via update_field() afterward) is
+		// required, or the testimonial renders a blank <blockquote> on the front
+		// end. See migrations/patch-testimonials-content-backfill.php for the
+		// 2026-08-19 fix + backfill for posts created before this line existed —
+		// that almost certainly includes every testimonial this function has ever
+		// created, since this bug predates the fix.
+		'post_content' => wp_kses_post( $quote ),
 	), true );
 
 	if ( is_wp_error( $post_id ) ) {
@@ -885,9 +909,11 @@ function momentive_cs_create_testimonial( array $legacy, bool $dry_run ): int {
 		return 0;
 	}
 
-	update_field( 'testimonial_content', $quote, $post_id );
 	update_field( 'testimonial_author_name', $name, $post_id );
 	update_field( 'testimonial_author_description', $desc, $post_id );
+	if ( ! empty( $cat_ids ) ) {
+		wp_set_object_terms( $post_id, $cat_ids, 'category', false );
+	}
 	update_post_meta( $post_id, MOMENTIVE_RUN_META, momentive_cs_run_id() );
 
 	return (int) $post_id;
@@ -1223,10 +1249,24 @@ function momentive_cs_run( array $argv = array() ): void {
 				$summary['testimonial_ref']++;
 				WP_CLI::log( "    testimonial: matched existing #{$tid}" );
 			} else {
+				// Inherit the host case study's own Solution-scoped category so a
+				// newly-created testimonial isn't left with none at all (added
+				// 2026-08-19 — see momentive_cs_create_testimonial()'s docblock).
+				// Reuses $legacy['cats'] (raw WXR category slugs), already resolved
+				// against rebuilt terms the same way a few lines below for the
+				// case study post itself — same source, same lookup, just earlier.
+				$testimonial_cat_ids = array();
+				foreach ( (array) ( $legacy['cats'] ?? array() ) as $cslug ) {
+					$cterm = get_term_by( 'slug', $cslug, 'category' );
+					if ( $cterm ) {
+						$testimonial_cat_ids[] = (int) $cterm->term_id;
+					}
+				}
 				$new_id = momentive_cs_create_testimonial( array(
-					'quote' => $quote,
-					'name'  => (string) ( $m['case_study_author_name'] ?? '' ),
-					'desc'  => (string) ( $m['case_study_author_description'] ?? '' ),
+					'quote'             => $quote,
+					'name'              => (string) ( $m['case_study_author_name'] ?? '' ),
+					'desc'              => (string) ( $m['case_study_author_description'] ?? '' ),
+					'category_term_ids' => $testimonial_cat_ids,
 				), $dry );
 				$summary['testimonial_new']++;
 				if ( $new_id > 0 ) {

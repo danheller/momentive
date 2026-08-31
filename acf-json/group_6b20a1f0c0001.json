@@ -1,0 +1,47 @@
+{
+    "key": "group_6b20a1f0c0001",
+    "title": "Integration Settings",
+    "fields": [
+        {
+            "key": "field_6b20a1f0c0004",
+            "label": "Products",
+            "name": "linked_products",
+            "type": "post_object",
+            "instructions": "Which product(s) feature this integration?",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "product"
+            ],
+            "taxonomy": [],
+            "allow_null": 1,
+            "multiple": 1,
+            "return_format": "object",
+            "ui": 1
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "integration"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1787265926
+}

@@ -26,13 +26,13 @@
  */
 $bar = apply_filters( 'momentive_announcement_bar_args', array(
 	// Main announcement text (plain text or simple inline HTML – no block tags).
-	'text'         => 'Explore AI Resources for Mission-Driven Organizations.',
+	'text'         => 'AI That Does the Work. Your Team Approves It.',
 
 	// URL the "Learn More" link points to.
-	'link_url'     => 'ai-resource-hub/',
+	'link_url'     => 'momentiveiq/',
 
 	// Label for the CTA link.
-	'link_label'   => 'Learn More',
+	'link_label'   => 'See How It Works',
 
 	// Cookie name.  Change if you ever need to force the bar to reappear.
 	'cookie_name'  => 'momentive_announcement_dismissed',

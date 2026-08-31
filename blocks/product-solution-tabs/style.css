@@ -14,7 +14,7 @@
 	.tabs-row {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-around;
+		justify-content: center;
 		gap: 0.75rem;
 		margin-bottom: 2rem;
 	}

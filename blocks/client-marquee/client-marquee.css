@@ -1,0 +1,212 @@
+/*
+ * momentive/client-marquee — front-end styles
+ *
+ * Marquee mode: pure CSS animation via @keyframes — no Splide, no JS dependency.
+ * The logo list is output twice in PHP; animating translateX(-50%) moves exactly
+ * one full set width, creating a seamless loop.
+ *
+ * Grid mode: static CSS grid, unchanged from before.
+ *
+ * Scoped under .wp-block-momentive-client-marquee to avoid collisions with
+ * legacy .trust / .logos patterns.
+ */
+
+/* ── Animation keyframe ──────────────────────────────────────────────────── */
+
+@keyframes client-marquee-scroll {
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
+}
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+
+.wp-block-momentive-client-marquee {
+	overflow: hidden;
+}
+
+.wp-block-momentive-client-marquee .client-marquee__heading {
+	text-align:    center;
+	margin-bottom: var(--wp--preset--spacing--small);
+}
+
+/* ── Shared figure styles (marquee + grid) ──────────────────────────────── */
+
+.wp-block-momentive-client-marquee figure {
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	margin:          0;
+	padding:         0;
+}
+
+.wp-block-momentive-client-marquee figure img {
+	display:    block;
+	width:      auto;
+	height:     auto;
+	max-width:  100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.wp-block-momentive-client-marquee figure a {
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	width:           100%;
+	height:          100%;
+}
+
+/* ── Marquee mode ────────────────────────────────────────────────────────── */
+
+.wp-block-momentive-client-marquee .client-marquee__viewport {
+	overflow: hidden;
+
+	/* Fade logos in from the left edge, out to the right */
+	-webkit-mask-image: linear-gradient(
+		to right,
+		transparent  0%,
+		black       12%,
+		black       88%,
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		to right,
+		transparent  0%,
+		black        8%,
+		black       92%,
+		transparent 100%
+	);
+}
+
+.wp-block-momentive-client-marquee .client-marquee__track {
+	display:   flex;
+	width:     max-content; /* expand to fit both sets side-by-side */
+	animation: client-marquee-scroll var(--marquee-duration, 60s) linear infinite;
+}
+
+/* No edge fade */
+.wp-block-momentive-client-marquee.no-mask .client-marquee__viewport {
+	-webkit-mask-image: none;
+	mask-image: none;
+}
+
+/* Second row scrolls right */
+.wp-block-momentive-client-marquee .client-marquee__track--reverse {
+	animation-direction: reverse;
+}
+
+/* Pause on hover / focus for accessibility */
+.wp-block-momentive-client-marquee .client-marquee__viewport:hover .client-marquee__track,
+.wp-block-momentive-client-marquee .client-marquee__viewport:focus-within .client-marquee__track {
+	animation-play-state: paused;
+}
+
+.wp-block-momentive-client-marquee .client-marquee__set {
+	display:    flex;
+	flex-shrink: 0;
+	margin-bottom: 4rem;
+}
+
+/* Each logo figure inside the marquee */
+.wp-block-momentive-client-marquee .client-marquee__set figure {
+	width:   12rem;
+	height:  2.75rem;
+	padding: 0 1.5rem; /* horizontal gap between logos */
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-momentive-client-marquee .client-marquee__track {
+		animation: none;
+	}
+}
+
+/* ── Faded logos (opt-in via fadedLogos attribute → .has-faded-logos) ───── */
+
+/*
+ * Matches the legacy site's soft grey treatment: black mono logos rendered at
+ * ~40% opacity against white, giving a mid-grey rather than full-black result.
+ * Applied to img directly (not the figure) so the name tooltip overlay, if
+ * also enabled, still renders at full opacity.
+ */
+
+.wp-block-momentive-client-marquee.has-faded-logos figure img {
+	opacity: 0.6;
+	transition: opacity 0.2s ease;
+}
+
+.wp-block-momentive-client-marquee.has-faded-logos figure:hover img {
+	opacity: 0.8;
+}
+
+/* ── Name tooltip (opt-in via showName attribute → .has-name-tooltip) ───── */
+
+/*
+ * When enabled, hovering a logo shows the organisation name as a subtle
+ * overlay covering the figure area. Pure CSS — no JS required.
+ * Only the real (non-aria-hidden) set gets data-name, so the duplicate set
+ * never triggers the tooltip.
+ */
+
+.wp-block-momentive-client-marquee.has-name-tooltip figure {
+	position: relative;
+}
+
+.wp-block-momentive-client-marquee.has-name-tooltip figure[data-name]::after {
+	content:          attr(data-name);
+	position:         absolute;
+	inset:            0;
+	display:          grid;
+	place-items:      center;
+	background:       rgba(255, 255, 255, 0.93);
+	color:            #222;
+	font-size:        0.8rem;
+	font-weight:      500;
+	text-wrap:        balance;
+	line-height:      1.2;
+	letter-spacing:   0.03em;
+	text-align:       center;
+	padding:          .25em .75em;
+	opacity:          0;
+	transition:       opacity 0.18s ease;
+	pointer-events:   none;
+	border-radius:    3px;
+}
+
+.wp-block-momentive-client-marquee.has-name-tooltip figure[data-name]:hover::after {
+	opacity: 1;
+}
+
+/* ── Grid mode ───────────────────────────────────────────────────────────── */
+
+.wp-block-momentive-client-marquee .client-logos.grid {
+	display:               grid;
+	grid-template-columns: repeat( auto-fit, minmax( 9rem, 1fr ) );
+	gap:                   4rem;
+	align-items:           center;
+}
+
+.wp-block-momentive-client-marquee .client-logos.grid figure {
+	width:      100%;
+	max-height: 2.75rem;
+}
+
+.wp-block-momentive-client-marquee .client-logos.grid.medium {
+	gap: 2rem;
+}
+
+.wp-block-momentive-client-marquee .client-logos.grid.small {
+	grid-template-columns: repeat( auto-fit, minmax( 7rem, 1fr ) );
+	gap: 1rem;
+}
+
+/* ── Editor placeholder ──────────────────────────────────────────────────── */
+
+.wp-block-momentive-client-marquee .is-placeholder {
+	padding:       2rem;
+	text-align:    center;
+	border:        1px dashed var( --wp--preset--color--secondary, #ccc );
+	color:         var( --wp--preset--color--secondary, #999 );
+	border-radius: 4px;
+}

@@ -327,7 +327,7 @@ add_action( 'enqueue_block_editor_assets', function() {
 add_filter( 'render_block', function( $block_content, $block ) {
 
 	if ( $block['blockName'] !== 'core/post-featured-image' ) return $block_content;
-	if ( ! is_singular( [ 'post', 'press-article', 'webinar', 'whitepaper', 'infographic', 'guide' ] ) ) return $block_content;
+	if ( ! is_singular( [ 'post', 'press-article', 'webinar', 'whitepaper', 'infographic', 'guide', 'product-overview' ] ) ) return $block_content;
 
 	$hero_image = get_field( 'hero_image' );
 	if ( ! $hero_image ) return $block_content;

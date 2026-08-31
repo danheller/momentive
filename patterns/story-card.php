@@ -44,6 +44,12 @@ $title         = get_the_title();
         // WP_Query loop, never the main query.
         get_template_part( 'blocks/webinar-status/webinar-status' );
         ?>
+    <?php elseif ( 'event' === $post_type ) : ?>
+        <?php
+        // Events: "Virtual Event" or "In-Person Event" based on the event_type
+        // ACF field. Defaults to "Virtual Event" when the field is unset.
+        ?>
+        <p class="top-label wp-block-paragraph"><?php echo esc_html( momentive_event_type_label( get_the_ID() ) ); ?></p>
     <?php elseif ( 'press-article' === $post_type ) : ?>
         <?php
         // Press articles: first category name, unlinked.

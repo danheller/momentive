@@ -1,0 +1,362 @@
+{
+    "key": "group_6b2f4a1c0001",
+    "title": "Product Overview Settings",
+    "fields": [
+        {
+            "key": "field_6b2f4a1c000d",
+            "label": "Schedule",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b2f4a1c0002",
+            "label": "Linked Product",
+            "name": "linked_product",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "The product this overview is for. Sets the public URL to \/products\/{product slug}\/overview\/. Required — each product can have at most one overview.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "product"
+            ],
+            "taxonomy": [],
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": "",
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_6b2f4a1c0004",
+            "label": "Overview Type",
+            "name": "webinar_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Upcoming = the live session is in the future; On-demand = it has passed. Switches which HubSpot form is shown automatically based on the date, but you can override here if needed.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "upcoming": "Upcoming",
+                "on-demand": "On-demand"
+            },
+            "default_value": "upcoming",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "ui": 0,
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_6b2f4a1c0005",
+            "label": "Date",
+            "name": "webinar_date",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "The date of the live overview session. Used to auto-switch from the upcoming form to the on-demand form once the date passes.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "m\/d\/Y",
+            "return_format": "Ymd",
+            "first_day": 1,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_6b2f4a1c0006",
+            "label": "Start Time",
+            "name": "webinar_time_start",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "g:i a",
+            "return_format": "H:i:s"
+        },
+        {
+            "key": "field_6b2f4a1c0007",
+            "label": "End Time",
+            "name": "webinar_time_end",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "g:i a",
+            "return_format": "H:i:s"
+        },
+        {
+            "key": "field_6b2f4a1c0008",
+            "label": "Timezone",
+            "name": "webinar_timezone",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "ET",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6b2f4a1c000e",
+            "label": "Registration Form",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b2f4a1c0009",
+            "label": "HubSpot Form — Upcoming",
+            "name": "form_upcoming",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "HubSpot embed code for the pre-event registration form (\"Save your seat\"). Shown while the date is in the future. Use the acf\/hubspot-form block without a block-level embed override to get auto-switching.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "rows": 4,
+            "placeholder": "Paste HubSpot embed code here",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "new_lines": ""
+        },
+        {
+            "key": "field_6b2f4a1c000a",
+            "label": "HubSpot Form — On-demand",
+            "name": "form_ondemand",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "HubSpot embed code for the post-event watch-now form (\"Watch the overview\"). Shown once the date has passed.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "rows": 4,
+            "placeholder": "Paste HubSpot embed code here",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "new_lines": ""
+        },
+        {
+            "key": "field_6b2f4a1c000f",
+            "label": "Recording",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b2f4a1c000b",
+            "label": "Recording Embed Code",
+            "name": "video_embed_code",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Wistia embed code for the recording. Once set, \/recordings\/{slug} becomes available to viewers who submitted the on-demand form.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "rows": 4,
+            "placeholder": "Paste Wistia embed code here",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "new_lines": "br"
+        },
+        {
+            "key": "field_6b2f4a1c000c",
+            "label": "Recording URL Override",
+            "name": "recording_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Optional. Overrides the auto-generated \/recordings\/{slug} URL with a custom destination (e.g. a direct Wistia link). Leave empty to use the standard recording page.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "allow_in_bindings": 0
+        },
+        {
+            "key": "field_6b2f4a1c0010",
+            "label": "Other",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b2f4a1c0011",
+            "label": "Presenters",
+            "name": "presenters",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "People who present or host this product overview. Rendered by the Webinar Presenters block.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "people"
+            ],
+            "post_status": "",
+            "taxonomy": [
+                "person_role:presenter"
+            ],
+            "return_format": "object",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_6b2f4a1c0003",
+            "label": "Hero Image",
+            "name": "hero_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Optional hero image override for the singular product overview page. If empty, the featured image is used in both the archive card and the hero.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "product-overview"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787620800
+}

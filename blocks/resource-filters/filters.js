@@ -97,15 +97,26 @@
 		// is actively selected by the user.
 		const defaultPostType = bar.dataset.defaultPostType || 'post';
 
+		// Custom taxonomies — read once from the data attribute set by PHP.
+		// Shape: [ { slug: 'organization_type', label: 'Organization Type' }, … ]
+		const customTaxonomies = ( () => {
+			try {
+				return JSON.parse( bar.dataset.customTaxonomies || '[]' );
+			} catch {
+				return [];
+			}
+		} )();
+
 		const state = {
-			categories:  [],
-			postTypes:   [],
-			search:      '',
-			orderby:     isAccordion ? 'menu_order' : 'date',
-			order:       isAccordion ? 'asc' : 'desc',
-			page:        1,
-			totalPages:  1,
-			loading:     false,
+			categories:      [],
+			postTypes:       [],
+			customTaxFilters: Object.fromEntries( customTaxonomies.map( t => [ t.slug, [] ] ) ),
+			search:          '',
+			orderby:         isAccordion ? 'menu_order' : 'date',
+			order:           isAccordion ? 'asc' : 'desc',
+			page:            1,
+			totalPages:      1,
+			loading:         false,
 		};
 
 		// Seed totalPages from the data attribute PHP already wrote on the accordion wrapper,
@@ -130,13 +141,14 @@
 			panel?.toggleAttribute( 'hidden', open );
 		} );
 
-		// Close the panel when clicking outside the filter bar.
+		// Close the panel and any open inline dropdowns when clicking outside the filter bar.
 		document.addEventListener( 'click', ( e ) => {
-			if ( toggle?.getAttribute( 'aria-expanded' ) !== 'true' ) return;
 			if ( bar.contains( e.target ) ) return;
-		
-			toggle.setAttribute( 'aria-expanded', 'false' );
-			panel?.toggleAttribute( 'hidden', true );
+			if ( toggle?.getAttribute( 'aria-expanded' ) === 'true' ) {
+				toggle.setAttribute( 'aria-expanded', 'false' );
+				panel?.toggleAttribute( 'hidden', true );
+			}
+			closeAllDropdowns();
 		} );
 
 		bar.querySelectorAll( '.filter-group-toggle' ).forEach( legend => {
@@ -144,6 +156,32 @@
 				const expanded = legend.getAttribute( 'aria-expanded' ) !== 'false';
 				legend.setAttribute( 'aria-expanded', String( ! expanded ) );
 				legend.nextElementSibling?.toggleAttribute( 'hidden', expanded );
+			} );
+		} );
+
+		// ── Inline taxonomy dropdowns ─────────────────────────────────────────
+		// Each custom taxonomy renders as its own dropdown in the filter bar top.
+		// Only one can be open at a time.
+
+		function closeAllDropdowns() {
+			bar.querySelectorAll( '.filter-dropdown-toggle[aria-expanded="true"]' ).forEach( btn => {
+				btn.setAttribute( 'aria-expanded', 'false' );
+				btn.closest( '.filter-dropdown' )
+					?.querySelector( '.filter-dropdown-panel' )
+					?.setAttribute( 'hidden', '' );
+			} );
+		}
+
+		bar.querySelectorAll( '.filter-dropdown-toggle' ).forEach( btn => {
+			btn.addEventListener( 'click', () => {
+				const isOpen = btn.getAttribute( 'aria-expanded' ) === 'true';
+				closeAllDropdowns();
+				if ( ! isOpen ) {
+					btn.setAttribute( 'aria-expanded', 'true' );
+					btn.closest( '.filter-dropdown' )
+						?.querySelector( '.filter-dropdown-panel' )
+						?.removeAttribute( 'hidden' );
+				}
 			} );
 		} );
 
@@ -169,6 +207,20 @@
 			} );
 		} );
 
+		// Wire custom taxonomy checkboxes (one listener per taxonomy slug).
+		customTaxonomies.forEach( tax => {
+			bar.querySelectorAll( `input[name="${ tax.slug }"]` ).forEach( input => {
+				input.addEventListener( 'change', () => {
+					state.customTaxFilters[ tax.slug ] = Array.from(
+						bar.querySelectorAll( `input[name="${ tax.slug }"]:checked` )
+					).map( el => el.value );
+					state.page = 1;
+					syncUI();
+					fetchPosts();
+				} );
+			} );
+		} );
+
 		const debouncedSearch = debounce( () => {
 			state.search = searchInput?.value.trim() ?? '';
 			state.page   = 1;
@@ -191,10 +243,11 @@
 				el.checked = false;
 			} );
 			if ( searchInput ) searchInput.value = '';
-			state.categories = [];
-			state.postTypes  = [];
-			state.search     = '';
-			state.page       = 1;
+			state.categories     = [];
+			state.postTypes      = [];
+			state.customTaxFilters = Object.fromEntries( customTaxonomies.map( t => [ t.slug, [] ] ) );
+			state.search         = '';
+			state.page           = 1;
 			syncUI();
 			fetchPosts();
 		} );
@@ -277,6 +330,11 @@
 					if ( state.categories.length ) {
 						params.set( 'categories', state.categories.join( ',' ) );
 					}
+					// Append any active custom taxonomy filters as native REST params.
+					// WP auto-generates ?{taxonomy_slug}= for show_in_rest taxonomies.
+					Object.entries( state.customTaxFilters ).forEach( ( [ slug, ids ] ) => {
+						if ( ids.length ) params.set( slug, ids.join( ',' ) );
+					} );
 					if ( state.search ) {
 						params.set( 'search', state.search );
 					}
@@ -301,7 +359,11 @@
 								.forEach( t => { t.setAttribute( 'data-init', '' ); wireAccordionTrigger( t ); } );
 						}
 					} else {
-						const html = posts.map( post => renderCard( post, activePostType ) ).join( '' );
+						const html = posts.map( post =>
+							activePostType === 'fundraiser'
+								? renderDonationExampleCard( post )
+								: renderCard( post, activePostType )
+						).join( '' );
 
 						if ( append ) {
 							grid.insertAdjacentHTML( 'beforeend', html );
@@ -405,6 +467,73 @@
 			</li>`;
 		}
 
+		// ── Donation Example card renderer ───────────────────────────────────
+		// Used when activePostType === 'donation-example'. Reads custom REST
+		// fields (organization_name, campaign_link) registered in donation-examples.php,
+		// plus wp:term groups for organization_type (badge) and fundraising_features (pills).
+
+		function renderDonationExampleCard( post ) {
+			const terms        = post._embedded?.[ 'wp:term' ] ?? [];
+			const orgTypes     = terms.find( g => g[0]?.taxonomy === 'organization_type' ) ?? [];
+			const features     = terms.find( g => g[0]?.taxonomy === 'fundraising_features' ) ?? [];
+			const media        = post._embedded?.[ 'wp:featuredmedia' ]?.[0];
+			const campaignLink = post.campaign_link || post.link;
+			const orgName      = post.organization_name || '';
+			const excerpt      = ( post.excerpt?.rendered ?? '' )
+				.replace( /<[^>]+>/g, '' )
+				.replace( /&hellip;/g, '…' )
+				.slice( 0, 140 );
+
+			const orgBadge = orgTypes[0]
+				? `<span class="fundraiser-card__org-badge">${ esc( orgTypes[0].name ) }</span>`
+				: '';
+
+			const featurePills = features.map(
+				f => `<span class="fundraiser-card__feature-pill">${ esc( f.name ) }</span>`
+			).join( '' );
+
+			const imageHtml = media
+				? `<figure class="fundraiser-card__image" style="aspect-ratio:16/9;position:relative;">
+						<a href="${ esc( campaignLink ) }" tabindex="-1" aria-hidden="true" target="_blank" rel="noopener noreferrer">
+							<img src="${ esc( media.source_url ) }"
+								 alt=""
+								 loading="lazy"
+								 style="width:100%;height:100%;object-fit:cover;display:block;">
+						</a>
+						${ orgBadge }
+					</figure>`
+				: '';
+
+			return `<li class="wp-block-post">
+				<div class="story-card fundraiser-card">
+
+					${ imageHtml }
+
+					${ featurePills
+						? `<div class="fundraiser-card__features">${ featurePills }</div>`
+						: ''
+					}
+
+					<div class="story-content">
+						<h3 class="wp-block-post-title">
+							<a href="${ esc( campaignLink ) }" target="_blank" rel="noopener noreferrer">
+								${ esc( post.title?.rendered ?? '' ) }
+							</a>
+						</h3>
+						${ orgName
+							? `<p class="fundraiser-card__org-name">${ esc( orgName ) }</p>`
+							: ''
+						}
+						${ excerpt
+							? `<div class="wp-block-post-excerpt"><p>${ esc( excerpt ) }…</p></div>`
+							: ''
+						}
+					</div>
+
+				</div>
+			</li>`;
+		}
+
 		// ── Multi-type card renderer ─────────────────────────────────────────
 		// Renders an item from the momentive/v1/resources REST route (a flat
 		// shape — see momentive_resource_to_rest_item() in inc/resources.php),
@@ -474,14 +603,26 @@
 		// ── UI sync ───────────────────────────────────────────────────────────
 
 		function syncUI() {
+			const customTaxActive = Object.values( state.customTaxFilters ).reduce( ( n, ids ) => n + ids.length, 0 );
 			const totalActive = state.categories.length + state.postTypes.length +
-								( state.search ? 1 : 0 );
+								customTaxActive + ( state.search ? 1 : 0 );
 			const hasActive   = totalActive > 0;
 
 			if ( countBadge ) {
 				countBadge.textContent = totalActive;
 				countBadge.hidden      = ! hasActive;
 			}
+
+			// Per-dropdown badges (one per inline custom taxonomy dropdown).
+			bar.querySelectorAll( '.filter-dropdown' ).forEach( dropdown => {
+				const taxSlug = dropdown.dataset.tax;
+				const count   = ( state.customTaxFilters[ taxSlug ] || [] ).length;
+				const badge   = dropdown.querySelector( '.filter-count' );
+				if ( badge ) {
+					badge.textContent = String( count );
+					badge.hidden      = count === 0;
+				}
+			} );
 
 			const label = toggle?.querySelector( '.filter-toggle-label' );
 			if ( label ) {
@@ -511,6 +652,16 @@
 					label: el.closest( 'label' )?.querySelector( '.filter-item-label' )?.textContent?.trim(),
 					value: el.value,
 					name:  'post_type',
+				} );
+			} );
+
+			customTaxonomies.forEach( tax => {
+				bar.querySelectorAll( `input[name="${ tax.slug }"]:checked` ).forEach( el => {
+					tags.push( {
+						label: el.closest( 'label' )?.querySelector( '.filter-item-label' )?.textContent?.trim(),
+						value: el.value,
+						name:  tax.slug,
+					} );
 				} );
 			} );
 

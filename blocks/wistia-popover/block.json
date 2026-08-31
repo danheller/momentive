@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/wistia-popover",
+	"title": "Wistia Popover Video",
+	"description": "A poster image that opens a Wistia video in a popover/lightbox when clicked.",
+	"category": "momentive",
+	"icon": "format-video",
+	"keywords": [ "wistia", "video", "popover", "lightbox", "facade", "poster" ],
+	"supports": {
+		"align": false,
+		"html": false,
+		"jsx": false
+	},
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "wistia-popover.php"
+	}
+}

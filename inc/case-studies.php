@@ -38,7 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_get_theme()->get( 'Version' )
 	);
 
-	if ( is_singular( 'case-study' ) || is_archive('case-study') ) {
+	if ( is_singular( 'case-study' ) || is_post_type_archive( 'case-study' ) ) {
 		wp_enqueue_style( 'momentive-case-study' );
 	}
 } );

@@ -68,6 +68,32 @@
             "preview_size": "medium"
         },
         {
+            "key": "field_c19a4f5e6b201",
+            "label": "Solution Family",
+            "name": "testimonial_solution",
+            "aria-label": "",
+            "type": "taxonomy",
+            "instructions": "Drives the pastel accent-color tint\/border on this testimonial",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "category",
+            "add_term": 0,
+            "save_terms": 1,
+            "load_terms": 1,
+            "return_format": "id",
+            "field_type": "select",
+            "allow_null": 0,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "multiple": 0,
+            "bidirectional_target": []
+        },
+        {
             "key": "field_6a23a1d7985e0",
             "label": "Related Case Study",
             "name": "related_case_study",
@@ -113,6 +139,90 @@
             "placeholder": "",
             "prepend": "",
             "append": ""
+        },
+        {
+            "key": "field_8fe702e2a34a2",
+            "label": "Review Source",
+            "name": "review_source",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Only relevant when testimonial type includes \"Review\"",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "Capterra": "Capterra",
+                "G2": "G2",
+                "TrustRadius": "TrustRadius",
+                "Software Advice": "Software Advice"
+            },
+            "default_value": false,
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_b5b41991ca3f5",
+            "label": "Review Source Link",
+            "name": "review_source_link",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_8fe702e2a34a2",
+                        "operator": "!=empty"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_d2c7e0a19f402",
+            "label": "Review Headline",
+            "name": "review_headline",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_8fe702e2a34a2",
+                        "operator": "!=empty"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -136,5 +246,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1785132989
+    "modified": 1787125587
 }

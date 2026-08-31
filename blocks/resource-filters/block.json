@@ -15,6 +15,7 @@
 		"showPostTypes":   { "type": "boolean", "default": false   },
 		"showSearch":      { "type": "boolean", "default": false   },
 		"showSort":        { "type": "boolean", "default": true    },
-		"postTypes":       { "type": "array",   "default": []      }
+		"postTypes":          { "type": "array",   "default": []      },
+		"customTaxonomies":   { "type": "array",   "default": []      }
 	}
 }

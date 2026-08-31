@@ -70,7 +70,7 @@ body.single {
 				@include has-after;
 				padding-left: 2.25rem;
 				&:before {
-					top: .325em;
+					top: .375em;
 					left: .675rem;
 					width: .3125rem;
 					height: .6rem;
@@ -97,7 +97,10 @@ body.single {
 		background: var(--superlight-accent-color);	
 		box-shadow: var(--wp--preset--shadow--card);
 		padding: 3rem 1.5rem;
-		figure.wp-block-post-featured-image {
+		.wistia-popover {
+			@include rounder;
+		}
+		figure.wp-block-post-featured-image, .wistia-popover {
 			margin: -3rem -1.5rem 1.5rem;
 			&.has-hero-image:not(.wider) {
 				margin: 0 0 3rem;

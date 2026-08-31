@@ -1,0 +1,42 @@
+@use 'config' as *;
+
+/*--------------------------------------------------------------
+ * Who We Serve styles
+--------------------------------------------------------------*/
+
+.is-style-boxed > .wp-block-column {
+
+	// Remove column-level padding so we control spacing per-child
+	padding: 1.25rem;
+
+	// Inner gray group fills all remaining vertical space
+	> .wp-block-group {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		h3, .impact-stat {
+			margin-top: 0;
+			width: 100%;
+		}
+		
+		.impact-stat {
+			margin-bottom: 3rem;
+			pointer-events: none;
+		}
+
+		// Learn more pushed to bottom
+		h3 {
+			// Stretch the link to cover the entire card
+			a {
+				position: static; // anchor stays in flow for text
+
+				&::before {
+					content: '';
+					position: absolute;
+					inset: 0;
+					border-radius: inherit;
+				}
+			}
+		}
+	}
+}

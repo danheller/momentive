@@ -1101,7 +1101,7 @@ table.wp-block-table td:last-child {
 	}
 
 	.is-root-container {
-		h1, h2, h3, h4, h5, h6 {
+		h1:not(.top-label), h2, h3, h4, h5, h6 {
 			line-height: 1.2;
 			@include has-before;
 			padding-top: 1.25rem;
@@ -1114,7 +1114,7 @@ table.wp-block-table td:last-child {
 			}
 		}
 	
-		h1 {
+		h1:not(.top-label) {
 	/*		font-size: 3rem;*/
 			max-width: var(--wp--style--global--content-size);	
 			&:before {
@@ -1225,10 +1225,13 @@ table.wp-block-table td:last-child {
 		display: grid;
 		grid-template-columns: repeat( 2, 1fr );
 		gap: 1rem;
+		li {
+			margin: 1rem 0;
+		}
 		.testimonial {
 			margin: 0;
 			padding: 1rem;
-			border: 1px solid #ccc;
+			border: 1.5px dashed var(--accent-color);
 			display: flex;
 			flex-direction: column;
 			gap: 1rem;
@@ -1694,6 +1697,11 @@ a.icon-link {
 	padding: .5rem;
 }
 
+.is-style-boxed {
+	.wp-block-heading, .wp-block-momentive-icon-block {
+		margin-left: 0 !important;
+	}
+}
 
 .megamenu-panel {
 	opacity: 1;
@@ -1702,4 +1710,11 @@ a.icon-link {
 
 .wp-block-post-content .prefooter { 
 	display: block;
+}
+
+.animate-on-scroll, .animate-on-scroll--stagger > * {
+	opacity: initial;
+	transform: initial;
+	transition: initial;
+	transition-delay: var(--reveal-delay, 0ms);
 }

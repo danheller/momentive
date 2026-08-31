@@ -176,6 +176,10 @@
 	 * -------------------------------------------------------------------------*/
 }
 
+.hubspot-form__modal-btn {
+	width: 100%;
+}
+
 /* Prevent body scroll while the modal is open.*/
 body.hubspot-modal-open {
 	overflow: hidden;

@@ -13,6 +13,25 @@
     var SelectControl     = wp.components.SelectControl;
     var __                = wp.i18n.__;
 
+    function parseCustomTaxes( text ) {
+        return ( text || '' )
+            .split( '\n' )
+            .map( function ( line ) {
+                var parts = line.split( '|' );
+                return {
+                    slug:  ( parts[0] || '' ).trim(),
+                    label: ( parts.slice(1).join('|') || '' ).trim(),
+                };
+            } )
+            .filter( function ( t ) { return t.slug && t.label; } );
+    }
+
+    function customTaxText( customTaxonomies ) {
+        return ( customTaxonomies || [] )
+            .map( function ( t ) { return t.slug + ' | ' + t.label; } )
+            .join( '\n' );
+    }
+
     function parsePostTypes( text ) {
         return ( text || '' )
             .split( '\n' )
@@ -66,12 +85,13 @@
         // Attributes are authoritative in block.json — listed here only
         // so the editor has defaults when block.json isn't loaded first.
         attributes: {
-            defaultPostType: { type: 'string',  default: 'post'  },
-            showCategories:  { type: 'boolean', default: true    },
-            showPostTypes:   { type: 'boolean', default: false   },
-            showSearch:      { type: 'boolean', default: false   },
-            showSort:        { type: 'boolean', default: true    },
-            postTypes:       { type: 'array',   default: []      },
+            defaultPostType:  { type: 'string',  default: 'post'  },
+            showCategories:   { type: 'boolean', default: true    },
+            showPostTypes:    { type: 'boolean', default: false   },
+            showSearch:       { type: 'boolean', default: false   },
+            showSort:         { type: 'boolean', default: true    },
+            postTypes:        { type: 'array',   default: []      },
+            customTaxonomies: { type: 'array',   default: []      },
         },
 
         edit: function ( props ) {
@@ -80,10 +100,15 @@
 
             // Local state for the textarea so it can update on each keystroke.
             // The parsed result is saved to block attributes on each change.
-            var initialText = postTypesText( attributes.postTypes );
-            var textState   = useState( initialText );
-            var rawText     = textState[0];
-            var setRawText  = textState[1];
+            var initialText    = postTypesText( attributes.postTypes );
+            var textState      = useState( initialText );
+            var rawText        = textState[0];
+            var setRawText     = textState[1];
+
+            var initialTaxText = customTaxText( attributes.customTaxonomies );
+            var taxTextState   = useState( initialTaxText );
+            var rawTaxText     = taxTextState[0];
+            var setRawTaxText  = taxTextState[1];
 
             var blockProps = useBlockProps( {
                 className: 'resource-filter-bar resource-filter-bar--editor',
@@ -170,6 +195,17 @@
                             checked: attributes.showSort,
                             onChange: function ( val ) {
                                 setAttributes( { showSort: val } );
+                            },
+                        } ),
+
+                        el( TextareaControl, {
+                            label: __( 'Inline taxonomy dropdowns (one per line: slug | Label)', 'momentive' ),
+                            help:  __( 'Each taxonomy gets its own visible dropdown in the filter bar. Example: organization_type | Organization Type', 'momentive' ),
+                            value: rawTaxText,
+                            rows:  4,
+                            onChange: function ( text ) {
+                                setRawTaxText( text );
+                                setAttributes( { customTaxonomies: parseCustomTaxes( text ) } );
                             },
                         } )
                     )

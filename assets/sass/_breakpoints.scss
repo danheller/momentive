@@ -14,6 +14,14 @@ $screen-largish:  73.875rem !default; /* 1182px */
 $screen-xlarge:   85.375em  !default;  /* 1366px */
 $screen-xxlarge: 120em  !default;  /* 1920px */
 
+// Container query breakpoints (px — more predictable than em here,
+// since em in a container query resolves against the *container's*
+// font-size, not the root)
+$container-xsmall-up:  "(min-width: 360px)";
+$container-small-up:   "(min-width: 480px)";
+$container-medium-up:  "(min-width: 600px)";
+$container-large-up:   "(min-width: 768px)";
+
 // NOTE: $increment is used to create range-based media queries
 // (e.g. "min-width: X and max-width: Y"). The intent is a 1px
 // step between the top of one range and the base of the next.

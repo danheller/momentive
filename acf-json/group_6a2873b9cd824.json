@@ -36,9 +36,17 @@
             "name": "two_step",
             "aria-label": "",
             "type": "true_false",
-            "instructions": "",
+            "instructions": "Shows an inline email field + button leading to the full form in a modal.",
             "required": 0,
-            "conditional_logic": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6a2873ba3bf88",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
             "wrapper": {
                 "width": "",
                 "class": "",
@@ -46,9 +54,68 @@
             },
             "message": "",
             "default_value": 0,
+            "allow_in_bindings": 1,
             "ui": 0,
             "ui_on_text": "",
             "ui_off_text": ""
+        },
+        {
+            "key": "field_6a2873ba3bf88",
+            "label": "Button Modal",
+            "name": "button_modal",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Shows a single button; clicking opens the full form in a modal",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6a35626f3a11b",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 1,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6a2873ba3bf89",
+            "label": "Button Text",
+            "name": "button_text",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Label for the modal-trigger button. Defaults to \"Watch this demo on-demand\" when left empty.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6a2873ba3bf88",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "Watch this demo on-demand",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -72,5 +139,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1784013634
+    "modified": 1787552630
 }

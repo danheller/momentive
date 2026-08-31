@@ -67,8 +67,70 @@
 		};
 	};
 
+	// Subtle parallax for the "Glow Lights" dark-mode hero background
+	// (assets/sass/solutions-dark.scss, .is-style-bg-glow-lights) — nudges
+	// each glow blob vertically by a fraction of scroll distance via the
+	// --glow-parallax custom property the SCSS already reads (defaults to
+	// 0px, so the glow is simply static if this never runs). Skipped
+	// entirely under prefers-reduced-motion.
+	Utils.initGlowParallax = function ( container ) {
+		const root = container ?? document;
+		const els = root.querySelectorAll( '.is-style-bg-glow-lights' );
+		if ( ! els.length ) return;
+		if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) return;
+
+		const SPEED = 0.15; // fraction of scroll distance the glow travels
+		let ticking = false;
+
+		function update() {
+			els.forEach( el => {
+				const offset = -el.getBoundingClientRect().top * SPEED;
+				el.style.setProperty( '--glow-parallax', `${ offset }px` );
+			} );
+			ticking = false;
+		}
+
+		window.addEventListener( 'scroll', () => {
+			if ( ticking ) return;
+			ticking = true;
+			requestAnimationFrame( update );
+		}, { passive: true } );
+
+		update(); // set initial position without waiting for the first scroll
+	};
+
+	// Scroll-reveal: observes .animate-on-scroll elements and direct children of
+	// .animate-on-scroll--stagger wrappers, adding .is-visible when they enter
+	// the viewport. Staggered children receive an incremental --reveal-delay so
+	// they cascade in. Each element is unobserved after its first reveal.
+	Utils.initScrollReveal = function () {
+		const STAGGER_MS = 80;
+		const observer = new IntersectionObserver( ( entries ) => {
+			entries.forEach( ( entry ) => {
+				if ( ! entry.isIntersecting ) return;
+				entry.target.classList.add( 'is-visible' );
+				observer.unobserve( entry.target );
+			} );
+		}, { threshold: 0.1 } );
+
+		// Plain .animate-on-scroll elements
+		document.querySelectorAll( '.animate-on-scroll' ).forEach( ( el ) => {
+			observer.observe( el );
+		} );
+
+		// Stagger wrappers: observe each direct child with a cascading delay
+		document.querySelectorAll( '.animate-on-scroll--stagger' ).forEach( ( wrapper ) => {
+			Array.from( wrapper.children ).forEach( ( child, i ) => {
+				child.style.setProperty( '--reveal-delay', `${ i * STAGGER_MS }ms` );
+				observer.observe( child );
+			} );
+		} );
+	};
+
 	document.addEventListener( 'DOMContentLoaded', () => {
 		Utils.initLowerLabels( document );
+		Utils.initGlowParallax( document );
+		Utils.initScrollReveal();
 	} );
 
 } )( window );

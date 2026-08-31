@@ -105,13 +105,28 @@
 
 			var previewContent = null;
 
+			var placeholderStyle = {
+				padding:      '0',
+				color:        'var(--wp--preset--color--contrast, #555)',
+				textAlign:    'center',
+				fontSize:     'var(--wp--preset--font-size--medium)',
+				lineHeight:   '1.4',
+				width:        '100%',
+			};
+
 			if ( ! attributes.testimonialId && ! inQueryLoop ) {
-				previewContent = el( 'p', { className: 'testimonial-placeholder', style: { opacity: 0.5 } },
-					__( 'Select a testimonial in the block settings.', 'momentive' )
+				previewContent = el( 'div', { style: placeholderStyle },
+					el( 'strong', null, __( 'Testimonial', 'momentive' ) ),
+					el( 'p', { style: { margin: '0.25rem 0 0', fontSize: '0.9375rem', color: '#666' } },
+						__( 'Select a testimonial in the block settings.', 'momentive' )
+					)
 				);
 			} else if ( ! attributes.testimonialId && inQueryLoop ) {
-				previewContent = el( 'p', { className: 'testimonial-placeholder', style: { opacity: 0.5 } },
-					__( 'Testimonial — rendered from query loop.', 'momentive' )
+				previewContent = el( 'div', { style: placeholderStyle },
+					el( 'strong', null, __( 'Testimonial', 'momentive' ) ),
+					el( 'p', { style: { margin: '0.25rem 0 0', fontSize: '0.9375rem', color: '#666' } },
+						__( 'Rendered from query loop context.', 'momentive' )
+					)
 				);
 			} else if ( loading ) {
 				previewContent = el( Spinner );

@@ -160,8 +160,15 @@
 	border: 1px solid var(--menu-border-color, #dbe1f3);
 	border-radius: 1rem;
 	position: absolute;
-	top: 3.25rem;
+	top: 6.25rem;
 	z-index: 1;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+@media screen and (min-width: 782px) {
+	.filter-panel {
+		top: 7rem;
+	}
 }
 
 .filter-panel[hidden] { display: none; }
@@ -208,12 +215,13 @@
 /* Checkboxes */
 .filter-item {
 	display: flex;
-	align-items: center;
+	align-items: top;
 	gap: 0.5rem;
 	padding: 0.25rem 0.375rem;
 	border-radius: 0.375rem;
 	cursor: pointer;
 	font-size: 0.9375rem;
+	line-height: 1.4;
 }
 
 .filter-item:hover {
@@ -227,7 +235,7 @@
 	flex-shrink: 0;
 	border: none;
 	padding: 0;
-	margin: 0;
+	margin: .125rem 0 0;;
 }
 
 /* Active tags */
@@ -259,6 +267,7 @@
 	color: var(--light-text-color, rgb(88, 88, 88));
 	width: 1rem;
 	height: 1rem;
+	font-size: 1rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -268,6 +277,62 @@
 .active-tag button:hover {
 	background: var(--light-accent-color, #c1e6f7);
 	color: var(--dark-color, #000);
+}
+
+/* Inline taxonomy dropdowns — each custom taxonomy gets its own dropdown in the top bar */
+.filter-dropdown {
+	position: relative;
+}
+
+.filter-dropdown-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 2rem 0.5rem 1rem;
+	line-height: 1.6;
+	background: var(--wp--preset--color--base, #fff) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 4L6 8L10.5 4' stroke='%23222' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: 1rem;
+	cursor: pointer;
+	white-space: nowrap;
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 400;
+}
+
+.filter-dropdown-toggle[aria-expanded="true"] {
+	border-color: var(--accent-color, rgb(0, 120, 255));
+	outline: 0.065rem solid var(--accent-color, rgb(0, 120, 255));
+}
+
+.filter-dropdown-panel {
+	position: absolute;
+	top: calc(100% + 0.375rem);
+	left: 0;
+	min-width: 14rem;
+	z-index: 9;
+	padding: 1rem;
+	background: var(--wp--preset--color--base, #fff);
+	border: 1px solid var(--menu-border-color, #dbe1f3);
+	border-radius: 1rem;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.filter-dropdown-panel[hidden] { display: none; }
+
+/* Push search/sort right when inline dropdowns are the leftmost controls */
+.filter-dropdown ~ .filter-search-wrapper {
+	margin-left: auto;
+}
+
+@media screen and (max-width: 782px) {
+	.filter-dropdown,
+	.filter-dropdown-toggle,
+	.filter-dropdown-panel {
+		width: 100%;
+	}
+	.filter-dropdown ~ .filter-search-wrapper {
+		margin-left: 0;
+	}
 }
 
 /* Loading state */

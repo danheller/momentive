@@ -1,0 +1,96 @@
+/**
+ * Wistia Popover Video block styles.
+ *
+ * The play button is drawn entirely in CSS (circle + triangle) so it looks
+ * consistent regardless of which poster image is used. Use the show_play_button
+ * field to disable it when the poster already has a baked-in button.
+ */
+
+.wistia-popover {
+	display: block;
+
+	/* The Wistia web component is inline-block by default; stretch it to fill. */
+	wistia-player {
+		display: block;
+		width: 100%;
+		cursor: pointer;
+	}
+
+	/* ── Poster image ─────────────────────────────────────────────────────── */
+
+	.wistia-popover__poster {
+		position: relative;
+		display: block;
+		margin: 0;
+		overflow: hidden;
+		border-radius: .75rem;
+		line-height: 0; /* collapse figure baseline gap */
+
+		img {
+			display: block;
+			width: 100%;
+			height: auto;
+			transition: transform .3s ease;
+		}
+
+		&:hover img {
+			transform: scale(1.02);
+		}
+	}
+
+	/* ── CSS play button overlay ──────────────────────────────────────────── */
+
+	.wistia-popover__play {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 72px;
+		height: 72px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, .88);
+		pointer-events: none;
+		transition: background .2s ease, transform .2s ease;
+
+		/* Triangle pointing right */
+		&::after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 53%; /* nudge slightly right — triangle's visual centre */
+			transform: translate(-50%, -50%);
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 11px 0 11px 20px;
+			border-color: transparent transparent transparent var(--button-background, #f26522);
+		}
+	}
+
+	/* Lift play button on hover for a subtle affordance */
+	.wistia-popover__poster:hover .wistia-popover__play {
+		background: rgba(255, 255, 255, 1);
+		transform: translate(-50%, -50%) scale(1.08);
+	}
+
+	/* ── No-poster text fallback ──────────────────────────────────────────── */
+
+	.wistia-popover__text-link {
+		display: inline-flex;
+		align-items: center;
+		gap: .5rem;
+		font-weight: 600;
+		color: var(--wp--preset--color--primary, var(--accent-color, #0078ff));
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	/* ── Editor placeholder ────────────────────────────────────────────────── */
+
+	&.is-empty {
+		border-radius: .5rem;
+	}
+}

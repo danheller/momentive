@@ -23,7 +23,7 @@
  */
 
 add_action( 'wp_enqueue_scripts', function (): void {
-	if ( ! is_page() ) return;
+	if ( ! is_singular() ) return;
 
 	$slug = get_post_field( 'post_name', get_queried_object_id() );
 	if ( ! $slug ) return;

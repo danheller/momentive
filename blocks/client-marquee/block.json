@@ -1,0 +1,29 @@
+{
+    "apiVersion": 3,
+    "name": "momentive/client-marquee",
+    "title": "Client Marquee",
+    "category": "momentive",
+    "description": "A scrolling marquee or static grid of client logos, queried dynamically from the Clients CPT.",
+    "keywords": [ "clients", "logos", "marquee", "trust" ],
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "align": [ "full", "wide" ],
+        "spacing": {
+            "margin":  [ "top", "bottom" ],
+            "padding": true
+        }
+    },
+    "attributes": {
+        "mode":             { "type": "string",  "default": "marquee" },
+        "logoVariant":      { "type": "string",  "default": "mono" },
+        "gridSize":         { "type": "string",  "default": "medium" },
+        "count":            { "type": "number",  "default": 20 },
+        "filterByCategory": { "type": "number",  "default": 0 },
+        "filterByTag":      { "type": "number",  "default": 0 },
+        "showName":         { "type": "boolean", "default": false },
+        "fadedLogos":       { "type": "boolean", "default": false },
+        "twoRow":           { "type": "boolean", "default": false },
+        "showMask":         { "type": "boolean", "default": true }
+    }
+}

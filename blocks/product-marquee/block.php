@@ -86,18 +86,25 @@ function momentive_render_product_marquee( array $attributes ): string {
 
 		// ── Preferred: logo image ───────────────────────────────────────────
 		if ( $logo && is_array( $logo ) && ! empty( $logo['url'] ) ) {
-			$alt = ! empty( $logo['alt'] ) ? $logo['alt'] : $title;
+			$alt    = ! empty( $logo['alt'] ) ? $logo['alt'] : $title;
+			$width  = ! empty( $logo['width'] )  ? (int) $logo['width']  : 0;
+			$height = ! empty( $logo['height'] ) ? (int) $logo['height'] : 0;
+
+			$size_attrs = ( $width && $height )
+				? sprintf( ' width="%d" height="%d"', $width, $height )
+				: '';
 
 			return sprintf(
 				'<li class="splide__slide product-card product-card--logo"%s>' .
 				'<a class="product-card__link" href="%s">' .
-				'<img class="product-card__logo" src="%s" alt="%s" loading="lazy" />' .
+				'<img class="product-card__logo" src="%s" alt="%s"%s loading="lazy" />' .
 				'</a>' .
 				'</li>',
 				$style_attr,
 				esc_url( $permalink ),
 				esc_url( $logo['url'] ),
-				esc_attr( $alt )
+				esc_attr( $alt ),
+				$size_attrs
 			);
 		}
 

@@ -200,6 +200,19 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 			options.interval   = 8000;
 		}
 
+		if ( which.classList.contains( 'resources-slider' ) ) {
+			options.arrows      = false;
+			options.pagination  = true;
+			options.perPage     = 3;
+			options.autoWidth   = false;
+			options.autoplay    = false;
+			options.gap         = '2rem';
+			options.breakpoints = {
+				1023: { perPage: 2 },
+				639:  { perPage: 1 },
+			};
+		}
+
 		if ( which.classList.contains( 'left-offset' ) ) {
 			const leftOffset = getContentLeftOffset();
 			options.trimSpace = false;
@@ -368,6 +381,22 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 		if ( track ) track.classList.add( 'splide__track', 'alignfull' );
 
 		const list = el.querySelector( '.wp-block-post-template' );
+		if ( list ) {
+			list.classList.add( 'splide__list' );
+			list.querySelectorAll( 'li' ).forEach( li => li.classList.add( 'splide__slide' ) );
+		}
+
+		setupslider( el, splidenumber++ );
+	} );
+
+	document.querySelectorAll( '.resources-slider' ).forEach( el => {
+		el.classList.add( 'splide', 'slider' );
+		el.id = 'splide-number-' + splidenumber;
+
+		const track = el.querySelector( '.solution-resources__track' );
+		if ( track ) track.classList.add( 'splide__track' );
+
+		const list = el.querySelector( '.solution-resources__grid' );
 		if ( list ) {
 			list.classList.add( 'splide__list' );
 			list.querySelectorAll( 'li' ).forEach( li => li.classList.add( 'splide__slide' ) );

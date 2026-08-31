@@ -184,11 +184,12 @@ function momentive_register_block_styles() {
 
 		'core/columns' => [
 			'columns-reverse' => __( 'Reverse',  'momentive' ),
-			'outline'         => __( 'Outline',  'momentive' ), // bordered card columns
+			'boxed'           => __( 'Boxed',    'momentive' ), // border all cards
+			'outline'         => __( 'Outline',  'momentive' ), // bordered wrapper
 		],
 
 		'core/column' => [
-			'outline'         => __( 'Outline',  'momentive' ), // bordered card columns
+			'outline'         => __( 'Outline',  'momentive' ), // bordered card
 		],
 
 		'core/group' => [
@@ -203,6 +204,13 @@ function momentive_register_block_styles() {
 			'ellipse-top'          => __( 'Ellipse Top',           'momentive' ),
 			'seafoam-wash'         => __( 'Seafoam Wash',          'momentive' ),
 			'motion-blur'          => __( 'Motion Blur',           'momentive' ),
+			// Two blurred glow blobs (top-left/top-right) — CSS replacement
+			// for the MIQ-Hero-Lights.webp background image on dark-mode
+			// Solution pages (MomentiveIQ family). Styled in
+			// solutions-dark.scss, scoped under body.solution-dark-mode —
+			// applying this class outside a dark-mode page currently does
+			// nothing, since no light-mode version of this treatment exists.
+			'bg-glow-lights'       => __( 'Glow Lights (dark mode)', 'momentive' ),
 		],
 
 		'core/list' => [
@@ -233,8 +241,12 @@ function momentive_register_block_styles() {
 		],
 
 		'core/heading' => [
-			'eyebrow'   => __( 'Eyebrow',         'momentive' ),
-			'has-swoop' => __( 'Swoop Underline', 'momentive' ),
+			'eyebrow'          => __( 'Eyebrow',         'momentive' ),
+			'has-swoop'        => __( 'Swoop Underline', 'momentive' ),
+			// Gradient text-clip headline — dark-mode Solution pages only so
+			// far. Styled in solutions-dark.scss, scoped under
+			// body.solution-dark-mode, same as bg-glow-lights above.
+			'gradient-heading' => __( 'Gradient Heading (dark mode)', 'momentive' ),
 		],
 
 		'core/image' => [
@@ -256,6 +268,12 @@ function momentive_register_block_styles() {
 		// used for the "Get Your Demo" CTA in the header navigation.
 		'core/navigation-link' => [
 			'button' => __( 'Button', 'momentive' ),
+		],
+
+		// Hides the sidebar and truncates the grid to ~4 rows (12 cards at 3-col).
+		// Used on the /solutions/integrations/ page where no filters are shown.
+		'momentive/integration-list' => [
+			'truncated' => __( 'Truncated (no filters)', 'momentive' ),
 		],
 
 	];
@@ -351,7 +369,12 @@ require get_template_directory() . '/blocks/person-metadata/block.php';
 require get_template_directory() . '/blocks/linked-products/block.php';
 require get_template_directory() . '/blocks/icon-list/block.php';
 require get_template_directory() . '/blocks/solution-resources/block.php';
+require get_template_directory() . '/blocks/fundraiser-list/block.php';
 require get_template_directory() . '/blocks/previous-studies/block.php';
+require get_template_directory() . '/blocks/wistia-popover/block.php';
+require get_template_directory() . '/blocks/reviews/block.php';
+require get_template_directory() . '/blocks/integration-list/block.php';
+require get_template_directory() . '/blocks/client-marquee/block.php';
 
 
 /*==============================================================================
@@ -370,8 +393,18 @@ require get_template_directory() . '/inc/webinars.php';
 require get_template_directory() . '/inc/recordings.php'; // not a post type, but a passthrough to what were formerly "assets"
 require get_template_directory() . '/inc/case-studies.php';
 require get_template_directory() . '/inc/whitepapers.php';
+require get_template_directory() . '/inc/videos.php';
 require get_template_directory() . '/inc/infographics.php';
+require get_template_directory() . '/inc/events.php';
+require get_template_directory() . '/inc/interactive-tools.php';
+require get_template_directory() . '/inc/toolkits.php';
 require get_template_directory() . '/inc/guides.php';
+require get_template_directory() . '/inc/integrations.php';
+require get_template_directory() . '/inc/fundraisers.php';
+require get_template_directory() . '/inc/product-overviews.php';
+require get_template_directory() . '/inc/award-recipients.php';
+require get_template_directory() . '/inc/who-we-serve.php';
+require get_template_directory() . '/inc/clients.php';
 require get_template_directory() . '/inc/resources.php'; // cross-CPT "Resources" query layer + REST endpoint
 require get_template_directory() . '/inc/resource-relevance.php'; // AI-assisted per-child-Solution relevance tagging
 
@@ -479,6 +512,7 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 add_action( 'wp_body_open', 'momentive_render_announcement_bar', 5 );
 
 function momentive_render_announcement_bar() {
+	if ( ! momentive_announcement_bar_is_enabled() ) return;
 	get_template_part( 'patterns/announcement-bar' );
 }
 
@@ -525,6 +559,7 @@ add_action( 'wp_enqueue_scripts', function () {
 ==============================================================================*/
 
 // "Edit Header" and "Edit Footer" hover buttons visible to logged-in editors.
+require get_template_directory() . '/inc/announcement-bar-settings.php';
 require get_template_directory() . '/inc/header-footer-edit-buttons.php';
 
 // Customize the dashboard sidebar menu order.
@@ -542,6 +577,9 @@ require get_template_directory() . '/inc/swoop-heading-cleanup.php';
 
 // Removes all comment-related UI, menus, and dashboard widgets.
 require get_template_directory() . '/inc/disable-comments.php';
+
+// Admin list table customizations (e.g. Last Modified column).
+require get_template_directory() . '/inc/admin-columns.php';
 
 
 

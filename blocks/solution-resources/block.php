@@ -53,11 +53,19 @@ if ( ! function_exists( 'momentive_register_solution_resources_block' ) ) {
  * @param int    $post_id    The post ID this block is rendering on.
  */
 
-$heading = get_field( 'heading' );
-$heading = ( null === $heading || false === $heading || '' === $heading ) ? 'Resources' : $heading;
-
 $count = (int) get_field( 'count' );
 $count = $count > 0 ? $count : 6;
+
+// Optional category override — when set, bypasses the solution-based query
+// and queries resources by this category term directly. Allows the block to
+// be used on non-Solution pages (e.g. Product Overview).
+$filter_category = (int) get_field( 'filter_category' );
+
+// Slider mode — wraps the grid in a Splide-compatible structure.
+$as_slider = (bool) get_field( 'as_slider' );
+if ( $as_slider && ! is_admin() ) {
+	wp_enqueue_script( 'sliders' );
+}
 
 // IMPORTANT: use the $post_id ACF passes into the renderTemplate, NOT
 // get_the_ID() — inside an FSE template, blocks render outside the main
@@ -71,28 +79,57 @@ if ( ! $host_id ) {
 	$host_id = get_the_ID() ?: 0;
 }
 
-if ( ! $host_id || 'solutions' !== get_post_type( $host_id ) ) {
+$host_type = $host_id ? get_post_type( $host_id ) : '';
+
+// Guard: require either a filter_category override OR a solution host.
+// When filter_category is set the block works on any post type.
+if ( ! $filter_category && 'solutions' !== $host_type ) {
 	if ( ! empty( $is_preview ) ) {
-		echo '<div class="solution-resources is-placeholder"><p>This block only renders on a Solution page.</p></div>';
+		echo '<div class="momentive-block-placeholder"><strong>Solution Resources</strong><p>Set a Category Filter above, or place this block on a Solution page.</p></div>';
 	}
 	return;
 }
 
-$query = momentive_query_resources_for_solution( $host_id, [ 'posts_per_page' => $count ] );
+if ( $filter_category ) {
+	// Direct category query — works on any host post type.
+	$query = new WP_Query( [
+		'post_type'        => momentive_get_resource_post_types(),
+		'post_status'      => 'publish',
+		'posts_per_page'   => $count,
+		'no_found_rows'    => true,
+		'suppress_filters' => false,
+		'tax_query'        => [
+			[
+				'taxonomy'         => 'category',
+				'field'            => 'term_id',
+				'terms'            => $filter_category,
+				'include_children' => true,
+			],
+		],
+	] );
+} else {
+	// Solution-based two-tier query (AI relevance + category fallback).
+	$query = momentive_query_resources_for_solution( $host_id, [ 'posts_per_page' => $count ] );
+}
 
 if ( ! $query->have_posts() ) {
 	if ( ! empty( $is_preview ) ) {
-		echo '<div class="solution-resources is-placeholder"><p>No resources are currently tagged with this Solution\'s category yet.</p></div>';
+		$msg = $filter_category
+			? 'No published resources found in the selected category.'
+			: "No resources are currently tagged with this Solution's category yet.";
+		echo '<div class="momentive-block-placeholder"><strong>Solution Resources</strong><p>' . esc_html( $msg ) . '</p></div>';
 	}
 	return; // Front end: render nothing rather than an empty heading + grid.
 }
 
-$anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) . '"' : '';
+$anchor     = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) . '"' : '';
+$extra_class = $as_slider ? ' resources-slider' : '';
+$wrapper_attributes = get_block_wrapper_attributes();
 ?>
-<div class="solution-resources"<?php echo $anchor; ?>>
+<div class="solution-resources<?php echo esc_attr( $extra_class ); ?>" <?php echo $wrapper_attributes; echo $anchor; ?>>
 
-	<?php if ( $heading ) : ?>
-	<h2 class="solution-resources__heading"><?php echo esc_html( $heading ); ?></h2>
+	<?php if ( $as_slider ) : ?>
+	<div class="solution-resources__track">
 	<?php endif; ?>
 
 	<ul class="solution-resources__grid" role="list">
@@ -117,4 +154,9 @@ $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) .
 		wp_reset_postdata();
 		?>
 	</ul>
+
+	<?php if ( $as_slider ) : ?>
+	</div><!-- .solution-resources__track -->
+	<?php endif; ?>
+
 </div>

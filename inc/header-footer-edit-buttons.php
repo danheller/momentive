@@ -1,7 +1,24 @@
 <?php
 /**
  * Front-end "Edit Header / Footer" hover buttons for logged-in users.
+ * Also adds a "← Dashboard" link to the admin-bar site-name submenu when
+ * inside the admin (FSE editor, block editor), where the sidebar is absent.
  */
+
+add_action( 'admin_bar_menu', function ( WP_Admin_Bar $bar ): void {
+	// Only needed when already inside the admin — on the front end WordPress
+	// already adds a "Dashboard" child to the site-name node automatically.
+	if ( ! is_admin() ) return;
+	if ( ! current_user_can( 'read' ) ) return;
+
+	$bar->add_node( [
+		'id'     => 'momentive-dashboard',
+		'parent' => 'site-name',
+		'title'  => __( 'Dashboard', 'momentive' ),
+		'href'   => admin_url(),
+		'meta'   => [ 'title' => __( 'Go to Dashboard', 'momentive' ) ],
+	] );
+}, 999 );
 add_action( 'wp_footer', 'momentive_fse_edit_buttons' );
 
 function momentive_fse_edit_buttons() {

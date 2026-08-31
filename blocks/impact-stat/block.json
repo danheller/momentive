@@ -41,6 +41,11 @@
   "supports": {
     "html": false,
     "align": false,
+    "color": {
+      "text": true,
+      "background": false,
+      "gradients": false
+    },
     "spacing": {
       "margin": true,
       "padding": true

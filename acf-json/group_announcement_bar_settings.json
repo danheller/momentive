@@ -1,0 +1,151 @@
+{
+    "key": "group_announcement_bar_settings",
+    "title": "Announcement Bar",
+    "fields": [
+        {
+            "key": "field_announcement_bar_enabled",
+            "label": "Show Announcement Bar",
+            "name": "announcement_bar_enabled",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Toggle the announcement bar on or off site-wide.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui_on_text": "Visible",
+            "ui_off_text": "Hidden",
+            "ui": 1
+        },
+        {
+            "key": "field_announcement_bar_text",
+            "label": "Announcement Text",
+            "name": "announcement_bar_text",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Plain text or simple inline HTML (strong, em, span only). No block-level tags.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "AI That Does the Work. Your Team Approves It.",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_announcement_bar_link_url",
+            "label": "Link URL",
+            "name": "announcement_bar_link_url",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "The URL the CTA link points to.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "70",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_announcement_bar_link_label",
+            "label": "Link Label",
+            "name": "announcement_bar_link_label",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "The CTA link text.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "30",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "See How It Works",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_announcement_bar_cookie_days",
+            "label": "Cookie Lifetime (days)",
+            "name": "announcement_bar_cookie_days",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "How many days before a dismissed visitor sees the bar again.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "30",
+                "class": "",
+                "id": ""
+            },
+            "default_value": 30,
+            "min": 1,
+            "max": 365,
+            "placeholder": 30,
+            "prepend": "",
+            "append": "days",
+            "step": ""
+        },
+        {
+            "key": "field_announcement_bar_cookie_name",
+            "label": "Cookie Name",
+            "name": "announcement_bar_cookie_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Change this value to force the bar to reappear for visitors who previously dismissed it. Use only letters, numbers, underscores, and hyphens.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "70",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "momentive_announcement_dismissed",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "momentive-announcement-bar"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Controls the announcement bar displayed above the site header.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787239408
+}

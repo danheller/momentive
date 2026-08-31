@@ -15,6 +15,10 @@ if ( ! $embed_code ) {
 	$embed_code = $post_id ? (string) momentive_resolve_webinar_form( $post_id ) : '';
 }
 
+// Strip any <br> tags that ACF's textarea new_lines setting may have injected
+// into the embed code — they break the JavaScript.
+$embed_code = $embed_code ? preg_replace( '/<br\s*\/?>/', "\n", $embed_code ) : $embed_code;
+
 // Auto-inject the HubSpot loader script when the embed code contains only
 // the hbspt.forms.create() call and the library <script> tag was omitted
 // (a common copy-paste gap in HubSpot's own UI).
@@ -24,7 +28,12 @@ if ( $embed_code
 	$embed_code = '<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>' . "\n" . $embed_code;
 }
 
-$two_step   = get_field( 'two_step' );
+$two_step     = get_field( 'two_step' );
+$button_modal = get_field( 'button_modal' );
+$button_text  = trim( (string) get_field( 'button_text' ) );
+if ( ! $button_text ) {
+	$button_text = __( 'Watch this demo on-demand', 'momentive' );
+}
 
 // Extract the HubSpot portal/form IDs from the embed code so JS can call
 // hbspt.forms.create() directly rather than re-parsing the script tag.
@@ -39,9 +48,10 @@ if ( $embed_code ) {
 }
 
 $wrapper_attrs = get_block_wrapper_attributes( [
-	'data-two-step'  => $two_step ? 'true' : 'false',
-	'data-portal-id' => esc_attr( $portal_id ),
-	'data-form-id'   => esc_attr( $form_id ),
+	'data-two-step'    => $two_step ? 'true' : 'false',
+	'data-button-modal' => $button_modal ? 'true' : 'false',
+	'data-portal-id'   => esc_attr( $portal_id ),
+	'data-form-id'     => esc_attr( $form_id ),
 ] );
 
 ?>
@@ -49,9 +59,42 @@ $wrapper_attrs = get_block_wrapper_attributes( [
 
 	<?php if ( $is_preview ) : ?>
 
-		<div style="padding: 1rem; border: 1px dashed #ccc; text-align: center; color: #666;">
-			<strong>HubSpot Form</strong><?php if ( $two_step ) : ?> &mdash; Two-step mode<?php endif; ?><br>
-			<?= $embed_code ? 'Embed code set.' : 'No embed code — edit block to add.'; ?>
+		<div class="momentive-block-placeholder">
+			<strong>HubSpot Form<?php
+				if ( $button_modal ) : ?> — Button Modal<?php
+				elseif ( $two_step ) : ?> — Two-step<?php
+				endif;
+			?></strong>
+			<p><?php echo $embed_code ? 'Embed code set.' : 'No embed code — edit block to add.'; ?></p>
+		</div>
+
+	<?php elseif ( $button_modal && $portal_id && $form_id ) : ?>
+
+		<?php $uid = 'hs-modal-' . uniqid(); ?>
+
+		<!-- Button-only modal trigger -->
+		<button
+			class="hubspot-form__modal-btn wp-block-button__link"
+			type="button"
+		>
+			<?php echo esc_html( $button_text ); ?>
+		</button>
+
+		<!-- Modal containing the full HubSpot form -->
+		<div
+			id="<?php echo esc_attr( $uid ); ?>"
+			class="hubspot-form__modal"
+			role="dialog"
+			aria-modal="true"
+			aria-label="<?php echo esc_attr( $button_text ); ?>"
+			hidden
+		>
+			<div class="hubspot-form__modal-panel">
+				<button class="hubspot-form__modal-close" type="button" aria-label="<?php esc_attr_e( 'Close', 'momentive' ); ?>">
+					&times;
+				</button>
+				<div class="hubspot-form__modal-body"></div>
+			</div>
 		</div>
 
 	<?php elseif ( $two_step && $portal_id && $form_id ) : ?>

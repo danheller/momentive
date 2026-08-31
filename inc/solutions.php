@@ -91,6 +91,26 @@ function momentive_solutions_setup() {
 add_action( 'init', 'momentive_solutions_setup' );
 
 
+/**
+ * Resolve a Solution field's value, walking up to the parent Solution when
+ * the child doesn't have it set. Shared by accent_color and dark_mode —
+ * both are "set once per family" fields, not something each child page
+ * should need to repeat.
+ */
+function momentive_solution_inherited_field( string $field_name, int $post_id ) {
+	// Walk up the ancestor chain until a non-empty value is found.
+	// Handles grandchildren (depth 3+), not just direct children.
+	$id = $post_id;
+	while ( $id > 0 ) {
+		$value = get_field( $field_name, $id );
+		if ( ! empty( $value ) ) {
+			return $value;
+		}
+		$id = (int) wp_get_post_parent_id( $id );
+	}
+	return null;
+}
+
 /*
  * For solution singular posts, apply the accent color as a root-level variable.
  * If the solution is a child page, use the parent solution's accent color.
@@ -99,18 +119,52 @@ add_action( 'init', 'momentive_solutions_setup' );
 add_action( 'wp_head', function() {
 	if ( ! is_singular( 'solutions' ) ) return;
 
-	$post_id = get_the_ID();
-	$parent_id = wp_get_post_parent_id( $post_id );
-
-	// If this is a child post, use the parent's accent color
-	$source_id = $parent_id ? $parent_id : $post_id;
-	$color = get_field( 'accent_color', $source_id );
+	$color = momentive_solution_inherited_field( 'accent_color', get_the_ID() );
 
 	if ( ! $color ) return;
 	echo '<style>body { --page-accent-color: ' . esc_attr( $color ) . '; }</style>';
 } );
 
-add_filter( 'acf/prepare_field/name=accent_color', function( $field ) {
+/*
+ * Dark-mode Solutions.
+ *
+ * A handful of newer Solution posts (the MomentiveIQ family, e.g.
+ * /solutions/momentiveiq/experience/) use a reversed color scheme on the
+ * same solution-content.php scaffold rather than a parallel template. A
+ * single `dark_mode` ACF toggle (Solution Settings, same parent-inheritance
+ * rule as accent_color) adds a body class; assets/sass/solutions-dark.scss
+ * (compiled to assets/css/solutions-dark.css) holds only the color-token
+ * overrides scoped under that class — it doesn't restate any layout, so it
+ * can't drift out of sync with the light version.
+ */
+
+add_filter( 'body_class', function( array $classes ): array {
+	if ( ! is_singular( 'solutions' ) ) return $classes;
+
+	if ( momentive_solution_inherited_field( 'dark_mode', get_the_ID() ) ) {
+		$classes[] = 'solution-dark-mode';
+	}
+
+	return $classes;
+} );
+
+add_action( 'wp_enqueue_scripts', function() {
+	if ( ! is_singular( 'solutions' ) ) return;
+	if ( ! momentive_solution_inherited_field( 'dark_mode', get_the_ID() ) ) return;
+
+	wp_enqueue_style(
+		'momentive-solutions-dark',
+		get_template_directory_uri() . '/assets/css/solutions-dark.css',
+		[ 'momentive' ], // load after the main stylesheet so its overrides win
+		wp_get_theme()->get( 'Version' )
+	);
+} );
+
+// accent_color and dark_mode are both parent-inherited (see
+// momentive_solution_inherited_field() above), so both are hidden entirely
+// on child posts in the single-post editor — same filter callback, one
+// added for each field name below.
+function momentive_hide_inherited_solution_field( $field ) {
 	// Only run in the admin editor context
 	if ( ! is_admin() ) return $field;
 
@@ -123,7 +177,9 @@ add_filter( 'acf/prepare_field/name=accent_color', function( $field ) {
 	}
 
 	return $field;
-} );
+}
+add_filter( 'acf/prepare_field/name=accent_color', 'momentive_hide_inherited_solution_field' );
+add_filter( 'acf/prepare_field/name=dark_mode', 'momentive_hide_inherited_solution_field' );
 
 /*
  * Add editor javascript to show/hide accent color field based on whether there is a parent post.
@@ -407,7 +463,9 @@ add_action( 'init', function() {
  */
  
 add_action( 'enqueue_block_assets', function() {
-	if ( ! momentive_content_has_block( 'acf/solution-slide' ) ) return;
+	$on_singular = momentive_content_has_block( 'acf/solution-slide' );
+	$on_archive  = is_post_type_archive( 'solutions' );
+	if ( ! $on_singular && ! $on_archive ) return;
 
 	wp_enqueue_style(
 		'momentive-solutions',

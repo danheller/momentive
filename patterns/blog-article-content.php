@@ -3,7 +3,7 @@
  * Title: Blog Article Content
  * Slug: momentive/blog-article-content
  * Description: Full layout for blog posts: hero, byline, body, and sidebar.
- * Post Types: press-article
+ * Post Types: post
  * Inserter: true
  */
 ?>

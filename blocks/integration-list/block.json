@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "momentive/integration-list",
+    "title": "Integration List",
+    "description": "Filtered grid of integrations, optionally scoped to specific products.",
+    "category": "momentive",
+    "icon": "grid-view",
+    "keywords": ["integrations", "filter", "grid"],
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "jsx": true
+    }
+}

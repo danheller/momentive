@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "momentive/fundraiser-list",
+	"title": "Fundraiser List",
+	"description": "Renders all fundraiser posts as a card grid. Pair with the Resource Filters block for live filtering.",
+	"category": "momentive",
+	"icon": "lightbulb",
+	"keywords": ["fundraiser", "fundraising", "ideas", "grid"],
+	"acf": {
+		"mode": "preview",
+		"renderTemplate": "block.php"
+	},
+	"supports": {
+		"html": false,
+		"anchor": true
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"data": {
+				"is_preview": true
+			}
+		}
+	}
+}

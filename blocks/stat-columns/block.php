@@ -74,7 +74,7 @@ if ( is_array( $stats ) ) {
 // No stats: render a placeholder in the editor, nothing on the front end.
 if ( empty( $rows ) ) {
 	if ( ! empty( $is_preview ) ) {
-		echo '<div class="stat-columns is-placeholder"><p>Add one or more stats to display.</p></div>';
+		echo '<div class="momentive-block-placeholder"><strong>Stat Columns</strong><p>Add one or more stats to display.</p></div>';
 	}
 	return;
 }

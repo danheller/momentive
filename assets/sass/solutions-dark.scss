@@ -1,0 +1,252 @@
+@use 'config' as *;
+
+/*--------------------------------------------------------------
+ * Solutions — Dark Mode variant
+ *
+ * A handful of newer Solution posts (the MomentiveIQ family, e.g.
+ * /solutions/momentiveiq/experience/) use a reversed color scheme on the
+ * same solution-content.php scaffold rather than a parallel template.
+ * Enabled via the `dark_mode` ACF field (Solution Settings — inherited
+ * from the parent Solution, same rule as accent_color); see the body_class
+ * filter and conditional enqueue in inc/solutions.php.
+ *
+ * This file intentionally only reassigns the color-token custom properties
+ * already used throughout momentive.scss, scoped under .solution-dark-mode.
+ * It does not restate any layout — every block on the page keeps its normal
+ * structure/spacing/rules and just inherits different color values, so this
+ * can't drift out of sync with the light version as the base styles evolve.
+ *
+ * STARTING POINT ONLY: these token values haven't been diffed pixel-for-
+ * pixel against the live legacy dark-mode pages yet (fetching a page's HTML
+ * doesn't surface its actual rendered colors) — open a real example
+ * (e.g. the MomentiveIQ family) in the browser and adjust the values below
+ * to match before treating this as final.
+--------------------------------------------------------------*/
+
+body.solution-dark-mode {
+	// glowing lens flare shapes
+	--glow-color: var(--accent-color);
+	--glow-size:  48vw;
+	--glow-blur:  6rem;
+/*	--glow-max:   40rem;*/
+	--menu-title-text-color-hover: var(--brand-color);
+	--page-accent-color: var(--brand-color);
+	// Page background + base text
+	background: var(--dark-color) linear-gradient(rgb(0, 0, 0) 40%, rgb(11, 24, 42) 100%);
+	--text-color:           var(--light-color);
+	--light-text-color:     rgb(200 205 224);
+	--contrast-text-color:  var(--light-color);
+
+	// Icons follow the same light-on-dark flip as text
+	--icon-fill: var(--light-color);
+
+	// The solid orange CTA button keeps working as-is against a dark
+	// background; only the *outline* variant needs to flip, since it
+	// assumes a light page background by default
+	--button-outline-background: transparent;
+	--button-outline-text-color: var(--light-color);
+	--button-outline-border:     var(--light-color);
+
+	// Accent-tinted backgrounds (icon chips, badges, soft section fills)
+	// assume a light page background by default — swap to a translucent
+	// tint of the accent color instead of the light "superlight" tones
+	--page-accent-color-bg:      color-mix(in oklab, var(--page-accent-color) 20%, transparent);
+	--page-accent-color-bg-soft: color-mix(in oklab, var(--page-accent-color) 10%, transparent);
+
+	// Borders / dividers that assume a light background (menu underlines,
+	// card outlines, etc.)
+	--menu-border-color: rgba(255, 255, 255, .15);
+
+	// The dark-mode gradient headline (.is-style-gradient-heading below)
+	// uses a blue that doesn't match any existing token (--accent-color is
+	// #0078FF, --light-accent-color is #C1E6F7) — it's a distinct one-off
+	// for this specific text-clip treatment, not a general brand color, so
+	// it's scoped here rather than promoted to a global :root token in
+	// momentive.scss. Confirm against the live legacy page before treating
+	// as final, same caveat as the rest of this file's starter values.
+	--gradient-heading-color: #3393FF;
+	
+	// Gradient text-clip headline. The `-webkit-linear-gradient()`/
+	// `-moz-linear-gradient()` duplicate declarations on the legacy site are
+	// dead weight, not a real fallback: those old vendor-prefixed gradient
+	// functions never supported the "to bottom right" directional syntax
+	// (they predate it, using a different corner/angle syntax entirely), so
+	// they'd have been no-ops in any browser that actually needed them.
+	// Standard unprefixed linear-gradient() alone covers every current
+	// browser. `-webkit-background-clip`/`-webkit-text-fill-color`, on the
+	// other hand, are NOT legacy cruft — background-clip:text still needs
+	// the -webkit- prefix in most engines today, so both stay. The
+	// unprefixed `background-clip: text` is added alongside as forward
+	// compat for the (currently few) engines that support it unprefixed.
+	.is-style-gradient-heading {
+		background: var(--light-color) linear-gradient(to bottom right, var(--light-color) 0%, var(--gradient-heading-color) 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	// "Hero Lights" — two soft glow blobs along the top-left/top-right
+	// corners, replacing a large raster background image
+	// (MIQ-Hero-Lights.webp, ~background-size:100% auto) with a pure CSS
+	// treatment. Lighter (no image request, no fixed resolution to scale/
+	// crop at different viewport widths), and the color/size/position are
+	// easy to art-direct via the custom properties below instead of
+	// re-exporting a new image asset every time the design shifts. Only
+	// meaningful in dark mode so far (no light-mode design exists for it),
+	// hence scoped here rather than added to momentive.scss's other
+	// is-style-bg-* family. Register the "bg-glow-lights" block style on
+	// core/group in functions.php to make it available in the editor.
+	.site-content, .is-style-bg-glow-lights {
+		@include has-before;
+		@include has-after;
+		max-width: 100vw;
+		// overflow-x: clip allows horizontal clipping without forcing overflow-y
+		// to auto (the usual problem with overflow-x: hidden), so overflow-y can
+		// stay visible and let ::before bleed upward into the header area.
+		overflow-x: clip;
+		overflow-y: visible;
+
+		// Left glow — moved here from .site-header::before so it scrolls with
+		// the page rather than staying fixed to the sticky header (which caused
+		// it to float over content during scroll). Positioned with enough negative
+		// top to place the blob center at the same spot it appeared when it lived
+		// on the header: original offset (-16vw - 4.75rem) plus ~header height
+		// (~4rem). Tune the last value if the seam isn't seamless at your header's
+		// actual rendered height.
+		&:before {
+			top: calc(-16vw - 8.75rem);
+			left: -11vw;
+			width: var(--glow-size);
+			height: var(--glow-size);
+/*
+			max-width: var(--glow-max);
+			max-height: var(--glow-max);
+*/
+			border-radius: 50%;
+			background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+			filter: blur(var(--glow-blur));
+			opacity: .6;
+			z-index: -1;
+			pointer-events: none;
+			will-change: transform;
+			transform: translateY(calc(var(--glow-parallax, 0px)));
+		}
+
+		// Right glow
+		&:after {
+			width: var(--glow-size);
+			height: var(--glow-size);
+/*
+			max-width: var(--glow-max);
+			max-height: var(--glow-max);
+*/
+			border-radius: 50%;
+			background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+			filter: blur(var(--glow-blur));
+			opacity: .6;
+			z-index: 0;
+			pointer-events: none;
+			will-change: transform;
+			transform: translateY(calc(var(--glow-parallax, 0px)));
+			right: -12vw;
+			top: 80vh;
+		}
+		&.diffuse {
+			--glow-size: 60vw;
+			--glow-blur: 10rem;
+			&:before, &:after {
+				opacity: .4;
+			}
+			&:before {
+				left: -14vw;
+			}
+			&:after {
+				right: -14vw;
+			}
+
+		}
+		> * { position: relative; z-index: 1; }
+	}
+
+	// =========================================================
+	// Header — dark-mode reversal
+	// =========================================================
+	// BEFORE: the header kept its default light background on dark-mode
+	// Solution pages (it's a sitewide FSE template part; Colleen noted in
+	// Figma that it "would have to be remade," and Anne confirmed the Figma
+	// mock's dark header should be ignored). The nav text color and bottom
+	// border already flip correctly via --text-color and --menu-border-color
+	// above — only the white background fill needed to stay light.
+	//
+	// AFTER: reversed to match the dark page background so the header and
+	// hero form one unified dark field rather than a white bar floating above
+	// it. The logo and "Get Your Demo" button work as-is against dark
+	// (the button is orange; the logo file includes a white wordmark variant
+	// that CSS filter:invert() can approximate if a proper white-logo asset
+	// isn't available — see note below). To revert to the original light
+	// header, delete from here down to the closing brace of this block.
+
+	.site-header {
+
+		&:before {
+			top: 0;
+			height: calc(100% - .375rem);
+			background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+			
+			// background-position y = content blob offset (8.75rem) + approx. header height (4rem)
+			background-position: -11vw calc(-16vw - 12.75rem);
+			background-size: var(--glow-size) var(--glow-size);
+			background-repeat: no-repeat;
+			opacity: .6;
+		}
+		// The header background is drawn by the ::after pseudo-element
+		// (z-index: -2, behind nav dropdowns). Override it from the default
+		// var(--light-color) to the same dark base used for the page body.
+		// A solid color rather than the body gradient keeps the header
+		// visually flat/distinct from the hero section below it.
+
+		&:after {
+			background: var(--dark-color);
+			border-bottom: 1px solid var(--menu-border-color);
+		}
+
+		.wp-block-site-title a {
+			background-image: url(../images/momentive-logo-white.svg);
+			position: relative;
+			z-index: 1;
+		}
+	}
+	
+	.megamenu-panels {
+		--text-color:           var(--dark-color);
+		--light-text-color:     var(--light-color);
+		color: var(--text-color);
+//		background: linear-gradient(to right, var(--dark-color) calc(50% + var(--wp--style--global--content-size) * 0.2), #111 calc(50% + var(--wp--style--global--content-size) * 0.2));
+	}
+	
+	.is-style-circle-checks li {
+		&:before {
+			border-color: var(--dark-color);
+		}
+
+		&:after {
+			background: var(--accent-color);
+		}
+	}
+	
+	.is-style-boxed .wp-block-column {
+		border-color: transparent;
+		background: rgba( 255, 255, 255, 0.1 );
+	}
+	
+	.feature-buttons .wp-block-button a {
+		background: rgb( 255, 255, 255, .15 );
+		&[href] {
+			background: var(--accent-color);
+		}
+	}
+	
+	.site-footer:before {
+		background: none;
+	}
+}

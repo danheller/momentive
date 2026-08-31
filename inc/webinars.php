@@ -162,7 +162,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	if ( is_singular( 'webinar' ) ) {
 		wp_enqueue_style( 'momentive-gate' );	
 	}
-	if ( is_singular( 'webinar' ) || is_archive('webinar') ) {
+	if ( is_singular( 'webinar' ) || is_post_type_archive( 'webinar' ) ) {
 		wp_enqueue_style( 'momentive-webinar' );
 	}
 } );
@@ -538,7 +538,8 @@ add_action( 'rest_api_init', function() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function momentive_resolve_webinar_form( $post_id ) {
-    if ( 'webinar' !== get_post_type( $post_id ) ) {
+    $form_host_types = array( 'webinar', 'product-overview' );
+    if ( ! in_array( get_post_type( $post_id ), $form_host_types, true ) ) {
         return '';
     }
     $status = momentive_webinar_status( $post_id ); // computed, always live

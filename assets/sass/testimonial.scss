@@ -166,9 +166,12 @@
 		li { margin-right: 1.5rem; }
 	}
 
+	.testimonial {
+		--page-accent-color-border:  color-mix(in oklab, var(--solution) 50%, white);
+		--page-accent-color-bg-soft: color-mix(in oklab, var(--solution) 7%, white);
+	}
+
 	// Arrow buttons, positioned at the bottom-left aligned with the content column.
-
-
 	.splide__arrows {
 		bottom: 2rem;
 		left: calc(50% - 3.25rem);

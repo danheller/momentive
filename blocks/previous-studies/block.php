@@ -92,7 +92,7 @@ if ( is_array( $rows ) ) {
 // No cards: render a placeholder in the editor, nothing on the front end.
 if ( empty( $cards ) ) {
 	if ( ! empty( $is_preview ) ) {
-		echo '<div class="previous-studies is-placeholder"><p>Add one or more previous studies to display.</p></div>';
+		echo '<div class="momentive-block-placeholder"><strong>Previous Studies</strong><p>Add one or more previous studies to display.</p></div>';
 	}
 	return;
 }

@@ -123,21 +123,11 @@
 
 		initDropdown( root );
 
-		// The server always renders the desktop default as active (first
-		// real solution), since it has no way to know the viewport width.
-		// If we're actually at mobile width on load, and there's no hash
-		// directing us elsewhere, correct to the mobile default (All)
-		// instead. NOTE: 960px must match the breakpoint in style.css —
-		// there's no way to read that value back out of the stylesheet,
-		// so if the CSS breakpoint changes, update this too.
+		// The server renders "All Solutions" as the default on both desktop
+		// and mobile, so no viewport-based correction is needed on load.
+		// If a hash is present, activate the matching tab instead.
 		var initialHash = window.location.hash.replace( '#', '' );
-
-		if ( ! initialHash && window.matchMedia( '(max-width: 960px)' ).matches ) {
-			var mobileDefault = root.getAttribute( 'data-mobile-default' );
-			if ( mobileDefault ) {
-				activateTab( root, mobileDefault, false );
-			}
-		} else if ( initialHash ) {
+		if ( initialHash ) {
 			activateTab( root, initialHash, false );
 		}
 

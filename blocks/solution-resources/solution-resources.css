@@ -15,6 +15,7 @@
 .solution-resources__heading {
 	font-size: var(--wp--preset--font-size--xxx-large);
 	margin: 0 0 var(--wp--preset--spacing--small, 1.5rem);
+	text-wrap: balance;
 }
 
 .solution-resources__grid {
@@ -24,6 +25,10 @@
 	list-style: none;
 	margin: 0;
 	padding: 0;
+}
+
+.solution-resources__grid.splide__list {
+	gap: 0;
 }
 
 .solution-resources__item {
@@ -38,10 +43,4 @@
 }
 
 /* Editor placeholder shown when there's no host Solution, or no resources yet. */
-.solution-resources.is-placeholder {
-	padding: var(--wp--preset--spacing--x-small, 1rem);
-	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
-	border-radius: 0.5rem;
-	color: var(--wp--preset--color--contrast, #555);
-	text-align: center;
-}
+/* Placeholder styles: see .momentive-block-placeholder in momentive.scss */

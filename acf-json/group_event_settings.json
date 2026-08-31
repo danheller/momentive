@@ -1,0 +1,248 @@
+{
+    "key": "group_event_settings",
+    "title": "Event Settings",
+    "fields": [
+        {
+            "key": "field_event_type",
+            "label": "Event Type",
+            "name": "event_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "virtual": "Virtual Event",
+                "physical": "In-Person Event"
+            },
+            "default_value": "virtual",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 1,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_event_status",
+            "label": "Status",
+            "name": "event_status",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "upcoming": "Upcoming",
+                "past": "Past"
+            },
+            "default_value": "upcoming",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_event_start_date",
+            "label": "Start Date",
+            "name": "event_start_date",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "F j, Y",
+            "return_format": "Ymd",
+            "first_day": 0,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_event_end_date",
+            "label": "End Date",
+            "name": "event_end_date",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "Leave empty for single-day events.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "F j, Y",
+            "return_format": "Ymd",
+            "first_day": 0,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_event_start_time",
+            "label": "Start Time",
+            "name": "event_start_time",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "g:i a",
+            "return_format": "g:i a"
+        },
+        {
+            "key": "field_event_end_time",
+            "label": "End Time",
+            "name": "event_end_time",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "g:i a",
+            "return_format": "g:i a"
+        },
+        {
+            "key": "field_event_timezone",
+            "label": "Timezone",
+            "name": "event_timezone",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Short abbreviation shown alongside dates, e.g. “ET”, “CT”, “PT”.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_event_location",
+            "label": "Location",
+            "name": "event_location",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "City, venue, or “Online” for virtual events.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_event_booth",
+            "label": "Booth",
+            "name": "event_booth",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Booth number or label for physical events, e.g. “Booth 813”.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_event_type",
+                        "operator": "==",
+                        "value": "physical"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_event_form_embed",
+            "label": "Registration Form Embed",
+            "name": "event_form_embed",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Paste the HubSpot (or other) form embed code here. Used by the acf\/hubspot-form block’s post-level fallback — same pattern as webinars.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": 4,
+            "new_lines": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "event"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Structured metadata for event posts: type, status, dates, location, and registration form.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787938423
+}

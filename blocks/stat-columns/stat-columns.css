@@ -54,13 +54,7 @@
 }
 
 /* Editor placeholder when no stats are entered yet. */
-.stat-columns.is-placeholder {
-	padding: var(--wp--preset--spacing--x-small, 1rem);
-	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
-	border-radius: 0.5rem;
-	color: var(--wp--preset--color--contrast, #555);
-	text-align: center;
-}
+/* Placeholder styles: see .momentive-block-placeholder in momentive.scss */
 
 .post-content.wp-block-column .stat-columns p {
 	margin: 0;

@@ -69,7 +69,7 @@ add_action( 'enqueue_block_assets', function () {
 		get_template_directory_uri() . '/blocks/product-solution-tabs/tabs.js',
 		[],
 		wp_get_theme()->get( 'Version' ),
-		true
+		[ 'in_footer' => true, 'strategy' => 'defer' ]
 	);
 } );
 
@@ -136,10 +136,10 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 		return;
 	}
 
-	// Prepend an "All" entry. Its term_ids is the union of every solution's
-	// terms, so the panel-rendering loop below can treat it identically to
-	// any other tab — same query shape, just a wider term list — rather
-	// than needing special-case branching later.
+	// Prepend an "All Solutions" entry. Its term_ids is the union of every
+	// solution's terms, so the panel-rendering loop below can treat it
+	// identically to any other tab — same query shape, just a wider term
+	// list — rather than needing special-case branching later.
 	$all_term_ids = [];
 	foreach ( $tabs as $tab ) {
 		$all_term_ids = array_merge( $all_term_ids, $tab['term_ids'] );
@@ -149,44 +149,33 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 		'solution_id' => null,
 		'term_ids'    => array_unique( $all_term_ids ),
 		'slug'        => 'all',
-		'label'       => 'All',
+		'label'       => 'All Solutions',
+		'icon'        => 'momentive',
+		'color'       => '#6EC1E4',
 	] );
 
-	// Desktop and mobile disagree about what's selected by default: desktop
-	// hides the All tab entirely and opens on the first real solution;
-	// mobile keeps All as its default. Two separate default slugs, rather
-	// than a single shared index, since "index 0" no longer means the same
-	// thing in both contexts.
-	$desktop_default_slug = $tabs[1]['slug'] ?? $tabs[0]['slug']; // first real solution, falling back to All if somehow only one tab exists
-	$mobile_default_slug  = $tabs[0]['slug']; // All
+	// Both desktop and mobile default to "All Solutions".
+	$default_slug = $tabs[0]['slug'];
 
 	$wrapper_attrs = get_block_wrapper_attributes( [
-		'class'               => 'momentive-product-solution-tabs',
-		'data-mobile-default' => esc_attr( $mobile_default_slug ),
+		'class' => 'momentive-product-solution-tabs',
 	] );
 
 	echo '<div ' . $wrapper_attrs . '>';
 
 	// ---- Tabs (desktop) -----------------------------------------------------
-	//
-	// All is intentionally excluded here — desktop opens on the first real
-	// solution instead. It still exists in $tabs and renders in the mobile
-	// dropdown and in the panels below; only this loop skips it.
+
 	echo '<div class="tabs-row" role="tablist">';
 
 	foreach ( $tabs as $tab ) {
-		if ( $tab['solution_id'] === null ) {
-			continue; // skip the All entry on desktop
-		}
-
 		$solution_id = $tab['solution_id'];
-		$icon        = get_field( 'solution_icon', $solution_id );
-		$is_active   = ( $tab['slug'] === $desktop_default_slug );
+		$icon        = $solution_id ? get_field( 'solution_icon', $solution_id ) : ( $tab['icon'] ?? '' );
+		$color       = $solution_id ? get_field( 'accent_color', $solution_id ) : ( $tab['color'] ?? '' );
+		$is_active   = ( $tab['slug'] === $default_slug );
 
 		$css_var = '';
-		$color = get_field( 'accent_color', $solution_id );
 		if ( $color ) {
-			$color = sanitize_hex_color( $color );
+			$color   = sanitize_hex_color( $color );
 			$css_var = '--solution:' . esc_attr( $color ) . ';';
 		}
 
@@ -195,11 +184,10 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 			$is_active ? ' is-active' : '',
 			esc_attr( $tab['slug'] ),
 			$is_active ? 'true' : 'false',
-			$css_var,			
+			$css_var,
 		);
 
 		echo momentive_render_icon( $icon, 'class="tab-icon"' );
-
 		echo '<span class="tab-label">' . esc_html( str_replace( ' Software', '', $tab['label'] ) ) . '</span>';
 		echo '</button>';
 	}
@@ -223,13 +211,13 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 	echo '<div class="dropdown-options" hidden>';
 	foreach ( $tabs as $tab ) {
 		$solution_id = $tab['solution_id'];
-		$icon        = $solution_id ? get_field( 'solution_icon', $solution_id ) : '';
-		$is_active   = ( $tab['slug'] === $mobile_default_slug );
+		$icon        = $solution_id ? get_field( 'solution_icon', $solution_id ) : ( $tab['icon'] ?? '' );
+		$color       = $solution_id ? get_field( 'accent_color', $solution_id ) : ( $tab['color'] ?? '' );
+		$is_active   = ( $tab['slug'] === $default_slug );
 
 		$css_var = '';
-		$color = $solution_id ? get_field( 'accent_color', $solution_id ) : '';
 		if ( $color ) {
-			$color = sanitize_hex_color( $color );
+			$color   = sanitize_hex_color( $color );
 			$css_var = '--solution:' . esc_attr( $color ) . ';';
 		}
 
@@ -247,17 +235,12 @@ function momentive_render_product_solution_tabs( array $block, string $content =
 	echo '</div>'; // .tabs-dropdown
 
 	// ---- Panels -------------------------------------------------------------
-	//
-	// Server-rendered default matches the desktop default (first real
-	// solution), not All — desktop is the more common case and this avoids
-	// any flash-of-wrong-content for the majority of visitors. tabs.js
-	// corrects this on init for mobile viewports, reading the mobile
-	// default from the wrapper's data attribute below.
+
 	echo '<div class="panels">';
 
 	foreach ( $tabs as $tab ) {
 		$term_ids  = $tab['term_ids'];
-		$is_active = ( $tab['slug'] === $desktop_default_slug );
+		$is_active = ( $tab['slug'] === $default_slug );
 
 		printf(
 			'<div class="panel%s" role="tabpanel" data-tab="%s"%s>',

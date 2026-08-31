@@ -49,10 +49,4 @@
 }
 
 /* Editor placeholder shown when no products are selected yet. */
-.linked-products.is-placeholder {
-	padding: var(--wp--preset--spacing--x-small, 1rem);
-	border: 1px dashed var(--wp--preset--color--neutral, #ccc);
-	border-radius: 0.5rem;
-	color: var(--wp--preset--color--contrast, #555);
-	text-align: center;
-}
+/* Placeholder styles: see .momentive-block-placeholder in momentive.scss */

@@ -1,0 +1,209 @@
+{
+    "key": "group_6b2c3e4f5001",
+    "title": "Toolkit Settings",
+    "fields": [
+        {
+            "key": "field_6b2c3e4f5002",
+            "label": "Toolkit Type",
+            "name": "toolkit_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Controls the layout below the gated form. “Standard” shows a card grid of bundled webinars/templates; “Buyer’s Guide” shows accordion sections built in the block editor.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "standard": "Standard (webinar \/ template bundle)",
+                "buyers-guide": "Buyer’s Guide (accordion sections in the editor)"
+            },
+            "default_value": "standard",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_6b2c3e4f5003",
+            "label": "Hero Image",
+            "name": "hero_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Optional singular-view hero image override. Leave empty to use the featured image in both the archive card and the hero.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_6b2c3e4f5004",
+            "label": "Form Heading",
+            "name": "form_heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Heading shown above the HubSpot form in the right column (e.g. “Download now”, “Watch now”, “Fill out the form to access this toolkit”).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "Download now",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_6b2c3e4f5005",
+            "label": "Card Grid Heading",
+            "name": "webinar_cards_heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Section heading above the bundled-resource card grid (e.g. “Included on-demand webinars:”).",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b2c3e4f5002",
+                        "operator": "==",
+                        "value": "standard"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_6b2c3e4f5006",
+            "label": "Bundled Resources",
+            "name": "webinar_cards",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "The webinars, templates, or other resources included in this toolkit. Each card links to the referenced post and pulls its title and thumbnail automatically.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b2c3e4f5002",
+                        "operator": "==",
+                        "value": "standard"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Resource",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_6b2c3e4f5007",
+                    "label": "Post",
+                    "name": "card_post",
+                    "aria-label": "",
+                    "type": "post_object",
+                    "instructions": "",
+                    "required": 1,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "70",
+                        "class": "",
+                        "id": ""
+                    },
+                    "post_type": [
+                        "webinar",
+                        "whitepaper",
+                        "guide",
+                        "infographic"
+                    ],
+                    "post_status": "",
+                    "taxonomy": "",
+                    "return_format": "id",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "bidirectional": 0,
+                    "ui": 1,
+                    "bidirectional_target": []
+                },
+                {
+                    "key": "field_6b2c3e4f5008",
+                    "label": "Type Label Override",
+                    "name": "asset_type_label",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Override the card’s type label (e.g. “Template”). Leave empty to use the post type’s own singular label.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "30",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": "e.g. Template",
+                    "prepend": "",
+                    "append": "",
+                    "maxlength": ""
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "toolkit"
+            }
+        ]
+    ],
+    "menu_order": 1,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787788800
+}

@@ -107,8 +107,7 @@ const MOMENTIVE_SOL_FK_HUBSPOT_EMBED   = 'field_6a2873ba3bf87';
 const MOMENTIVE_SOL_FK_HUBSPOT_TWOSTEP = 'field_6a35626f3a11b';
 
 // momentive/solution-resources block field keys (group_6a7c1e2f4a001).
-const MOMENTIVE_SOL_FK_RESOURCES_HEADING = 'field_6a7c1e304a002';
-const MOMENTIVE_SOL_FK_RESOURCES_COUNT   = 'field_6a7c1e324a003';
+const MOMENTIVE_SOL_FK_RESOURCES_COUNT = 'field_6a7c1e324a003';
 
 /**
  * Family-wide HubSpot demo-form override — added 2026-07-23.
@@ -182,10 +181,20 @@ const MOMENTIVE_SOL_DEMO_FORM_OVERRIDE = array(
 );
 
 /**
- * Legacy IDs to skip entirely — "(OLD)" / "(DUPLICATE)" drafts with no
- * rebuild target. Confirmed with Daniel 2026-07-14.
+ * Legacy IDs to skip entirely.
+ *
+ * Original set (2026-07-14): "(OLD)" / "(DUPLICATE)" drafts with no rebuild target.
+ *
+ * Added 2026-08-27:
+ *   11768 — Community hub (parent=0, no children in legacy export; hand-built on
+ *            rebuilt site at a different ID — script would fail parent resolution).
+ *   12037, 12173, 12191, 12213 — New MomentiveIQ children (Agentic Workers, AI
+ *            Analytics, Connections, Experience). These pages lack the standard
+ *            Elementor postmeta fields (event_sub_hero_-_title, features sections,
+ *            etc.) the script reads — only a hero description and demo form flag
+ *            are present. Build by hand using the MomentiveIQ dark-mode template.
  */
-const MOMENTIVE_SOL_EXCLUDE_IDS = array( 2372, 2935, 3203, 4312, 6856, 10152 );
+const MOMENTIVE_SOL_EXCLUDE_IDS = array( 2372, 2935, 3203, 4312, 6856, 10152, 11768, 12037, 12173, 12191, 12213 );
 
 /**
  * Legacy IDs of the 12 top-level hub families + the 9 "(Split Test B)"
@@ -869,14 +878,34 @@ function momentive_sol_features_block( array $legacy, array $attach_map, int $po
 			? '<img src="' . esc_url( wp_get_attachment_url( $att_id ) ?: '' ) . '" alt="" class="wp-image-' . $att_id . ' size-full"/>'
 			: '<img src="" alt="" />';
 
-		$row_html = '<!-- wp:media-text ' . momentive_sol_json( $media_attrs ) . ' -->'
-			. '<div class="wp-block-media-text is-stacked-on-mobile no-shadow' . ( $is_left ? '' : ' has-media-on-the-right' ) . '" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)">'
-			. '<figure class="wp-block-media-text__media">' . $img_tag . '</figure>'
-			. '<div class="wp-block-media-text__content">'
+		// Core's own core/media-text save() doesn't just add a class for the
+		// "right" position — it swaps the DOM order of the figure and the
+		// content div (content first, then figure, when mediaPosition is
+		// "right"; figure first otherwise), and "has-media-on-the-right"
+		// sorts BEFORE "is-stacked-on-mobile" in the class list rather than
+		// after. Emitting figure-then-content unconditionally (as this
+		// function did before) doesn't match what core's save() regenerates
+		// from the "right" attributes, so Gutenberg flags every right-
+		// positioned instance as invalid content needing "Attempt Block
+		// Recovery" on open — confirmed against a real migrated post
+		// (Daniel, 2026-07-28; solution-before/after-recovery.html). Front
+		// end is unaffected either way since static HTML renders regardless
+		// of the editor's validation state.
+		$figure_html = '<figure class="wp-block-media-text__media">' . $img_tag . '</figure>';
+		$content_html = '<div class="wp-block-media-text__content">'
 			. ( '' !== $r_kicker ? '<!-- wp:paragraph {"className":"is-style-eyebrow"} --><p class="is-style-eyebrow">' . esc_html( $r_kicker ) . '</p><!-- /wp:paragraph -->' : '' )
 			. ( '' !== $r_title ? '<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">' . esc_html( $r_title ) . '</h3><!-- /wp:heading -->' : '' )
 			. ( '' !== $r_desc ? '<!-- wp:paragraph {"fontSize":"medium"} --><p class="has-medium-font-size">' . esc_html( $r_desc ) . '</p><!-- /wp:paragraph -->' : '' )
-			. '</div></div><!-- /wp:media-text -->';
+			. '</div>';
+
+		$wrapper_class = $is_left
+			? 'wp-block-media-text is-stacked-on-mobile no-shadow'
+			: 'wp-block-media-text has-media-on-the-right is-stacked-on-mobile no-shadow';
+
+		$row_html = '<!-- wp:media-text ' . momentive_sol_json( $media_attrs ) . ' -->'
+			. '<div class="' . $wrapper_class . '" style="padding-top:var(--wp--preset--spacing--medium);padding-bottom:var(--wp--preset--spacing--medium)">'
+			. ( $is_left ? $figure_html . $content_html : $content_html . $figure_html )
+			. '</div><!-- /wp:media-text -->';
 
 		// Every row gets wrapped in its own "to-edge" group — even the ones
 		// with no background color — so a full-bleed background can be
@@ -959,6 +988,63 @@ function momentive_sol_benefits_media_block( array $legacy, array $attach_map, i
 		. '</div><!-- /wp:group --></div><!-- /wp:group -->';
 }
 
+/**
+ * Full save()-equivalent markup for momentive/impact-stat.
+ *
+ * Unlike the ACF PHP-rendered blocks elsewhere in this file, impact-stat is
+ * a JSX-built block (blocks/impact-stat/src/) whose save.js actually
+ * serializes real markup into post_content — it isn't rendered dynamically
+ * at request time. Emitting it as a self-closing
+ * `<!-- wp:momentive/impact-stat {...} /-->` with no inner HTML (what this
+ * function used to do) doesn't match what the block's own save() would
+ * regenerate from those attributes, so Gutenberg flags every instance as
+ * invalid content needing "Attempt Block Recovery" on open — confirmed
+ * against a real migrated post (Daniel, 2026-07-28;
+ * solution-before/after-recovery.html). The front end renders fine either
+ * way since static HTML displays regardless of the editor's validation
+ * state, which is exactly why this was easy to miss.
+ *
+ * Mirrors blocks/impact-stat/src/save.js line for line, including the
+ * block.json defaults this migration never overrides (accentColor
+ * "#E8611A", animationDuration 1800, animate true) — those stay out of the
+ * block comment's JSON (Gutenberg omits schema-default attributes from the
+ * comment, same as the deprecation gotcha documented for this block
+ * elsewhere in CLAUDE.md) but still need to appear in the rendered
+ * data-attributes, same as a real editor-saved instance would.
+ */
+function momentive_sol_impact_stat_html( array $attrs ): string {
+	$prefix = (string) ( $attrs['statPrefix'] ?? '' );
+	$number = $attrs['statNumber'] ?? 0;
+	$suffix = (string) ( $attrs['statSuffix'] ?? '' );
+	$label  = (string) ( $attrs['statLabel'] ?? '' );
+	$accent = (string) ( $attrs['accentColor'] ?? '#E8611A' );
+
+	// Number.isInteger() equivalent — checks the numeric value, not the PHP
+	// type (a legacy value like "5000.0" casts to a PHP float but is still
+	// a whole number for formatting purposes).
+	$is_integer = ( (float) $number === (float) (int) $number );
+	$final = $is_integer ? number_format( (int) $number ) : (string) $number;
+
+	return '<!-- wp:momentive/impact-stat ' . momentive_sol_json( $attrs ) . ' -->'
+		. '<div class="wp-block-momentive-impact-stat impact-stat" style="--accent-color:' . esc_attr( $accent ) . '"'
+		. ' data-stat-number="' . esc_attr( $number ) . '"'
+		. ' data-stat-prefix="' . esc_attr( $prefix ) . '"'
+		. ' data-stat-suffix="' . esc_attr( $suffix ) . '"'
+		. ' data-stat-integer="' . ( $is_integer ? 'true' : 'false' ) . '"'
+		. ' data-animation-duration="1800"'
+		. ' data-animate="true">'
+		. '<div class="impact-stat__border"></div>'
+		. '<div class="impact-stat__content">'
+		. '<p class="impact-stat__value" aria-label="' . esc_attr( $prefix . $number . $suffix ) . '">'
+		. ( '' !== $prefix ? '<span class="impact-stat__prefix" aria-hidden="true">' . esc_html( $prefix ) . '</span>' : '' )
+		. '<span class="impact-stat__number" aria-hidden="true" data-final="' . esc_attr( $final ) . '">0</span>'
+		. ( '' !== $suffix ? '<span class="impact-stat__suffix" aria-hidden="true">' . esc_html( $suffix ) . '</span>' : '' )
+		. '</p>'
+		. ( '' !== $label ? '<p class="impact-stat__label">' . esc_html( $label ) . '</p>' : '' )
+		. '</div></div>'
+		. '<!-- /wp:momentive/impact-stat -->';
+}
+
 /** Stats (statistics_-_* + repeater — 19/87). */
 function momentive_sol_stats_block( array $legacy ): string {
 	if ( ! momentive_sol_bool( $legacy, 'statistics_-_enable_statistics_section' ) ) {
@@ -981,7 +1067,7 @@ function momentive_sol_stats_block( array $legacy ): string {
 		if ( ! empty( $row['accent_color'] ) ) {
 			$attrs['accentColor'] = $row['accent_color'];
 		}
-		$cols .= '<!-- wp:column {"width":"' . $width . '%"} --><div class="wp-block-column" style="flex-basis:' . $width . '%"><!-- wp:momentive/impact-stat ' . momentive_sol_json( $attrs ) . ' /--></div><!-- /wp:column -->';
+		$cols .= '<!-- wp:column {"width":"' . $width . '%"} --><div class="wp-block-column" style="flex-basis:' . $width . '%">' . momentive_sol_impact_stat_html( $attrs ) . '</div><!-- /wp:column -->';
 	}
 
 	return '<!-- wp:group {"className":"impact-stat-wrapper wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|large","bottom":"var:preset|spacing|large"}}},"layout":{"type":"constrained"}} -->'
@@ -1310,14 +1396,11 @@ function momentive_sol_resources_block( array $legacy ): string {
 	if ( ! momentive_sol_bool( $legacy, 'event_sub_resources_-_enable_section' ) ) {
 		return '';
 	}
-	// "Featured resources" / 3 — matches the convention on hand-rebuilt pages
-	// (Daniel, 2026-07-22), not the block's own field defaults ("Resources" / 6).
-	$title = momentive_sol_str( $legacy, 'event_sub_resources_-_custom_title' ) ?: 'Featured resources';
+	// Heading is now a native block placed before solution-resources, not a field.
+	// Count: 3 — matches the hand-rebuilt convention (Daniel, 2026-07-22).
 	$attrs = momentive_sol_json( array(
 		'name' => 'momentive/solution-resources',
 		'data' => array(
-			'heading' => $title,
-			'_heading' => MOMENTIVE_SOL_FK_RESOURCES_HEADING,
 			'count' => '3',
 			'_count' => MOMENTIVE_SOL_FK_RESOURCES_COUNT,
 		),

@@ -1,0 +1,94 @@
+{
+    "key": "group_6b1f2a3b4c001",
+    "title": "Wistia Popover Block Settings",
+    "fields": [
+        {
+            "key": "field_6b1f2a3b4c002",
+            "label": "Media ID",
+            "name": "media_id",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "The Wistia media ID — the alphanumeric string in the video URL, e.g. <code>sbkdhn0omw</code>.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "e.g. sbkdhn0omw",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6b1f2a3b4c003",
+            "label": "Poster Image",
+            "name": "poster_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Clickable thumbnail shown before the video opens. Use a clean image without a baked-in play button — the block adds one automatically (see below).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_6b1f2a3b4c004",
+            "label": "Show play button",
+            "name": "show_play_button",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Overlay a CSS-drawn play button on the poster. Disable if the poster image already has a play button baked in.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui": 1,
+            "ui_on_text": "Show",
+            "ui_off_text": "Hide"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "momentive\/wistia-popover"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1755561600
+}

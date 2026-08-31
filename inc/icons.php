@@ -317,10 +317,14 @@ function momentive_render_icon_link_block( array $attributes ): string {
 		momentive_use_icon( $icon_slug );
 	}
 
-	// Inline custom property carries the accent color into the CSS cascade.
-	$style_attr = $accent_color
-		? ' style="--icon-link-accent:' . esc_attr( $accent_color ) . '"'
-		: '';
+	// get_block_wrapper_attributes() merges WP-managed attrs onto the wrapper —
+	// including any value from the Advanced → "Additional CSS class(es)" field.
+	// Pass the accent color as a default style so it's included in the same
+	// style attribute WP outputs (rather than a separate hardcoded one).
+	$wrapper_extra = $accent_color
+		? [ 'style' => '--icon-link-accent:' . esc_attr( $accent_color ) ]
+		: [];
+	$wrapper_attrs = get_block_wrapper_attributes( $wrapper_extra );
 
 	// Icon markup
 	$icon_html = '';
@@ -339,7 +343,7 @@ function momentive_render_icon_link_block( array $attributes ): string {
 		: '';
 
 	return sprintf(
-		'<div class="wp-block-momentive-icon-link"%s>' .
+		'<div %s>' .
 		'<a class="icon-link icon-link--%s" href="%s">' .
 		'%s' .
 		'<span class="icon-link__text">' .
@@ -348,7 +352,7 @@ function momentive_render_icon_link_block( array $attributes ): string {
 		'</span>' .
 		'</a>' .
 		'</div>',
-		$style_attr,
+		$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		esc_attr( $icon_size ),
 		$url,
 		$icon_html,

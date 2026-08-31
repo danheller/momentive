@@ -1,0 +1,71 @@
+{
+    "key": "group_clients",
+    "title": "Client Settings",
+    "fields": [
+        {
+            "key": "field_client_logo_mono",
+            "label": "Monochrome Logo",
+            "name": "logo_mono",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "A monochrome (black or grayscale) version of the logo. Used in the scrolling marquee and any reversed\/dark-background context.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "svg, png, webp",
+            "allow_in_bindings": 1,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_client_url",
+            "label": "Website URL",
+            "name": "client_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "The client’s public website. Used to link logos where appropriate.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https:\/\/example.com"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "client"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Monochrome logo variant and website URL for the Client CPT.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787857675
+}

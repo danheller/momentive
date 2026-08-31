@@ -1,0 +1,255 @@
+{
+    "key": "group_6b01award0001",
+    "title": "Award Recipient Settings",
+    "fields": [
+        {
+            "key": "field_6b01award0002",
+            "label": "Award Received",
+            "name": "award_received",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "The award category for this recipient.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "Nonprofit of the Year": "Nonprofit of the Year",
+                "Association of the Year": "Association of the Year",
+                "Innovator of the Year": "Innovator of the Year",
+                "Leader of the Year": "Leader of the Year",
+                "Volunteer of the Year": "Volunteer of the Year",
+                "Rising Star": "Rising Star"
+            },
+            "default_value": false,
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_6b01award0003",
+            "label": "Year Awarded",
+            "name": "year_awarded",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "The year this award was given (e.g. 2025).",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": 2020,
+            "max": "",
+            "step": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6b01award0004",
+            "label": "Organization Name",
+            "name": "organization_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Full organization name as it should appear on the card.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6b01award0005",
+            "label": "Organization Logo",
+            "name": "organization_logo",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Logo image displayed on the award card.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "preview_size": "thumbnail"
+        },
+        {
+            "key": "field_6b01award0006",
+            "label": "Individual Recipient",
+            "name": "individual_recipient",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Enable if this award goes to a named individual rather than (or in addition to) an organization.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b01award0007",
+            "label": "Individual Name",
+            "name": "individual_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b01award0006",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_6b01award0008",
+            "label": "Individual Photo",
+            "name": "individual_photo",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Headshot or portrait of the individual recipient.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b01award0006",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "preview_size": "thumbnail"
+        },
+        {
+            "key": "field_6b01award0009",
+            "label": "Description",
+            "name": "award_recipient_description",
+            "aria-label": "",
+            "type": "wysiwyg",
+            "instructions": "Description paragraph shown on the card and\/or singular view.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 0,
+            "delay": 0
+        },
+        {
+            "key": "field_6b01award000a",
+            "label": "Related Blog Post",
+            "name": "related_blog_post",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Optional. Links the award card to a blog post and redirects the singular URL there.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "post"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "award-recipient"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "seamless",
+    "label_placement": "left",
+    "instruction_placement": "field",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1787811063
+}

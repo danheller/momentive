@@ -15,7 +15,11 @@
 		"anchor": true,
 		"align": [ "wide", "full" ],
 		"html": false,
-		"jsx": false
+		"jsx": false,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
 	},
 	"example": {
 		"attributes": {

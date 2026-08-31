@@ -1,0 +1,47 @@
+{
+    "key": "group_6b20a1f0c0002",
+    "title": "Integration List",
+    "fields": [
+        {
+            "key": "field_6b20a1f0c0005",
+            "label": "Filter by product(s)",
+            "name": "filter_products",
+            "type": "post_object",
+            "instructions": "Limit integrations to specific product(s). Leave empty to show all.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "product"
+            ],
+            "taxonomy": [],
+            "allow_null": 1,
+            "multiple": 1,
+            "return_format": "object",
+            "ui": 1
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "momentive/integration-list"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1787265926
+}

@@ -9,6 +9,23 @@
 /*	display: inline-block; /* Shrink-wrap by default; a grid/flex parent controls layout. */
 }
 
+.is-style-pill.wp-block-momentive-icon-link {
+	display: inline-block;
+	width: fit-content;
+	background: #fff;
+}
+
+.is-style-pill.wp-block-momentive-icon-link a {
+	display: flex;
+	align-items: center;
+	font-size: var(--wp--preset--font-size--medium);
+	color: var(--text-color);
+}
+
+.is-style-pill.wp-block-momentive-icon-link .icon-link__icon {
+	color: var(--accent-color);
+}
+
 /* -----------------------------------------------------------------------
    Link element
    ----------------------------------------------------------------------- */

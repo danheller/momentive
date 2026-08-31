@@ -88,7 +88,7 @@ if ( empty( $products ) && $host_id ) {
 // In the editor preview with nothing selected yet, show a friendly placeholder.
 if ( empty( $products ) ) {
 	if ( ! empty( $is_preview ) ) {
-		echo '<div class="linked-products is-placeholder"><p>Select one or more products to display.</p></div>';
+		echo '<div class="momentive-block-placeholder"><strong>Linked Products</strong><p>Select one or more products to display.</p></div>';
 	}
 	return; // Front end: render nothing rather than an empty box.
 }

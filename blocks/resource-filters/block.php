@@ -74,8 +74,11 @@ add_action( 'enqueue_block_editor_assets', 'momentive_resource_filters_localize'
 function momentive_resource_filters_post_type_map(): array {
 	$map = array();
 
+	// Include `publicly_queryable` types even when `public` is false — this
+	// covers CPTs like `donation-example` that expose a REST endpoint and can
+	// be queried via the filter bar but don't need public singular pages.
 	$types = get_post_types(
-		array( 'public' => true, 'show_in_rest' => true ),
+		array( 'publicly_queryable' => true, 'show_in_rest' => true ),
 		'objects'
 	);
 
@@ -104,6 +107,48 @@ function momentive_resource_filters_render( array $attributes, string $content )
 	$show_search      = ! empty( $attributes['showSearch'] );
 	$show_sort        = ! empty( $attributes['showSort'] );
 	$post_types       = array_map( 'sanitize_text_field', $attributes['postTypes'] ?? [] );
+
+	// Custom taxonomies — when set, these replace the standard `category` panel.
+	// Each entry is { slug: string, label: string }.
+	// PHP builds the term list; JS reads the slugs from data-custom-taxonomies.
+	$custom_taxonomies_attr = $attributes['customTaxonomies'] ?? [];
+	$custom_taxonomies      = [];  // resolved: [ { slug, label, terms[] } ]
+
+	if ( ! empty( $custom_taxonomies_attr ) ) {
+		$show_categories = false; // custom taxs take over the filter panel
+
+		$posts_of_type = get_posts( [
+			'post_type'      => sanitize_key( $attributes['defaultPostType'] ?? 'post' ),
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'post_status'    => 'publish',
+		] );
+
+		foreach ( $custom_taxonomies_attr as $tax_config ) {
+			$tax_slug  = sanitize_key( $tax_config['slug'] ?? '' );
+			$tax_label = sanitize_text_field( $tax_config['label'] ?? $tax_slug );
+
+			if ( ! $tax_slug || ! taxonomy_exists( $tax_slug ) ) continue;
+
+			$terms = [];
+			if ( ! empty( $posts_of_type ) ) {
+				$terms = get_terms( [
+					'taxonomy'   => $tax_slug,
+					'object_ids' => $posts_of_type,
+					'hide_empty' => true,
+					'orderby'    => 'name',
+					'order'      => 'ASC',
+				] );
+				if ( is_wp_error( $terms ) ) $terms = [];
+			}
+
+			$custom_taxonomies[] = [
+				'slug'  => $tax_slug,
+				'label' => $tax_label,
+				'terms' => $terms,
+			];
+		}
+	}
 
 	// The post type this filter bar is configured for.
 	// Defaults to 'post' so the blog archive works without configuration.
@@ -190,17 +235,65 @@ function momentive_resource_filters_render( array $attributes, string $content )
 		}
 	}
 
-	$first_filter = ! $show_categories && ! $show_post_types;
-	$bar_top_class = 'filter-bar-top' . ( $first_filter ? ' filter-bar-top--search-first' : '' );
+	$has_custom_taxs = ! empty( $custom_taxonomies );
+	$first_filter    = ! $show_categories && ! $show_post_types && ! $has_custom_taxs;
+	$bar_top_class   = 'filter-bar-top' . ( $first_filter ? ' filter-bar-top--search-first' : '' );
+
+	// Slim JSON for JS: just slug + label; JS builds state and listeners from this.
+	$custom_tax_json = $has_custom_taxs
+		? wp_json_encode( array_map( fn( $t ) => [ 'slug' => $t['slug'], 'label' => $t['label'] ], $custom_taxonomies ) )
+		: '';
 
 	ob_start();
 	?>
 	<div
 		class="resource-filter-bar"
 		data-default-post-type="<?php echo esc_attr( $default_post_type ); ?>"
+		<?php if ( $custom_tax_json ) : ?>
+		data-custom-taxonomies="<?php echo esc_attr( $custom_tax_json ); ?>"
+		<?php endif; ?>
 	>
 			<div class="<?php echo esc_attr( $bar_top_class ); ?>">
-			<?php if ( $show_categories && ! empty( $categories ) ) : ?>
+
+			<?php foreach ( $custom_taxonomies as $tax ) : ?>
+			<?php if ( ! empty( $tax['terms'] ) ) : ?>
+			<div class="filter-dropdown" data-tax="<?php echo esc_attr( $tax['slug'] ); ?>">
+				<button
+					class="filter-dropdown-toggle"
+					type="button"
+					aria-expanded="false"
+					aria-controls="filter-dropdown-panel-<?php echo esc_attr( $tax['slug'] ); ?>"
+				>
+					<span class="filter-dropdown-label"><?php echo esc_html( $tax['label'] ); ?></span>
+					<span class="filter-count" hidden></span>
+				</button>
+				<div
+					class="filter-dropdown-panel"
+					id="filter-dropdown-panel-<?php echo esc_attr( $tax['slug'] ); ?>"
+					hidden
+				>
+					<fieldset class="filter-group">
+						<div class="filter-group-items">
+							<?php foreach ( $tax['terms'] as $term ) : ?>
+							<label class="filter-item">
+								<input
+									type="checkbox"
+									name="<?php echo esc_attr( $tax['slug'] ); ?>"
+									value="<?php echo esc_attr( $term->term_id ); ?>"
+									data-slug="<?php echo esc_attr( $term->slug ); ?>"
+									aria-label="<?php echo esc_attr( $term->name ); ?>"
+								>
+								<span class="filter-item-label"><?php echo esc_html( $term->name ); ?></span>
+							</label>
+							<?php endforeach; ?>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<?php endif; ?>
+			<?php endforeach; ?>
+
+			<?php if ( ( $show_categories && ! empty( $categories ) ) || ( $show_post_types && ! empty( $post_types ) ) ) : ?>
 			<button
 				class="filter-toggle"
 				aria-expanded="false"
@@ -286,6 +379,7 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				</div>
 			</fieldset>
 			<?php endif; ?>
+
 
 		</div>
 
