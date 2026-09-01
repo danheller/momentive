@@ -39,7 +39,7 @@
  *   MOMENTIVE_GDE_MEDIA_WXR    — path to a general media-library export, used
  *                                only to fill in attachment IDs the guides
  *                                export itself doesn't include (optional;
- *                                defaults to momentivesoftware.media.current.2026-07-13.xml
+ *                                defaults to momentivesoftware.media.current.2026-09-01.xml
  *                                next to this script)
  *   MOMENTIVE_GDE_UPLOADS_BASE — base URL for resolving attachment IDs
  *
@@ -581,7 +581,7 @@ function momentive_gde_parse_attachment_map( string $path, string $base ): array
  * entirely; there's no post in the guides export whose own attachment
  * items cover them.
  *
- * MOMENTIVE_GDE_MEDIA_WXR (default: momentivesoftware.media.current.2026-07-13.xml,
+ * MOMENTIVE_GDE_MEDIA_WXR (default: momentivesoftware.media.current.2026-09-01.xml,
  * the general media library export, not guides-specific) is loaded as a
  * SUPPLEMENT, filling in only the IDs the primary export doesn't already
  * have -- it never overrides an ID the guides export itself resolved.
@@ -592,7 +592,7 @@ function momentive_gde_parse_attachment_map( string $path, string $base ): array
 function momentive_gde_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_GDE_LEGACY_WXR' )
 		? MOMENTIVE_GDE_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.guides.current.2026-07-16.xml';
+		: __DIR__ . '/exports/momentivesoftware.guides.current.2026-09-01.xml';
 
 	$base = defined( 'MOMENTIVE_GDE_UPLOADS_BASE' )
 		? MOMENTIVE_GDE_UPLOADS_BASE
@@ -609,7 +609,7 @@ function momentive_gde_build_attachment_map(): array {
 
 	$media_path = defined( 'MOMENTIVE_GDE_MEDIA_WXR' )
 		? MOMENTIVE_GDE_MEDIA_WXR
-		: __DIR__ . '/exports/momentivesoftware.media.current.2026-07-13.xml';
+		: __DIR__ . '/exports/momentivesoftware.media.current.2026-09-01.xml';
 
 	if ( file_exists( $media_path ) ) {
 		$media_map = momentive_gde_parse_attachment_map( $media_path, $base );
@@ -715,7 +715,7 @@ function momentive_gde_sideload( string $url, int $post_id, bool $dry ): int {
 function momentive_gde_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_GDE_LEGACY_WXR' )
 		? MOMENTIVE_GDE_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.guides.current.2026-07-16.xml';
+		: __DIR__ . '/exports/momentivesoftware.guides.current.2026-09-01.xml';
 
 	$out = [];
 	if ( ! file_exists( $path ) ) {

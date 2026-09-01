@@ -478,7 +478,7 @@ function momentive_cs_load_product_map(): array {
 function momentive_cs_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_LEGACY_WXR' )
 		? MOMENTIVE_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
+		: __DIR__ . '/exports/momentivesoftware.case-studies.current.2026-09-01.xml';
 
 	$base = defined( 'MOMENTIVE_UPLOADS_BASE' )
 		? MOMENTIVE_UPLOADS_BASE
@@ -553,7 +553,7 @@ function momentive_cs_xml_tag( string $item, string $tag ): string {
 function momentive_cs_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_LEGACY_WXR' )
 		? MOMENTIVE_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
+		: __DIR__ . '/exports/momentivesoftware.case-studies.current.2026-09-01.xml';
 
 	$out = array();
 	if ( ! file_exists( $path ) ) {

@@ -217,7 +217,7 @@ function momentive_ask_llm_for_relevant_solutions( WP_Post $post, array $candida
 		. "Only include a solution if the content is substantively about that specific topic — not just tangentially related. "
 		. "Return an empty array [] if nothing is a clear match. Output nothing but the JSON array — no prose, no markdown fences.";
 
-	$response = wp_remote_post( 'https://api.anthropic.com/v1/messages', [
+	$request_args = [
 		'timeout' => 30,
 		'headers' => [
 			'x-api-key'         => $api_key,
@@ -231,15 +231,35 @@ function momentive_ask_llm_for_relevant_solutions( WP_Post $post, array $candida
 				[ 'role' => 'user', 'content' => $prompt ],
 			],
 		] ),
-	] );
+	];
 
-	if ( is_wp_error( $response ) ) {
-		error_log( 'Momentive relevance tagging: request failed for post ' . $post->ID . ' — ' . $response->get_error_message() );
-		return null;
-	}
+	// Retry up to 3 attempts on 529 (API overloaded — transient). Other
+	// non-200 codes are not transient and fail immediately.
+	$max_attempts = 3;
+	$response     = null;
+	for ( $attempt = 1; $attempt <= $max_attempts; $attempt++ ) {
+		$response = wp_remote_post( 'https://api.anthropic.com/v1/messages', $request_args );
 
-	$code = wp_remote_retrieve_response_code( $response );
-	if ( 200 !== $code ) {
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Momentive relevance tagging: request failed for post ' . $post->ID . ' — ' . $response->get_error_message() );
+			return null;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $code ) {
+			break;
+		}
+		if ( 529 === $code && $attempt < $max_attempts ) {
+			$delay = (int) pow( 2, $attempt ); // 2s, 4s
+			error_log( sprintf(
+				'Momentive relevance tagging: API overloaded (529) for post %d, attempt %d/%d — retrying in %ds.',
+				$post->ID, $attempt, $max_attempts, $delay
+			) );
+			sleep( $delay );
+			continue;
+		}
+
+		// Non-200 (and non-retryable 529) — log and bail.
 		error_log( 'Momentive relevance tagging: API returned ' . $code . ' for post ' . $post->ID . ' — ' . wp_remote_retrieve_body( $response ) );
 		return null;
 	}

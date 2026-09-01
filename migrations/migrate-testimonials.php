@@ -10,7 +10,7 @@
  * folder), which preserved legacy post IDs 1:1 for whatever it migrated —
  * confirmed by `patch-testimonials-solution-category.php`'s gap check
  * (`get_post_type( $legacy_id ) !== 'testimonials'`). A fresh full export,
- * `momentivesoftware.testimonials.current.2026-08-19.xml` (157 posts), showed
+ * `momentivesoftware.testimonials.current.2026-09-01.xml` (157 posts), showed
  * ~59 of those 157 legacy IDs have no matching post on the rebuilt site at
  * all — never imported. This script imports exactly those, and only those:
  * any legacy ID that already resolves to a `testimonials` post on this site
@@ -185,7 +185,7 @@ function momentive_mt_build_existing_index(): array {
 function momentive_mt_build_case_study_map(): array {
 	$path = defined( 'MOMENTIVE_MT_CASE_STUDY_WXR' )
 		? MOMENTIVE_MT_CASE_STUDY_WXR
-		: __DIR__ . '/exports/momentivesoftware_current-case-studies_2026-06-29.xml';
+		: __DIR__ . '/exports/momentivesoftware.case-studies.current.2026-09-01.xml';
 
 	$map = array();
 	if ( ! file_exists( $path ) ) {
@@ -292,7 +292,7 @@ function momentive_mt_run( array $argv ): void {
 
 	$wxr_path = defined( 'MOMENTIVE_MT_LEGACY_WXR' )
 		? MOMENTIVE_MT_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.testimonials.current.2026-08-19.xml';
+		: __DIR__ . '/exports/momentivesoftware.testimonials.current.2026-09-01.xml';
 
 	if ( ! file_exists( $wxr_path ) ) {
 		WP_CLI::error( "Export not found: {$wxr_path}" );

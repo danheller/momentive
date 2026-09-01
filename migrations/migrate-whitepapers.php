@@ -486,7 +486,7 @@ function momentive_whp_page(
 function momentive_whp_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_WHP_LEGACY_WXR' )
 		? MOMENTIVE_WHP_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.whitepapers.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.whitepapers.current.2026-09-01.xml';
 
 	$base = defined( 'MOMENTIVE_WHP_UPLOADS_BASE' )
 		? MOMENTIVE_WHP_UPLOADS_BASE
@@ -613,7 +613,7 @@ function momentive_whp_sideload( string $url, int $post_id, bool $dry ): int {
 function momentive_whp_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_WHP_LEGACY_WXR' )
 		? MOMENTIVE_WHP_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.whitepapers.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.whitepapers.current.2026-09-01.xml';
 
 	$out = [];
 	if ( ! file_exists( $path ) ) {

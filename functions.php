@@ -581,6 +581,9 @@ require get_template_directory() . '/inc/disable-comments.php';
 // Admin list table customizations (e.g. Last Modified column).
 require get_template_directory() . '/inc/admin-columns.php';
 
+// Dashboard widget showing rebuilt vs. empty post counts across all CPTs.
+require get_template_directory() . '/inc/rebuild-progress.php';
+
 
 
 /**

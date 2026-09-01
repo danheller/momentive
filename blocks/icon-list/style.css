@@ -69,3 +69,7 @@
 	font-style: italic;
 	margin: 0;
 }
+
+.post-layout ul li.icon-list__item {
+	margin: 0;
+}

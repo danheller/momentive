@@ -127,7 +127,7 @@ if ( ! defined( 'MOMENTIVE_PA_ABOUT_TA_PATTERN_REF' ) ) {
 
 $pa_wxr_path = defined( 'MOMENTIVE_PA_LEGACY_WXR' )
 	? MOMENTIVE_PA_LEGACY_WXR
-	: __DIR__ . '/exports/momentivesoftware.current.press-articles.2026-07-22.xml';
+	: __DIR__ . '/exports/momentivesoftware.press-articles.current.2026-09-01.xml';
 
 $pa_uploads_base = rtrim(
 	defined( 'MOMENTIVE_PA_UPLOADS_BASE' )

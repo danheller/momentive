@@ -73,7 +73,7 @@
  * same requirement as the other *-wxr migrations on this theme).
  *
  * SOURCES (override via constants below or place beside this script):
- *   MOMENTIVE_SOL_LEGACY_WXR          momentivesoftware.solutions.current.2026-07-14.xml
+ *   MOMENTIVE_SOL_LEGACY_WXR          momentivesoftware.solutions.current.2026-09-01.xml
  *   MOMENTIVE_SOL_CCT_CSV             solution-settings-cct.csv
  *   MOMENTIVE_SOL_TESTIMONIALS_WXR    legacy testimonials export (optional; see above)
  *   MOMENTIVE_SOL_UPLOADS_BASE        media host for sideloading
@@ -361,7 +361,7 @@ function momentive_sol_slug_from_link( string $link, string $fallback ): string 
 function momentive_sol_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_SOL_LEGACY_WXR' )
 		? MOMENTIVE_SOL_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-07-14.xml';
+		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-09-01.xml';
 
 	$out = array();
 	if ( ! file_exists( $path ) ) {
@@ -448,7 +448,7 @@ function momentive_sol_repeater( array $legacy, string $key ): array {
 function momentive_sol_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_SOL_LEGACY_WXR' )
 		? MOMENTIVE_SOL_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-07-14.xml';
+		: __DIR__ . '/exports/momentivesoftware.solutions.current.2026-09-01.xml';
 	$base = defined( 'MOMENTIVE_SOL_UPLOADS_BASE' )
 		? MOMENTIVE_SOL_UPLOADS_BASE
 		: 'https://momentivesoftware.com/wp-content/uploads/';

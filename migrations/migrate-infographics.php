@@ -430,7 +430,7 @@ function momentive_inf_page( string $content_col, string $sidebar_col ): string 
 function momentive_inf_build_attachment_map(): array {
 	$path = defined( 'MOMENTIVE_INF_LEGACY_WXR' )
 		? MOMENTIVE_INF_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.infographics.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.infographics.current.2026-09-01.xml';
 
 	$base = defined( 'MOMENTIVE_INF_UPLOADS_BASE' )
 		? MOMENTIVE_INF_UPLOADS_BASE
@@ -557,7 +557,7 @@ function momentive_inf_sideload( string $url, int $post_id, bool $dry ): int {
 function momentive_inf_load_legacy_posts(): array {
 	$path = defined( 'MOMENTIVE_INF_LEGACY_WXR' )
 		? MOMENTIVE_INF_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.infographics.current.2026-07-01.xml';
+		: __DIR__ . '/exports/momentivesoftware.infographics.current.2026-09-01.xml';
 
 	$out = [];
 	if ( ! file_exists( $path ) ) {

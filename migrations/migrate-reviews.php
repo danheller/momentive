@@ -35,7 +35,7 @@
  *
  * Overridable constant:
  *   MOMENTIVE_REV_LEGACY_WXR — path to the legacy reviews export
- *   (default: migrations/exports/momentivesoftware.reviews.current.2026-07-20.xml)
+ *   (default: migrations/exports/momentivesoftware.reviews.current.2026-09-01.xml)
  *
  * Idempotent: upserts by a stamped `_momentive_source_review_id` meta key on
  * newly-created posts, so re-running updates in place. Merged (pre-existing)
@@ -229,7 +229,7 @@ function momentive_rev_run( array $argv ): void {
 	$dry_run  = ! $flags['live'];
 	$wxr_path = defined( 'MOMENTIVE_REV_LEGACY_WXR' )
 		? MOMENTIVE_REV_LEGACY_WXR
-		: __DIR__ . '/exports/momentivesoftware.reviews.current.2026-07-20.xml';
+		: __DIR__ . '/exports/momentivesoftware.reviews.current.2026-09-01.xml';
 
 	momentive_rev_require_field_keys( $dry_run );
 

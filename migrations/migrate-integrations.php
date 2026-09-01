@@ -20,7 +20,7 @@
  * Must run with --user=<admin-login-or-id> (required for media sideloading via Safe SVG).
  *
  * Overridable constants (define before running or in wp-config.php):
- *   MOMENTIVE_INT_WXR         — path to the WXR file (default: migrations/exports/momentivesoftware.integrations.current.2026-07-27.xml)
+ *   MOMENTIVE_INT_WXR         — path to the WXR file (default: migrations/exports/momentivesoftware.integrations.current.2026-09-01.xml)
  *   MOMENTIVE_INT_UPLOADS_BASE — base URL for sideloading images (default: https://momentivesoftware.com/wp-content/uploads/)
  *   MOMENTIVE_INT_PATH_LMS_SLUG — slug of the Path LMS product post (default: path-lms)
  */
@@ -33,7 +33,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 
 $wxr_path     = defined( 'MOMENTIVE_INT_WXR' )
 	? MOMENTIVE_INT_WXR
-	: __DIR__ . '/exports/momentivesoftware.integrations.current.2026-07-27.xml';
+	: __DIR__ . '/exports/momentivesoftware.integrations.current.2026-09-01.xml';
 
 $uploads_base = defined( 'MOMENTIVE_INT_UPLOADS_BASE' )
 	? MOMENTIVE_INT_UPLOADS_BASE

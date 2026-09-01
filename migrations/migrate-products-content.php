@@ -17,7 +17,7 @@
  * the legacy postmeta to script the rest.
  *
  * Data sources (place next to this script):
- *   - momentivesoftware.branded-products.current.2026-07-25.xml
+ *   - momentivesoftware.branded-products.current.2026-09-01.xml
  *       24 legacy `branded-products` posts. Each carries ~200 structured
  *       postmeta keys (hero, feature repeaters, CTA, FAQ, testimonials,
  *       related-products cross-sell, request-a-demo). This is the content
@@ -143,7 +143,7 @@ if ( get_current_user_id() === 0 && ! $dry_run ) {
 
 // ── Config (override via constants defined before this file runs) ──────────
 if ( ! defined( 'MOMENTIVE_PC_LEGACY_WXR' ) ) {
-	define( 'MOMENTIVE_PC_LEGACY_WXR', __DIR__ . '/exports/momentivesoftware.branded-products.current.2026-07-25.xml' );
+	define( 'MOMENTIVE_PC_LEGACY_WXR', __DIR__ . '/exports/momentivesoftware.branded-products.current.2026-09-01.xml' );
 }
 if ( ! defined( 'MOMENTIVE_PC_CSV' ) ) {
 	define( 'MOMENTIVE_PC_CSV', __DIR__ . '/exports/export-product_settings-25-07-2026.csv' );

@@ -71,7 +71,7 @@ const MOMENTIVE_PM_RUN_META = '_momentive_migration_run';
 
 $pm_wxr_path = defined( 'MOMENTIVE_PM_LEGACY_WXR' )
 	? MOMENTIVE_PM_LEGACY_WXR
-	: __DIR__ . '/exports/momentivesoftware.posts.current.2026-07-13.xml';
+	: __DIR__ . '/exports/momentivesoftware.posts.current.2026-09-01.xml';
 
 // Optional supplementary media export (Tools → Export → Media on the legacy site).
 // The posts WXR only contains attachments parented to exported posts; standalone
@@ -79,7 +79,7 @@ $pm_wxr_path = defined( 'MOMENTIVE_PM_LEGACY_WXR' )
 // and dropping it next to the script fills those gaps.
 $pm_media_wxr_path = defined( 'MOMENTIVE_PM_MEDIA_WXR' )
 	? MOMENTIVE_PM_MEDIA_WXR
-	: __DIR__ . '/exports/momentivesoftware.media.current.2026-07-13.xml';
+	: __DIR__ . '/exports/momentivesoftware.media.current.2026-09-01.xml';
 
 $pm_uploads_base = rtrim(
 	defined( 'MOMENTIVE_PM_UPLOADS_BASE' )
@@ -1326,9 +1326,16 @@ function momentive_pm_migrate_post( array $post, array $att_map, bool $dry ): ar
 	// ── 14. Categories ───────────────────────────────────────────────────
 	// Map legacy category slugs → rebuilt term IDs. Slug lookup is safe
 	// across migrations because slugs are stable; IDs are not.
+	//
+	// Remap table for slugs that changed between legacy and rebuilt site.
+	$cat_slug_remap = [
+		'event-technology' => 'event-management',
+		'career-services'  => 'career-centers',
+	];
 	$cat_ids = [];
 	foreach ( $post['category_slugs'] as $cat_slug ) {
-		$term = get_term_by( 'slug', $cat_slug, 'category' );
+		$resolved = $cat_slug_remap[ $cat_slug ] ?? $cat_slug;
+		$term = get_term_by( 'slug', $resolved, 'category' );
 		if ( $term && ! is_wp_error( $term ) ) {
 			$cat_ids[] = $term->term_id;
 		} else {

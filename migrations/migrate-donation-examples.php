@@ -31,7 +31,7 @@
 
 define( 'MOMENTIVE_DE_WXR', defined( 'MOMENTIVE_DE_LEGACY_WXR' )
 	? MOMENTIVE_DE_LEGACY_WXR
-	: __DIR__ . '/exports/momentivesoftware.fundraisers.current.2026-07-27.xml'
+	: __DIR__ . '/exports/momentivesoftware.donation-examples.current.2026-09-01.xml'
 );
 
 define( 'MOMENTIVE_DE_UPLOADS_BASE', defined( 'MOMENTIVE_DE_UPLOADS_BASE_URL' )
