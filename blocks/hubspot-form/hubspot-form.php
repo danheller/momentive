@@ -35,23 +35,40 @@ if ( ! $button_text ) {
 	$button_text = __( 'Watch this demo on-demand', 'momentive' );
 }
 
-// Extract the HubSpot portal/form IDs from the embed code so JS can call
-// hbspt.forms.create() directly rather than re-parsing the script tag.
-$portal_id = '';
-$form_id   = '';
+// When enabled, the block renders a clean hbspt.forms.create() call with the
+// standard thank-you redirect injected, rather than echoing the raw embed code.
+// Default off so existing blocks with redirect logic already in their embed code
+// are unaffected until an editor explicitly opts in and cleans the embed.
+$redirect_to_thank_you = (bool) get_field( 'redirect_to_thank_you' );
+
+// Extract HubSpot parameters from the embed code. All four values are preserved
+// in a clean embed (portalId, formId, region, sfdcCampaignId) and parsed here
+// so the render template can reconstruct the create() call without the raw JS.
+$portal_id        = '';
+$form_id          = '';
+$region           = 'na1';
+$sfdc_campaign_id = '';
 
 if ( $embed_code ) {
 	preg_match( '/portalId:\s*["\']?(\d+)["\']?/', $embed_code, $m );
 	$portal_id = $m[1] ?? '';
+
 	preg_match( '/formId:\s*["\']?([\w-]+)["\']?/', $embed_code, $m );
 	$form_id = $m[1] ?? '';
+
+	preg_match( '/region:\s*["\']([^"\']+)["\']/', $embed_code, $m );
+	$region = $m[1] ?? 'na1';
+
+	preg_match( '/sfdcCampaignId:\s*["\']([^"\']+)["\']/', $embed_code, $m );
+	$sfdc_campaign_id = $m[1] ?? '';
 }
 
 $wrapper_attrs = get_block_wrapper_attributes( [
-	'data-two-step'    => $two_step ? 'true' : 'false',
-	'data-button-modal' => $button_modal ? 'true' : 'false',
-	'data-portal-id'   => esc_attr( $portal_id ),
-	'data-form-id'     => esc_attr( $form_id ),
+	'data-two-step'              => $two_step ? 'true' : 'false',
+	'data-button-modal'          => $button_modal ? 'true' : 'false',
+	'data-portal-id'             => esc_attr( $portal_id ),
+	'data-form-id'               => esc_attr( $form_id ),
+	'data-redirect-to-thank-you' => $redirect_to_thank_you ? 'true' : 'false',
 ] );
 
 ?>
@@ -144,10 +161,37 @@ $wrapper_attrs = get_block_wrapper_attributes( [
 			</div>
 		</div>
 
-	<?php elseif ( $embed_code ) : 
+	<?php elseif ( $embed_code ) :
 
-		echo $embed_code;
-		
+		if ( $redirect_to_thank_you && $portal_id && $form_id ) :
+			// Render a clean hbspt.forms.create() call with the standard redirect
+			// behaviour injected server-side. The pasted embed code only needs to
+			// carry portalId, formId, region, and sfdcCampaignId — the onFormSubmit
+			// callback and inlineMessage are added here so they never have to live
+			// in the textarea or be updated per-form when the destination changes.
+			// Uses a relative URL so the redirect works in any environment (local,
+			// staging, production) without modification.
+?>
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+<script>
+hbspt.forms.create({
+	portalId:      <?php echo json_encode( $portal_id ); ?>,
+	formId:        <?php echo json_encode( $form_id ); ?>,
+	region:        <?php echo json_encode( $region ); ?>,<?php if ( $sfdc_campaign_id ) : ?>
+	sfdcCampaignId: <?php echo json_encode( $sfdc_campaign_id ); ?>,<?php endif; ?>
+	inlineMessage: 'Thank you for contacting us. Your scheduler is loading.',
+	onFormSubmit: function( $form ) {
+		setTimeout( function() {
+			window.location = '/demo/thank-you/?' + $form.serialize();
+		}, 250 );
+	}
+});
+</script>
+<?php
+		else :
+			echo $embed_code;
+		endif;
+
 	else : ?>
 
 		<p class="hubspot-form__placeholder">No embed code set.</p>

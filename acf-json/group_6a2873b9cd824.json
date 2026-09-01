@@ -89,6 +89,27 @@
             "ui_off_text": ""
         },
         {
+            "key": "field_6b2873ba3bf90",
+            "label": "Redirect to Thank You Page",
+            "name": "redirect_to_thank_you",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "After submission, redirect to \/demo\/thank-you\/ with form data appended. Enable for demo request forms; leave off for newsletter sign-ups or other inline forms.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
             "key": "field_6a2873ba3bf89",
             "label": "Button Text",
             "name": "button_text",
@@ -139,5 +160,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1787552630
+    "modified": 1787650000
 }

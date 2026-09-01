@@ -144,8 +144,9 @@
 	// -------------------------------------------------------------------------
 
 	function initButtonModal( block ) {
-		const portalId  = block.dataset.portalId;
-		const formId    = block.dataset.formId;
+		const portalId           = block.dataset.portalId;
+		const formId             = block.dataset.formId;
+		const redirectToThankYou = block.dataset.redirectToThankYou === 'true';
 		if ( ! portalId || ! formId ) return;
 
 		const btn       = block.querySelector( '.hubspot-form__modal-btn' );
@@ -162,7 +163,7 @@
 			if ( formRendered ) return;
 			formRendered = true;
 			loadHubSpotScript().then( () => {
-				window.hbspt.forms.create( {
+				const formOptions = {
 					region:   'na1',
 					portalId: portalId,
 					formId:   formId,
@@ -171,13 +172,22 @@
 						setUtmContentFromTitle();
 						populateUtmFields();
 					},
-					onFormSubmit: function () {
+					onFormSubmit: function ( $form ) {
 						gtagEvent( 'form_submitted', {
 							event_category: 'HubSpot Form',
 							event_label:    formId,
 						} );
+						if ( redirectToThankYou ) {
+							setTimeout( function () {
+								window.location = '/demo/thank-you/?' + $form.serialize();
+							}, 250 );
+						}
 					},
-				} );
+				};
+				if ( redirectToThankYou ) {
+					formOptions.inlineMessage = 'Thank you for contacting us. Your scheduler is loading.';
+				}
+				window.hbspt.forms.create( formOptions );
 			} ).catch( ( err ) => {
 				console.warn( '[momentive/hubspot-form] Failed to load HubSpot script:', err );
 			} );
@@ -212,8 +222,9 @@
 	// -------------------------------------------------------------------------
 
 	function initBlock( block ) {
-		const portalId = block.dataset.portalId;
-		const formId   = block.dataset.formId;
+		const portalId           = block.dataset.portalId;
+		const formId             = block.dataset.formId;
+		const redirectToThankYou = block.dataset.redirectToThankYou === 'true';
 		if ( ! portalId || ! formId ) return;
 
 		const emailInput = block.querySelector( '.hubspot-form__email-input' );
@@ -242,7 +253,7 @@
 			formRendered = true;
 
 			loadHubSpotScript().then( () => {
-				window.hbspt.forms.create( {
+				const formOptions = {
 					region:   'na1',   // change to 'eu1' for EU portals
 					portalId: portalId,
 					formId:   formId,
@@ -256,13 +267,22 @@
 						populateUtmFields();
 					},
 
-					onFormSubmit: function () {
+					onFormSubmit: function ( $form ) {
 						gtagEvent( 'demo_form_submitted', {
 							event_category: 'HubSpot Form',
 							event_label:    formId,
 						} );
+						if ( redirectToThankYou ) {
+							setTimeout( function () {
+								window.location = '/demo/thank-you/?' + $form.serialize();
+							}, 250 );
+						}
 					},
-				} );
+				};
+				if ( redirectToThankYou ) {
+					formOptions.inlineMessage = 'Thank you for contacting us. Your scheduler is loading.';
+				}
+				window.hbspt.forms.create( formOptions );
 			} ).catch( ( err ) => {
 				console.warn( '[momentive/hubspot-form] Failed to load HubSpot script:', err );
 			} );

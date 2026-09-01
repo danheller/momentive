@@ -911,6 +911,7 @@ figure {
 }
 
 .megamenu-panel {
+	--icon-link-accent: var(--accent-color);
 	margin: 0;
 	grid-area: 1 / 1;
 	align-self: start; // prevents shorter panels stretching to tallest height
@@ -953,7 +954,7 @@ figure {
 		border-radius: .5rem;
 		padding: .5rem;
 	}
-	&[data-menu=products] {
+	&[data-menu=products], &[data-menu=solutions] {
 		.wp-block-column {
 			position: relative;
 		}

@@ -186,6 +186,9 @@
 	}
 	
 	&.is-style-outline {
+		&.wp-block-group {
+			border: none !important;
+		}
 		.wp-block-post-template {
 			border: 1px solid var(--menu-border-color);
 		}

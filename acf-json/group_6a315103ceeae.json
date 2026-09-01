@@ -35,6 +35,7 @@
                 "id": ""
             },
             "default_value": "",
+            "allow_in_bindings": 0,
             "tabs": "all",
             "toolbar": "basic",
             "media_upload": 0,
@@ -343,5 +344,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1785022741
+    "modified": 1788200927
 }
