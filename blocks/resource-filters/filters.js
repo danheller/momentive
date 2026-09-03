@@ -130,7 +130,7 @@
 		const toggle      = bar.querySelector( '.filter-toggle' );
 		const panel       = bar.querySelector( '.filter-panel' );
 		const resetBtn    = bar.querySelector( '.filter-reset' );
-		const countBadge  = bar.querySelector( '.filter-count' );
+		const countBadge  = bar.querySelector( '.filter-toggle .filter-count' );
 		const activeTags  = bar.querySelector( '.filter-active-tags' );
 		const searchInput = bar.querySelector( '.filter-search' );
 		const sortSelect  = bar.querySelector( '.filter-sort' );
@@ -257,6 +257,19 @@
 			state.page++;
 			fetchPosts( true );
 		} );
+
+		// ── Auto-query on page load ────────────────────────────────────────────
+		// When the filter bar carries data-auto-query="true" (set by PHP when
+		// showPostTypes is true and multiple types are configured — see the
+		// Resources archive page), pre-select all post-type checkboxes and fire
+		// an initial multi-type fetch so the grid opens with all resource types
+		// rather than the server-rendered single-type Query Loop output.
+		if ( bar.dataset.autoQuery === 'true' ) {
+			const allTypeInputs = bar.querySelectorAll( 'input[name="post_type"]' );
+			allTypeInputs.forEach( el => { el.checked = true; } );
+			state.postTypes = Array.from( allTypeInputs ).map( el => el.value );
+			fetchPosts();
+		}
 
 		// ── Fetch ─────────────────────────────────────────────────────────────
 		async function fetchPosts( append = false ) {
@@ -560,14 +573,14 @@
 
 					${ topLabel }
 
-					${ item.featured_image ? `<figure class="wp-block-post-featured-image" style="aspect-ratio:16/9">
+					<figure class="wp-block-post-featured-image" style="aspect-ratio:16/9">
 						<a href="${ esc( item.link ) }" tabindex="-1" aria-hidden="true">
-							<img src="${ esc( item.featured_image ) }"
+							<img src="${ esc( item.featured_image || ( window.momentiveResourceFilters?.themeUri + '/assets/images/default-card-image.webp' ) ) }"
 								 alt=""
 								 loading="lazy"
 								 style="width:100%;height:100%;object-fit:cover;">
 						</a>
-					</figure>` : '' }
+					</figure>
 
 					<div class="story-content">
 
@@ -613,21 +626,23 @@
 				countBadge.hidden      = ! hasActive;
 			}
 
-			// Per-dropdown badges (one per inline custom taxonomy dropdown).
+			// Per-dropdown badges — post_type, category, and custom taxonomies.
 			bar.querySelectorAll( '.filter-dropdown' ).forEach( dropdown => {
 				const taxSlug = dropdown.dataset.tax;
-				const count   = ( state.customTaxFilters[ taxSlug ] || [] ).length;
-				const badge   = dropdown.querySelector( '.filter-count' );
+				let count;
+				if ( taxSlug === 'post_type' ) {
+					count = state.postTypes.length;
+				} else if ( taxSlug === 'category' ) {
+					count = state.categories.length;
+				} else {
+					count = ( state.customTaxFilters[ taxSlug ] || [] ).length;
+				}
+				const badge = dropdown.querySelector( '.filter-count' );
 				if ( badge ) {
 					badge.textContent = String( count );
 					badge.hidden      = count === 0;
 				}
 			} );
-
-			const label = toggle?.querySelector( '.filter-toggle-label' );
-			if ( label ) {
-				label.textContent = hasActive ? `Filters (${ totalActive })` : 'Filters';
-			}
 
 			if ( resetBtn ) resetBtn.hidden = ! hasActive;
 

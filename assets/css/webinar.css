@@ -1,1 +1,1 @@
-.single-webinar .webinar-schedule{font-size:var(--wp--preset--font-size--regular)}.story-card .webinar-schedule{margin:0;flex-direction:column;align-items:start;width:100%}.recording{overflow:hidden;border-radius:1.5rem}
+.single-webinar .webinar-schedule{font-size:var(--wp--preset--font-size--regular)}.story-card .webinar-schedule{margin:auto 0 0;flex-direction:column;align-items:start;width:100%}.story-card .webinar-schedule+.meta{margin-top:0}.recording{overflow:hidden;border-radius:1.5rem}

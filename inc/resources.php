@@ -410,6 +410,25 @@ function momentive_resources_rest_callback( WP_REST_Request $request ): WP_REST_
 		$query_args['post__not_in'] = $exclude;
 	}
 
+	// Exclude posts hidden via the Archive Visibility ACF fields (inc/archive-visibility.php).
+	// Posts with no featured image are shown with a default fallback image (see story-card.php /
+	// filters.js), so there is no _thumbnail_id EXISTS gate here.
+	$query_args['meta_query'] = [
+		'relation' => 'AND',
+		// hide_from_archives: excludes from CPT archives AND the Resource Center.
+		[
+			'relation' => 'OR',
+			[ 'key' => 'hide_from_archives', 'compare' => 'NOT EXISTS' ],
+			[ 'key' => 'hide_from_archives', 'value' => '1', 'compare' => '!=' ],
+		],
+		// hide_from_resource_center: Resource Center only; post still shows on CPT archives.
+		[
+			'relation' => 'OR',
+			[ 'key' => 'hide_from_resource_center', 'compare' => 'NOT EXISTS' ],
+			[ 'key' => 'hide_from_resource_center', 'value' => '1', 'compare' => '!=' ],
+		],
+	];
+
 	$query = new WP_Query( $query_args );
 	$items = array_map( 'momentive_resource_to_rest_item', $query->posts );
 
@@ -458,7 +477,7 @@ function momentive_resource_to_rest_item( WP_Post $post ): array {
 		'id'             => $post_id,
 		'type'           => $post->post_type,
 		'type_label'     => $type_obj->labels->singular_name ?? $post->post_type,
-		'title'          => get_the_title( $post_id ),
+		'title'          => $post->post_title,
 		'excerpt'        => wp_trim_words( wp_strip_all_tags( get_the_excerpt( $post_id ) ), 30, '…' ),
 		'link'           => get_permalink( $post_id ),
 		'date'           => get_the_date( 'c', $post_id ),

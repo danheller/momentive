@@ -60,12 +60,12 @@ add_action( 'init', 'momentive_clients_setup' );
 function momentive_clients_setup(): void {
 
 	$labels = [
-		'name'               => _x( 'Clients', 'Post type general name', 'momentive' ),
-		'singular_name'      => _x( 'Client', 'Post type singular name', 'momentive' ),
-		'menu_name'          => _x( 'Clients', 'Admin Menu text', 'momentive' ),
-		'name_admin_bar'     => _x( 'Client', 'Add New on Toolbar', 'momentive' ),
+		'name'               => _x( 'Clients/Partners', 'Post type general name', 'momentive' ),
+		'singular_name'      => _x( 'Client/Partner', 'Post type singular name', 'momentive' ),
+		'menu_name'          => _x( 'Clients/Partners', 'Admin Menu text', 'momentive' ),
+		'name_admin_bar'     => _x( 'Client/Partner', 'Add New on Toolbar', 'momentive' ),
 		'add_new'            => __( 'Add New', 'momentive' ),
-		'add_new_item'       => __( 'Add New Client', 'momentive' ),
+		'add_new_item'       => __( 'Add New Logo', 'momentive' ),
 		'new_item'           => __( 'New Client', 'momentive' ),
 		'edit_item'          => __( 'Edit Client', 'momentive' ),
 		'view_item'          => __( 'View Client', 'momentive' ),

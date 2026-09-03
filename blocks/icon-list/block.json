@@ -7,7 +7,19 @@
 	"description": "A list of items, each with an icon and a short description. Replaces the hand-built features section.",
 	"supports": {
 		"html": false,
-		"anchor": true
+		"anchor": true,
+		"dimensions": {
+			"minHeight": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": false,
+			"__experimentalDefaultControls": {
+				"margin": false,
+				"padding": false
+			}
+		}
 	},
 	"attributes": {
 		"heading":     { "type": "string",  "default": "Key Features" },

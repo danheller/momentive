@@ -6,8 +6,9 @@ add_action( 'init', function() {
 add_action( 'enqueue_block_assets', function() {
 	$on_singular_with_block = momentive_content_has_block( 'acf/webinar-schedule' );
 	$on_webinar_archive    = is_post_type_archive( 'webinar' );
+	$on_resources_page     = is_page( 'resources' );
 
-	if ( ! $on_singular_with_block && ! $on_webinar_archive ) {
+	if ( ! $on_singular_with_block && ! $on_webinar_archive && ! $on_resources_page ) {
 		return;
 	}
 

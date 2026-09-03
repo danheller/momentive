@@ -1,14 +1,17 @@
 To do:
 
-	Next up
-	- Continue with CPTs
-	- 
-	
+	Conference hub healthcare page (example)
+	Partners: Add logos at bottom
+	Solutions: Fix tiger striping issues, add logos as clients
+	Animated GIFs: convert to WebM
+	Make prefooter background orbit
+	Resource Center: filter on/off behavior
+	Menu: responsive version
+	Landing Pages: move over
 
-	Megamenus
-	- Need to adjust the design for usability and to accommodate more stuff
-	- Per Greg's suggestion, try following the model of stripe.com's products menu
-		- Could AI shorten the descriptions?
+Done:
+	Product Overviews: create redirects
+
 
 	Site configuration screen ideas
 	- Show a summary view of post types – how many posts are in each one, etc.

@@ -314,7 +314,7 @@ function momentive_sol_xml_tag( string $item, string $tag ): string {
 		return $m[1];
 	}
 	if ( preg_match( '#<' . preg_quote( $tag, '#' ) . '>(.*?)</' . preg_quote( $tag, '#' ) . '>#s', $item, $m ) ) {
-		return $m[1];
+		return html_entity_decode( $m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 	}
 	return '';
 }

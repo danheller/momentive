@@ -30,7 +30,8 @@ $anchor       = $attributes['anchor']           ?? '';
 $show_name    = ! empty( $attributes['showName'] );
 $faded_logos  = ! empty( $attributes['fadedLogos'] );
 $two_row      = ! empty( $attributes['twoRow'] );
-$show_mask    = $attributes['showMask'] ?? true;
+$show_mask       = $attributes['showMask']       ?? true;
+$grayscale_hover = ! empty( $attributes['grayscaleHover'] );
 
 // ── Query ─────────────────────────────────────────────────────────────────────
 
@@ -144,9 +145,10 @@ $figure = function ( array $item, bool $aria_hidden = false, bool $show_name = f
 // ── Output ────────────────────────────────────────────────────────────────────
 
 $wrapper_classes = trim( 'wp-block-momentive-client-marquee'
-	. ( $faded_logos         ? ' has-faded-logos'  : '' )
-	. ( $show_name           ? ' has-name-tooltip' : '' )
-	. ( ! $show_mask         ? ' no-mask'          : '' )
+	. ( $faded_logos         ? ' has-faded-logos'      : '' )
+	. ( $show_name           ? ' has-name-tooltip'     : '' )
+	. ( ! $show_mask         ? ' no-mask'              : '' )
+	. ( $grayscale_hover     ? ' has-grayscale-hover'  : '' )
 	. ' ' . $class_name );
 $wrapper_attrs   = 'class="' . esc_attr( $wrapper_classes ) . '"';
 if ( $anchor ) {

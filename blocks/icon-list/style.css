@@ -33,6 +33,19 @@
 	gap: var(--wp--preset--spacing--xx-small, 0.75rem);
 }
 
+.wp-block-momentive-icon-list.separators .icon-list {
+	gap: 0;
+}
+
+.wp-block-momentive-icon-list.separators .icon-list__item {
+	padding-top: .625rem;
+	padding-bottom: .625rem;
+}
+
+.wp-block-momentive-icon-list.separators .icon-list__item:not(:first-child) {
+	border-top: 1px solid var(--menu-border-color);
+}
+
 /* ── Icon: no shape, no background, secondary color ───────────────────────── */
 
 .wp-block-momentive-icon-list .icon-list__icon {
@@ -50,6 +63,11 @@
 	height: 1.5rem;
 	/* SVG uses currentColor, inheriting the secondary color above. */
 	fill: currentColor;
+}
+
+.wp-block-momentive-icon-list.large .icon-list__icon, .wp-block-momentive-icon-list.large .icon-list__icon svg {
+	width: 2.25rem;
+	height: 2.25rem;
 }
 
 /* ── Description text ─────────────────────────────────────────────────────── */

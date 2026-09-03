@@ -19,7 +19,7 @@
             "choices": {
                 "guides": "Guides & Research",
                 "research-study": "Research Study",
-                "research-study-preview": "Research Study — Preview"
+                "research-study-preview": "Research Study \u2014 Preview"
             },
             "default_value": "guides",
             "return_format": "value",
@@ -77,6 +77,115 @@
             "max_size": "",
             "mime_types": "",
             "preview_size": "thumbnail"
+        },
+        {
+            "key": "field_6b309a0201",
+            "label": "Other",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b309a0202",
+            "label": "Hide from all archives",
+            "name": "hide_from_archives",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from archives, the blog index, and the Resource Center. Use for client-only or campaign-exclusive content.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0203",
+            "label": "Hide from resource center",
+            "name": "hide_from_resource_center",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from the Resource Center grid but the post still appears on its post type archive.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b309a0202",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0204",
+            "label": "Simplified header",
+            "name": "landing_header",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0205",
+            "label": "Simplified footer",
+            "name": "landing_footer",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
         }
     ],
     "location": [
@@ -100,5 +209,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1784409625
+    "modified": 1788372798
 }

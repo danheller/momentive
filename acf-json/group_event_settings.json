@@ -137,7 +137,7 @@
             "name": "event_timezone",
             "aria-label": "",
             "type": "text",
-            "instructions": "Short abbreviation shown alongside dates, e.g. “ET”, “CT”, “PT”.",
+            "instructions": "Short abbreviation shown alongside dates, e.g. \u201cET\u201d, \u201cCT\u201d, \u201cPT\u201d.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -158,7 +158,7 @@
             "name": "event_location",
             "aria-label": "",
             "type": "text",
-            "instructions": "City, venue, or “Online” for virtual events.",
+            "instructions": "City, venue, or \u201cOnline\u201d for virtual events.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -179,7 +179,7 @@
             "name": "event_booth",
             "aria-label": "",
             "type": "text",
-            "instructions": "Booth number or label for physical events, e.g. “Booth 813”.",
+            "instructions": "Booth number or label for physical events, e.g. \u201cBooth 813\u201d.",
             "required": 0,
             "conditional_logic": [
                 [
@@ -208,7 +208,7 @@
             "name": "event_form_embed",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "Paste the HubSpot (or other) form embed code here. Used by the acf\/hubspot-form block’s post-level fallback — same pattern as webinars.",
+            "instructions": "Paste the HubSpot (or other) form embed code here. Used by the acf/hubspot-form block\u2019s post-level fallback \u2014 same pattern as webinars.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -221,6 +221,73 @@
             "maxlength": "",
             "rows": 4,
             "new_lines": ""
+        },
+        {
+            "key": "field_6b309a0501",
+            "label": "Other",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b309a0502",
+            "label": "Hide from all archives",
+            "name": "hide_from_archives",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from archives, the blog index, and the Resource Center. Use for client-only or campaign-exclusive content.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0503",
+            "label": "Hide from resource center",
+            "name": "hide_from_resource_center",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from the Resource Center grid but the post still appears on its post type archive.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b309a0502",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
         }
     ],
     "location": [
@@ -244,5 +311,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1787938423
+    "modified": 1788372798
 }

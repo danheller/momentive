@@ -63,6 +63,7 @@ add_action( 'init', function (): void {
 				'fadedLogos'       => [ 'type' => 'boolean', 'default' => false ],
 				'twoRow'           => [ 'type' => 'boolean', 'default' => false ],
 				'showMask'         => [ 'type' => 'boolean', 'default' => true ],
+				'grayscaleHover'   => [ 'type' => 'boolean', 'default' => false ],
 				'className'        => [ 'type' => 'string', 'default' => '' ],
 				'anchor'           => [ 'type' => 'string', 'default' => '' ],
 				'style'            => [ 'type' => 'object' ],

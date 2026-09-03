@@ -1,0 +1,117 @@
+<!-- wp:template-part {"slug":"header","tagName":"header","className":"site-header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"site-content"} -->
+<main class="wp-block-group site-content">
+
+<!-- wp:group {"className":"hero-background is-style-bg-ellipse stretch-background","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hero-background is-style-bg-ellipse stretch-background"><!-- wp:paragraph {"className":"is-style-eyebrow","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium"},"margin":{"top":"0","bottom":"0"}}}} -->
+<p class="is-style-eyebrow" style="padding-top:var(--wp--preset--spacing--medium)">Resources</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":1,"fontSize":"display-large"} -->
+<h1 class="wp-block-heading has-display-large-font-size">All Resources</h1>
+<!-- /wp:heading -->
+
+<!-- wp:group {"className":"featured-blogs","layout":{"type":"constrained"}} -->
+<div class="wp-block-group featured-blogs"><!-- wp:paragraph {"className":"h3","fontSize":"large"} -->
+<p class="h3 has-large-font-size">Featured</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:query {"queryId":11,"query":{"perPage":4,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false,"parents":[],"format":[],"taxQuery":{"include":{"post_tag":[24]}},"excludeCurrent":null},"metadata":{"categories":["posts"],"patternName":"momentive/posts-grid","name":"Grid of posts in three columns."},"className":"alignwide"} -->
+<div class="wp-block-query alignwide"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+<!-- wp:group {"className":"story-card"} -->
+<div class="wp-block-group story-card"><!-- wp:query-title {"type":"post-type","showPrefix":false,"className":"top-label"} /-->
+
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+
+<!-- wp:group {"className":"story-content","layout":{"type":"constrained"}} -->
+<div class="wp-block-group story-content"><!-- wp:post-terms {"term":"category","separator":"","className":"lower-label"} /-->
+
+<!-- wp:post-title {"isLink":true} /-->
+
+<!-- wp:post-excerpt {"moreText":"","excerptLength":20} /-->
+
+<!-- wp:group {"className":"meta","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group meta"><!-- wp:read-more {"content":"Read more"} /-->
+
+<!-- wp:post-date {"metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- /wp:post-template --></div>
+<!-- /wp:query --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"featured-resources","layout":{"type":"constrained"}} -->
+<div class="wp-block-group featured-resources"><!-- wp:paragraph {"className":"h3","fontSize":"large"} -->
+<p class="h3 has-large-font-size">Upcoming Events</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:query {"queryId":111,"query":{"postType":"webinar","perPage":3,"pages":0,"offset":0,"order":"asc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":null,"parents":[]},"className":"alignwide upcoming-webinars-only"} -->
+<div class="wp-block-query alignwide upcoming-webinars-only"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+<!-- wp:group {"className":"story-card"} -->
+<div class="wp-block-group story-card"><!-- wp:acf/webinar-status {"name":"acf/webinar-status","mode":"preview"} /-->
+
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+
+<!-- wp:group {"className":"story-content","layout":{"type":"constrained"}} -->
+<div class="wp-block-group story-content"><!-- wp:post-terms {"term":"category","className":"lower-label"} /-->
+
+<!-- wp:post-title {"isLink":true} /-->
+
+<!-- wp:post-excerpt {"moreText":"","excerptLength":30} /-->
+
+<!-- wp:acf/webinar-schedule {"name":"acf/webinar-schedule","mode":"preview"} /-->
+
+<!-- wp:group {"className":"meta","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group meta"><!-- wp:acf/webinar-cta {"name":"acf/webinar-cta","mode":"preview"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- /wp:post-template --></div>
+<!-- /wp:query --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"all-resources content-width","style":{"spacing":{"padding":{"top":"var:preset|spacing|medium"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group all-resources content-width" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--medium)"><!-- wp:momentive/resource-filters {"defaultPostType":"post","showPostTypes":true,"showCategories":true,"showSearch":true,"showSort":true,"className":"space-above"} /-->
+
+
+<!-- wp:query {"queryId":20,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":null,"parents":[]},"className":"alignwide has-featured-images-only"} -->
+<div class="wp-block-query alignwide"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+<!-- wp:group {"className":"story-card"} -->
+<div class="wp-block-group story-card"><!-- wp:paragraph {"className":"top-label"} -->
+<p class="top-label">Blog</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+
+<!-- wp:group {"className":"story-content","layout":{"type":"constrained"}} -->
+<div class="wp-block-group story-content"><!-- wp:post-title {"isLink":true} /-->
+
+<!-- wp:post-excerpt {"moreText":"","excerptLength":20} /-->
+
+<!-- wp:group {"className":"meta","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group meta"><!-- wp:read-more {"content":"Read more"} /-->
+
+<!-- wp:post-date /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- /wp:post-template -->
+
+<!-- wp:query-pagination -->
+<div class="wp-block-query-pagination">
+	<!-- wp:query-pagination-previous /-->
+	<!-- wp:query-pagination-numbers /-->
+	<!-- wp:query-pagination-next /-->
+</div>
+<!-- /wp:query-pagination -->
+</div>
+<!-- /wp:query --></div>
+<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","className":"site-footer"} /-->

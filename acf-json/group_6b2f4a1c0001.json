@@ -25,7 +25,7 @@
             "name": "linked_product",
             "aria-label": "",
             "type": "post_object",
-            "instructions": "The product this overview is for. Sets the public URL to \/products\/{product slug}\/overview\/. Required — each product can have at most one overview.",
+            "instructions": "The product this overview is for. Sets the public URL to /products/{product slug}/overview/. Required \u2014 each product can have at most one overview.",
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
@@ -89,7 +89,7 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "m\/d\/Y",
+            "display_format": "m/d/Y",
             "return_format": "Ymd",
             "first_day": 1,
             "default_to_current_date": 0
@@ -168,11 +168,11 @@
         },
         {
             "key": "field_6b2f4a1c0009",
-            "label": "HubSpot Form — Upcoming",
+            "label": "HubSpot Form \u2014 Upcoming",
             "name": "form_upcoming",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "HubSpot embed code for the pre-event registration form (\"Save your seat\"). Shown while the date is in the future. Use the acf\/hubspot-form block without a block-level embed override to get auto-switching.",
+            "instructions": "HubSpot embed code for the pre-event registration form (\"Save your seat\"). Shown while the date is in the future. Use the acf/hubspot-form block without a block-level embed override to get auto-switching.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -189,7 +189,7 @@
         },
         {
             "key": "field_6b2f4a1c000a",
-            "label": "HubSpot Form — On-demand",
+            "label": "HubSpot Form \u2014 On-demand",
             "name": "form_ondemand",
             "aria-label": "",
             "type": "textarea",
@@ -231,7 +231,7 @@
             "name": "video_embed_code",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "Wistia embed code for the recording. Once set, \/recordings\/{slug} becomes available to viewers who submitted the on-demand form.",
+            "instructions": "Wistia embed code for the recording. Once set, /recordings/{slug} becomes available to viewers who submitted the on-demand form.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -252,7 +252,7 @@
             "name": "recording_url",
             "aria-label": "",
             "type": "url",
-            "instructions": "Optional. Overrides the auto-generated \/recordings\/{slug} URL with a custom destination (e.g. a direct Wistia link). Leave empty to use the standard recording page.",
+            "instructions": "Optional. Overrides the auto-generated /recordings/{slug} URL with a custom destination (e.g. a direct Wistia link). Leave empty to use the standard recording page.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -335,6 +335,56 @@
             "mime_types": "",
             "allow_in_bindings": 0,
             "preview_size": "medium"
+        },
+        {
+            "key": "field_6b309a0702",
+            "label": "Hide from all archives",
+            "name": "hide_from_archives",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from archives, the blog index, and the Resource Center. Use for client-only or campaign-exclusive content.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0703",
+            "label": "Hide from resource center",
+            "name": "hide_from_resource_center",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from the Resource Center grid but the post still appears on its post type archive.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b309a0702",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
         }
     ],
     "location": [
@@ -358,5 +408,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1787620800
+    "modified": 1788372798
 }

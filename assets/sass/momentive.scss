@@ -303,6 +303,9 @@ textarea {
 .shadow, figure.shadow {
 	box-shadow: var(--shadow);
 }
+.shadow-diffuse {
+	box-shadow: var(--wp--preset--shadow--diffuse);
+}
 figure {
 	&.stretch {
 		img {
@@ -595,6 +598,9 @@ figure {
   3.2 - Columns
 ==============================================================*/
 
+.column-bottom {
+	margin-top: auto;
+}
 
 .wp-block-columns {
 	.wp-block-column {
@@ -605,9 +611,6 @@ figure {
 		line-height: 1.25;
 		// Pushes the last element in a column to the bottom, useful
 		// for aligning CTAs across columns of varying height.
-		.column-bottom {
-			margin-top: auto;
-		}
 		&.no-gap      { gap: 0; }
 		&.no-padding  { padding: 0; }
 		&.justify-center { justify-content: center; }
@@ -698,9 +701,10 @@ figure {
 					}
 				}
 			}
-			
-			&[aria-expanded="true"] > .wp-block-navigation-item__content::after {
-				transform: rotate(225deg) translateY(-.1rem);
+			@media #{$large-up} {
+				&[aria-expanded="true"] > .wp-block-navigation-item__content::after {
+					transform: rotate(225deg) translateY(-.1rem);
+				}
 			}
 		}
 		&:hover {
@@ -779,9 +783,9 @@ figure {
 	// ── Close button ──────────────────────────────────────────────────────────
 
 	&__responsive-container-close {
-		top: -3.25rem;
+		top: -4.25rem;
 		border: none;
-		right: -1.5rem;
+		right: 0;
 	}
 
 	// Focus/hover state for has-background context
@@ -797,7 +801,8 @@ figure {
 	&__responsive-container {
 
 		&.is-menu-open {
-			padding: 1rem var(--wp--custom--spacing--gap) 2rem !important;
+			padding: 0 1rem 1rem !important;
+//			padding: 1rem var(--wp--custom--spacing--gap) 2rem !important;
 			overflow: visible;
 			top: calc(var(--announcement-bar-height, 0px) + 6rem);
 			height: calc( 100vh - var(--announcement-bar-height, 0px) - 6rem );
@@ -886,6 +891,174 @@ figure {
 
 
 /*==============================================================
+  3.3.1 - Mobile drawer (sub-panel slide navigation)
+==============================================================*/
+
+// Only active below the desktop breakpoint (where the overlay is used).
+@media #{$large-below} {
+
+	// The content div needs to be a clipping flex column so the drawer can
+	// flex-grow and its panels can slide without leaking outside the overlay.
+	.wp-block-navigation__responsive-container.is-menu-open
+	.wp-block-navigation__responsive-container-content {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	// ── Drawer wrapper ────────────────────────────────────────────────────────
+
+	.mobile-drawer {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		min-height: 0;
+		position: relative; // anchor for the absolutely-positioned secondary
+		.wp-block-column, .has-global-padding {
+			padding: 0;
+			gap: 0;
+		}
+		.menu-sidebar {
+			display: none;
+		}
+		&__primary, &__secondary {
+			display: flex;
+			flex-direction: column;
+			transition: transform .3s ease;		
+			width: calc(100vw - 2rem);
+		}
+		// Primary fills the drawer, scrolls normally with the overlay.
+		&__primary {
+			flex: 1;
+
+			// Keep as flex column so margin-top:auto on the CTA button still works.
+			ul.wp-block-navigation__container {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+		}
+
+		// Secondary is absolutely positioned over the primary so it always has
+		// a CSS-defined starting transform — the key to a reliable transition.
+		// It sits off-screen right at rest and slides over the primary when open.
+		&__secondary {
+			position: absolute;
+			inset: 0;
+			transform: translateX(100%);
+			overflow-y: auto;
+			background: var(--wp--preset--color--base, #fff);
+		}
+
+		// Open state: primary slides left, secondary slides in from the right.
+		&.is-secondary-open {
+			.mobile-drawer__primary   { transform: translateX(-30%); }
+			.mobile-drawer__secondary { transform: translateX(0); }
+		}
+	}
+
+	// ── Secondary panel chrome ────────────────────────────────────────────────
+
+	.mobile-drawer__secondary-inner {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding-bottom: .5rem;
+	}
+
+	// Back button
+	.mobile-drawer-back {
+		display: flex;
+		align-items: center;
+		gap: .5rem;
+		background: none;
+		border: none;
+		padding: .625rem;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.5;
+		cursor: pointer;
+		border-radius: .5rem;
+		width: 100%;
+		margin-bottom: .25rem;
+		color: var(--text-color);
+
+		&:hover {
+			background: var(--superlight-accent-color);
+		}
+
+		svg {
+			flex-shrink: 0;
+		}
+	}
+
+	// Cloned megamenu panel — reset desktop-only styles
+	.mobile-drawer__panel-content {
+		flex: 1;
+
+		.megamenu-panel {
+			opacity: 1 !important;
+			pointer-events: auto !important;
+			padding: 0 !important;
+			display: block !important;
+
+			// Unwrap the desktop constrained-width columns
+			.wp-block-columns {
+				width: 100%;
+				flex-direction: column;
+				gap: 0;
+			}
+
+			.wp-block-column {
+				flex-basis: 100% !important;
+			}
+
+			// Reflow multi-column grids to 2 columns on mobile, 1 on small
+			.columns-2,
+			.columns-3 {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-auto-flow: row;
+				@media #{$medium-below} {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			// Hide desktop-only extras
+			.read-more,
+			.is-style-uppercase,
+			.mega-feature,
+			.wp-block-buttons {
+				display: none;
+			}
+
+			// Icon links: remove desktop hover background; keep padding
+			a.icon-link {
+				padding: .5rem;
+			}
+		}
+	}
+
+	// "View All [Section]" link pinned to the bottom of the secondary panel
+	.mobile-drawer__view-all {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: .75rem .625rem;
+		margin-top: .5rem;
+		border-top: 1px solid var(--wp--preset--color--neutral, #e5e5e5);
+		font-weight: 600;
+		color: var(--accent-color);
+		border-radius: .5rem;
+
+		&:hover {
+			background: var(--superlight-accent-color);
+		}
+	}
+}
+
+/*==============================================================
   3.4 - Megamenus
 ==============================================================*/
 
@@ -928,8 +1101,8 @@ figure {
 		}
 	}
 	.wp-block-columns {
-		width: var(--wp--style--global--content-size);
-		max-width: 100%;
+		max-width: var(--wp--style--global--content-size);
+		width: 100%;
 		gap: 1rem;
 	}
 	.wp-block-group {
@@ -938,6 +1111,13 @@ figure {
 	.columns-2 {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
+		gap: 0 1rem;
+	}
+	.columns-3 {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-template-rows: repeat(5, auto);  // ceil(15 / 3)
+		grid-auto-flow: column;
 		gap: 0 1rem;
 	}
 	.wp-block-buttons {
@@ -1088,7 +1268,7 @@ figure {
 			border-bottom: .0625rem solid currentColor;
 			width:  .5rem;
 			height: .5rem;
-			transition: transform .3s ease, border-color .3s;
+			transition: transform .3s, border-color .3s;
 			transform: rotate(-45deg);
 			transform-origin: 50% 50%;
 			top: .375rem;
@@ -1260,6 +1440,10 @@ a.read-more {
 			height: clamp( 3.6rem, 6.5vw, 5rem  );
 		}
 	}
+}
+
+.has-background .is-style-has-swoop .swoop-svg {
+	z-index: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1494,6 +1678,11 @@ ul.is-style-circle-checks {
 	flex-direction: column;
 	.wp-block-media-text__content {
 		padding: 0;
+		&:has(.column-bottom) {
+			display: flex;
+			flex-direction: column;
+			min-height: 50%;
+		}
 	}
 	figure {
 		@include rounder;
@@ -1508,7 +1697,7 @@ ul.is-style-circle-checks {
 			box-shadow: none;
 		}
 	}
-	&.square-image {
+	&.square-corners {
 		figure {
 			border-radius: 0;
 		}	
@@ -1533,6 +1722,20 @@ ul.is-style-circle-checks {
 				object-fit: cover;
 			}
 		}
+		&.shorter-image {
+			figure.wp-block-media-text__media {
+				img {
+					aspect-ratio: 3 / 1;
+				}
+			}
+		}
+		&.taller-image {
+			figure.wp-block-media-text__media {
+				img {
+					aspect-ratio: 4 / 3;
+				}
+			}
+		}
 		.wp-block-media-text__content {
 			grid-area: Content;
 			padding: 1.5rem;
@@ -1550,7 +1753,7 @@ ul.is-style-circle-checks {
 						color: var(--secondary-color);
 						&:after {
 							border-color: var(--secondary-color);
-							transform: rotate(-45deg) translate(.25rem,.25rem);
+							transform: rotate(-45deg) translate( .25rem, .25rem );				
 						}
 					}
 				}
@@ -1757,7 +1960,7 @@ ul.is-style-circle-checks {
 --------------------------------------------------------------*/
 
 .is-style-boxed {
-	gap: 2rem;
+//	gap: 2rem;
 	.svg-icon {
 		width: 3rem;
 		height: 3rem;
@@ -1853,6 +2056,9 @@ ul.is-style-circle-checks {
 	}
 	.read-more {
 		margin: auto 0 0 !important;
+	}
+	&.regular-gap {
+		gap: 2rem;
 	}
 	&.small-gap {
 		gap: 1rem;
@@ -1990,14 +2196,14 @@ ul.is-style-circle-checks {
 			padding: 0 1rem;
 		}
 		@media #{$largish-up} {
-			padding: 0 0;
+			padding: 0;
 		}
 		@media #{$xlarge-up} {
 			padding: 0;
 		}
-		&.megamenu-panels {
-			padding: 0;
-		}
+	}
+	&.simple {
+		height: 5rem;
 	}
 }
 
@@ -2276,6 +2482,16 @@ main.site-content {
 			}
 		}
 	}
+	
+	&.simple {
+		.wp-block-columns {
+			.wp-block-column {
+				&.copyright {
+					flex-basis: 25%;
+				}
+			}
+		}
+	}
 
 	// Footer logo: white version, drawn as a ::before pseudo-element
 	// because the default .wp-block-site-title uses the dark logo SVG.
@@ -2499,9 +2715,6 @@ body.home {
 		width: 220%;
 		height: auto;
 		transform: translate(-50%,-50%);
-		@media #{$largish-below} {
-			
-		}
 	}
 	@media #{$medium-below} {
 		height: 44vw;
@@ -3187,7 +3400,7 @@ body.home {
   7.4 - All Blogs Grid
 --------------------------------------------------------------*/
 
-.all-blogs {
+.all-blogs, .all-resources {
 	.columns-3 {
 		gap: 1.5rem;
 		@media #{$medium-below} {
@@ -3637,7 +3850,69 @@ body.single-solutions, body.single-product {
 		background: url(../images/rings-with-shapes-full.svg) center 33% no-repeat;
 		pointer-events: none;
 		background-size: 135vw;
-	}	
+	}
+	// When the render_block filter in inc/bg-rings-animation.php injects the
+	// inline animated SVG, it adds has-animated-rings to suppress the static
+	// CSS background — the inline SVG takes over completely.
+	&.has-animated-rings:after {
+		display: none;
+	}
+}
+
+// Animated rings — wrapper and orbit animations
+// Injected inline by inc/bg-rings-animation.php when is-style-bg-rings is present.
+
+// The > * { position: relative; z-index: 1 } rule below (needed for swoop
+// stacking) hits .bg-rings-wrap too since it's a direct child of the group.
+// This more-specific override wins the cascade and keeps the wrapper
+// position: absolute so it can cover the group as a background layer.
+.is-style-bg-rings.has-animated-rings > .bg-rings-wrap {
+	position: absolute;
+	z-index: 0;
+}
+
+.bg-rings-wrap {
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+
+	svg {
+		position: absolute;
+		width: 135vw;
+		height: auto;
+		// Replicate the original background-position: center 33%.
+		// translate(-50%, -40.49%) shifts the SVG's own centre point
+		// (960/1920=50%, 524/1294≈40.49%) to align with left:50%/top:33%.
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -40%);
+	}
+}
+
+@keyframes orbit-cw {
+	to { transform: rotate(360deg); }
+}
+
+@keyframes orbit-ccw {
+	to { transform: rotate(-360deg); }
+}
+
+// Each orbiting shape is wrapped in a <g class="orbit-cw|ccw"> with a
+// --orbit-dur custom property set inline for per-shape timing.
+// transform-box: view-box makes transform-origin use SVG viewBox coordinates,
+// so 50%/40.49% resolves to (960, 524) — the ring centre — at any scale.
+.orbit-cw,
+.orbit-ccw {
+	transform-box: view-box;
+	transform-origin: 50% 40.49%;
+}
+
+.orbit-cw  { animation: orbit-cw  var(--orbit-dur, 60s) linear infinite; }
+.orbit-ccw { animation: orbit-ccw var(--orbit-dur, 60s) linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+	.orbit-cw,
+	.orbit-ccw { animation: none; }
 }
 
 .is-style-bg-rings, .is-style-bg-ellipse, .is-style-ellipse-bottom, .is-style-ellipse-top, .is-style-bg-dots, .is-style-motion-blur {

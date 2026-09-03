@@ -147,7 +147,7 @@ add_filter( 'render_block', function( $content, $block ) {
 		// "Research Study Preview"), matching the legacy site's per-subtype
 		// top label. See momentive_guide_type_front_label() in inc/guides.php
 		// for why this overrides here rather than using a dedicated block.
-		if ( ( is_singular( 'guide' ) || is_archive( 'guide' ) ) && function_exists( 'momentive_guide_type_front_label' ) ) {
+		if ( ( is_singular( 'guide' ) || is_post_type_archive( 'guide' ) ) && function_exists( 'momentive_guide_type_front_label' ) ) {
 			$label   = momentive_guide_type_front_label( (string) get_field( 'guide_type', get_the_ID() ) );
 			$content = preg_replace( '/(<p[^>]*>).*?(<\/p>\s*)$/s', '$1' . esc_html( $label ) . '$2', $content );
 		}
@@ -406,7 +406,9 @@ require get_template_directory() . '/inc/award-recipients.php';
 require get_template_directory() . '/inc/who-we-serve.php';
 require get_template_directory() . '/inc/clients.php';
 require get_template_directory() . '/inc/resources.php'; // cross-CPT "Resources" query layer + REST endpoint
+require get_template_directory() . '/inc/archive-visibility.php'; // hide_from_archives / hide_from_resource_center ACF toggles
 require get_template_directory() . '/inc/resource-relevance.php'; // AI-assisted per-child-Solution relevance tagging
+require get_template_directory() . '/inc/default-card-image.php'; // fallback image for posts with no featured image
 
 /*==============================================================================
   5.0 - Query & Content Filters
@@ -454,6 +456,29 @@ add_filter( 'query_loop_block_query_vars', function ( $query, $block ) {
 		$query['orderby'] = 'modified';
 		$query['order']   = $query['order'] ?? 'DESC';
 	}
+	return $query;
+}, 10, 2 );
+
+// Query Loop blocks with the class `upcoming-webinars-only` restrict the
+// webinar query to future events only (webinar_date >= today, sorted soonest
+// first). The webinar_date ACF field is stored as Ymd (e.g. 20261022), so
+// lexicographic string comparison is correct — no NUMERIC cast needed.
+add_filter( 'query_loop_block_query_vars', function ( array $query, WP_Block $block ): array {
+	if ( ! momentive_query_block_has_class( $block, 'upcoming-webinars-only' ) ) {
+		return $query;
+	}
+	$today        = date( 'Ymd' );
+	$meta_query   = $query['meta_query'] ?? [];
+	$meta_query[] = [
+		'key'     => 'webinar_date',
+		'value'   => $today,
+		'compare' => '>=',
+	];
+	$query['meta_query'] = $meta_query;
+	// Sort soonest-first so the grid reads like a calendar.
+	$query['meta_key'] = 'webinar_date';
+	$query['orderby']  = 'meta_value';
+	$query['order']    = 'ASC';
 	return $query;
 }, 10, 2 );
 
@@ -562,6 +587,9 @@ add_action( 'wp_enqueue_scripts', function () {
 require get_template_directory() . '/inc/announcement-bar-settings.php';
 require get_template_directory() . '/inc/header-footer-edit-buttons.php';
 
+// Landing page: simplified header / footer swap via ACF fields.
+require get_template_directory() . '/inc/landing-page.php';
+
 // Customize the dashboard sidebar menu order.
 require get_template_directory() . '/inc/custom-menu-order.php';
 
@@ -574,6 +602,7 @@ require get_template_directory() . '/inc/check-content-for-block.php';
 // Normalize stray &nbsp; inside is-style-has-swoop headings at save time
 // (prevents pasted-in nbsp from breaking the swoop underline's word wrap).
 require get_template_directory() . '/inc/swoop-heading-cleanup.php';
+require get_template_directory() . '/inc/bg-rings-animation.php';
 
 // Removes all comment-related UI, menus, and dashboard widgets.
 require get_template_directory() . '/inc/disable-comments.php';

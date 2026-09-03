@@ -12,10 +12,13 @@
 
 .story-card {
 	.webinar-schedule {
-		margin: 0;
+		margin: auto 0 0;
 		flex-direction: column;
 		align-items: start;
 		width: 100%;
+		+ .meta {
+			margin-top: 0;
+		}
 	}
 }
 

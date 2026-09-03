@@ -52,7 +52,10 @@ add_action( 'init', function () {
  *     empty and the front-end labels were stale before.
  */
 function momentive_resource_filters_localize(): void {
-	$data = array( 'postTypes' => momentive_resource_filters_post_type_map() );
+	$data = array(
+		'postTypes' => momentive_resource_filters_post_type_map(),
+		'themeUri'  => get_template_directory_uri(),
+	);
 
 	foreach ( array( 'momentive-resource-filters', 'momentive-resource-filters-editor' ) as $handle ) {
 		if ( wp_script_is( $handle, 'registered' ) ) {
@@ -106,7 +109,42 @@ function momentive_resource_filters_render( array $attributes, string $content )
 	$show_post_types  = ! empty( $attributes['showPostTypes'] );
 	$show_search      = ! empty( $attributes['showSearch'] );
 	$show_sort        = ! empty( $attributes['showSort'] );
-	$post_types       = array_map( 'sanitize_text_field', $attributes['postTypes'] ?? [] );
+
+	// Build the post-type list for the filter panel.
+	// Each item: { slug: string, label: string }.
+	//
+	// When the editor has configured an explicit list (postTypes attribute is non-empty),
+	// use that — sanitize each item individually since array_map( 'sanitize_text_field', … )
+	// on an array of arrays is a no-op in PHP and would silently produce empty strings.
+	//
+	// When showPostTypes is true but the attribute is empty (the default), auto-populate
+	// from momentive_get_resource_post_types() so dropping the block on the Resources page
+	// "just works" without per-instance configuration.
+	$post_types_raw = $attributes['postTypes'] ?? [];
+	if ( ! empty( $post_types_raw ) ) {
+		$post_types = [];
+		foreach ( $post_types_raw as $pt ) {
+			if ( is_array( $pt ) && ! empty( $pt['slug'] ) ) {
+				$post_types[] = [
+					'slug'  => sanitize_key( $pt['slug'] ),
+					'label' => sanitize_text_field( $pt['label'] ?? '' ),
+				];
+			}
+		}
+	} elseif ( $show_post_types && function_exists( 'momentive_get_resource_post_types' ) ) {
+		$post_types = [];
+		foreach ( momentive_get_resource_post_types() as $slug ) {
+			$obj = get_post_type_object( $slug );
+			if ( $obj ) {
+				$post_types[] = [
+					'slug'  => $slug,
+					'label' => $obj->labels->singular_name ?? $obj->label,
+				];
+			}
+		}
+	} else {
+		$post_types = [];
+	}
 
 	// Custom taxonomies — when set, these replace the standard `category` panel.
 	// Each entry is { slug: string, label: string }.
@@ -252,6 +290,9 @@ function momentive_resource_filters_render( array $attributes, string $content )
 		<?php if ( $custom_tax_json ) : ?>
 		data-custom-taxonomies="<?php echo esc_attr( $custom_tax_json ); ?>"
 		<?php endif; ?>
+		<?php if ( $show_post_types && count( $post_types ) > 1 ) : ?>
+		data-auto-query="true"
+		<?php endif; ?>
 	>
 			<div class="<?php echo esc_attr( $bar_top_class ); ?>">
 
@@ -293,19 +334,67 @@ function momentive_resource_filters_render( array $attributes, string $content )
 			<?php endif; ?>
 			<?php endforeach; ?>
 
-			<?php if ( ( $show_categories && ! empty( $categories ) ) || ( $show_post_types && ! empty( $post_types ) ) ) : ?>
-			<button
-				class="filter-toggle"
-				aria-expanded="false"
-				aria-controls="filter-panel"
-				type="button"
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-					<path d="M7.26452 18V18.8172L7.99213 18.4452L12.4631 16.1595L12.7355 16.0202V15.7143V11.7143C12.7355 11.3593 12.8719 10.835 13.1358 10.2682C13.3961 9.70937 13.7573 9.15905 14.1578 8.7496L18.8523 3.9496C19.1045 3.69167 19.2985 3.42196 19.4061 3.14571C19.5155 2.86479 19.5435 2.55103 19.4135 2.25573C19.2845 1.96251 19.0367 1.77172 18.7642 1.65925C18.4943 1.54786 18.1727 1.5 17.8242 1.5H2.17584C1.82731 1.5 1.50571 1.54786 1.23585 1.65925C0.96334 1.77172 0.715542 1.96251 0.586492 2.25573C0.456528 2.55103 0.484536 2.86479 0.593927 3.14571C0.701495 3.42196 0.895473 3.69167 1.14774 3.9496L5.84223 8.7496C6.23046 9.14656 6.59027 9.74135 6.85306 10.3997C7.1157 11.0576 7.26452 11.7366 7.26452 12.2857V18Z" fill="currentColor"/>
-				</svg>
-				<span class="filter-toggle-label">Filters</span>
-				<span class="filter-count" hidden>0</span>
-			</button>
+			<?php if ( $show_post_types && ! empty( $post_types ) ) : ?>
+			<div class="filter-dropdown" data-tax="post_type">
+				<button
+					class="filter-dropdown-toggle"
+					type="button"
+					aria-expanded="false"
+					aria-controls="filter-dropdown-panel-post_type"
+				>
+					<span class="filter-dropdown-label">All resources</span>
+					<span class="filter-count" hidden></span>
+				</button>
+				<div class="filter-dropdown-panel" id="filter-dropdown-panel-post_type" hidden>
+					<fieldset class="filter-group">
+						<div class="filter-group-items">
+							<?php foreach ( $post_types as $pt ) : ?>
+							<label class="filter-item">
+								<input
+									type="checkbox"
+									name="post_type"
+									value="<?php echo esc_attr( $pt['slug'] ); ?>"
+									aria-label="<?php echo esc_attr( $pt['label'] ); ?>"
+								>
+								<span class="filter-item-label"><?php echo esc_html( $pt['label'] ); ?></span>
+							</label>
+							<?php endforeach; ?>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<?php endif; ?>
+
+			<?php if ( $show_categories && ! empty( $categories ) ) : ?>
+			<div class="filter-dropdown" data-tax="category">
+				<button
+					class="filter-dropdown-toggle"
+					type="button"
+					aria-expanded="false"
+					aria-controls="filter-dropdown-panel-category"
+				>
+					<span class="filter-dropdown-label">All topics</span>
+					<span class="filter-count" hidden></span>
+				</button>
+				<div class="filter-dropdown-panel" id="filter-dropdown-panel-category" hidden>
+					<fieldset class="filter-group">
+						<div class="filter-group-items">
+							<?php foreach ( $categories as $cat ) : ?>
+							<label class="filter-item">
+								<input
+									type="checkbox"
+									name="category"
+									value="<?php echo esc_attr( $cat->term_id ); ?>"
+									data-slug="<?php echo esc_attr( $cat->slug ); ?>"
+									aria-label="<?php echo esc_attr( $cat->name ); ?>"
+								>
+								<span class="filter-item-label"><?php echo esc_html( $cat->name ); ?></span>
+							</label>
+							<?php endforeach; ?>
+						</div>
+					</fieldset>
+				</div>
+			</div>
 			<?php endif; ?>
 
 			<?php if ( $show_search ) : ?>
@@ -339,48 +428,6 @@ function momentive_resource_filters_render( array $attributes, string $content )
 				</select>
 			</div>
 			<?php endif; ?>
-		</div>
-
-		<div class="filter-panel" id="filter-panel" hidden>
-
-			<?php if ( $show_post_types && ! empty( $post_types ) ) : ?>
-			<fieldset class="filter-group">
-				<div class="filter-group-items">
-					<?php foreach ( $post_types as $pt ) : ?>
-					<label class="filter-item">
-						<input
-							type="checkbox"
-							name="post_type"
-							value="<?php echo esc_attr( $pt['slug'] ); ?>"
-							aria-label="<?php echo esc_attr( $pt['label'] ); ?>"
-						>
-						<span class="filter-item-label"><?php echo esc_html( $pt['label'] ); ?></span>
-					</label>
-					<?php endforeach; ?>
-				</div>
-			</fieldset>
-			<?php endif; ?>
-
-			<?php if ( $show_categories && ! empty( $categories ) ) : ?>
-			<fieldset class="filter-group">
-				<div class="filter-group-items">
-					<?php foreach ( $categories as $cat ) : ?>
-					<label class="filter-item">
-						<input
-							type="checkbox"
-							name="category"
-							value="<?php echo esc_attr( $cat->term_id ); ?>"
-							data-slug="<?php echo esc_attr( $cat->slug ); ?>"
-							aria-label="<?php echo esc_attr( $cat->name ); ?>"
-						>
-						<span class="filter-item-label"><?php echo esc_html( $cat->name ); ?></span>
-					</label>
-					<?php endforeach; ?>
-				</div>
-			</fieldset>
-			<?php endif; ?>
-
-
 		</div>
 
 		<div class="filter-active-tags" aria-live="polite" aria-label="Active filters"></div>

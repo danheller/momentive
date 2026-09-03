@@ -48,6 +48,73 @@
             "maxlength": "",
             "allow_in_bindings": 0,
             "new_lines": "br"
+        },
+        {
+            "key": "field_6b309a0401",
+            "label": "Other",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6b309a0402",
+            "label": "Hide from all archives",
+            "name": "hide_from_archives",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from archives, the blog index, and the Resource Center. Use for client-only or campaign-exclusive content.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_6b309a0403",
+            "label": "Hide from resource center",
+            "name": "hide_from_resource_center",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Excludes from the Resource Center grid but the post still appears on its post type archive.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_6b309a0402",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
         }
     ],
     "location": [
@@ -68,5 +135,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1755648000
+    "modified": 1788372798
 }

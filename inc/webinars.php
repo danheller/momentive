@@ -162,7 +162,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	if ( is_singular( 'webinar' ) ) {
 		wp_enqueue_style( 'momentive-gate' );	
 	}
-	if ( is_singular( 'webinar' ) || is_post_type_archive( 'webinar' ) ) {
+	if ( is_singular( 'webinar' ) || is_post_type_archive( 'webinar' ) || is_page( 'resources' ) ) {
 		wp_enqueue_style( 'momentive-webinar' );
 	}
 } );

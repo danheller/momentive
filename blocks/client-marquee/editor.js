@@ -20,7 +20,7 @@
 			const blockProps = useBlockProps();
 			const {
 				mode, logoVariant, gridSize,
-				count, showName, fadedLogos, twoRow, showMask,
+				count, showName, fadedLogos, twoRow, showMask, grayscaleHover,
 				filterByCategory, filterByTag,
 			} = attributes;
 
@@ -89,6 +89,13 @@
 							],
 							help: 'Monochrome falls back to the color logo when logo_mono is not set.',
 							onChange: function ( v ) { setAttributes( { logoVariant: v } ); },
+						} ),
+
+						mode === 'grid' && el( ToggleControl, {
+							label:    'Grayscale → color on hover',
+							checked:  grayscaleHover,
+							help:     'Logos are desaturated by default and reveal full color on hover. Use with "Full color" logo version.',
+							onChange: function ( v ) { setAttributes( { grayscaleHover: v } ); },
 						} ),
 
 						mode === 'grid' && el( SelectControl, {

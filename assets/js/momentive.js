@@ -99,6 +99,7 @@
 		} );
 
 		moveBlogPrefooter();
+		initMobileDrawer();
 	} );
 
 	// ── Megamenu ──────────────────────────────────────────────────────────────
@@ -258,5 +259,127 @@
 	updateFooterGradient();
 	window.addEventListener( 'resize', updateFooterGradient );
 
+	// ── Mobile drawer navigation ───────────────────────────────────────────────
+	//
+	// On tablet/mobile the responsive overlay shows top-level nav items.
+	// For items with a megamenu, clicking the row slides the primary list
+	// offscreen left and slides in a secondary panel (cloned from the matching
+	// .megamenu-panel) from the right. A "← Back" button returns to the list;
+	// a "View All [Section]" link at the bottom links to the section's top page.
+
+	function initMobileDrawer() {
+		const nav = document.querySelector( '.wp-block-navigation' );
+		if ( ! nav ) return;
+
+		const overlay = nav.querySelector( '.wp-block-navigation__responsive-container' );
+		if ( ! overlay ) return;
+
+		const content = overlay.querySelector( '.wp-block-navigation__responsive-container-content' );
+		if ( ! content ) return;
+
+		const primaryList = content.querySelector( 'ul.wp-block-navigation__container' );
+		if ( ! primaryList ) return;
+
+		// Build the drawer shell — two panels side-by-side inside a clipping wrapper.
+		const drawer    = document.createElement( 'div' );
+		drawer.className = 'mobile-drawer';
+
+		const primary   = document.createElement( 'div' );
+		primary.className = 'mobile-drawer__primary';
+
+		const secondary = document.createElement( 'div' );
+		secondary.className  = 'mobile-drawer__secondary';
+		secondary.setAttribute( 'aria-hidden', 'true' );
+
+		primaryList.parentNode.insertBefore( drawer, primaryList );
+		primary.appendChild( primaryList );
+		drawer.appendChild( primary );
+		drawer.appendChild( secondary );
+
+		// Intercept clicks on megamenu items when the mobile overlay is open.
+		nav.querySelectorAll( '.wp-block-navigation-item.has-megamenu' ).forEach( item => {
+			const link = item.querySelector( ':scope > .wp-block-navigation-item__content' );
+			if ( ! link ) return;
+
+			const name = item.dataset.menu
+				?? [ ...item.classList ]
+					.find( c => c.startsWith( 'megamenu--' ) )
+					?.replace( 'megamenu--', '' );
+			if ( ! name ) return;
+
+			// Grab the destination URL and a clean label from the link.
+			const href  = link.getAttribute( 'href' );
+			const label = ( link.querySelector( '.wp-block-navigation-item__label' )?.textContent
+				?? link.textContent ).trim();
+
+			link.addEventListener( 'click', e => {
+				if ( ! overlay.classList.contains( 'is-menu-open' ) ) return;
+				e.preventDefault();
+				openMobileSubpanel( drawer, secondary, name, label, href, link );
+			} );
+		} );
+
+		// Back button — delegated so it works after innerHTML is replaced.
+		secondary.addEventListener( 'click', e => {
+			const back = e.target.closest( '.mobile-drawer-back' );
+			if ( ! back ) return;
+			closeMobileSubpanel( drawer, secondary );
+			secondary._opener?.focus();
+		} );
+
+		// Reset the drawer whenever the overlay is closed.
+		overlay.querySelector( '.wp-block-navigation__responsive-container-close' )
+			?.addEventListener( 'click', () => closeMobileSubpanel( drawer, secondary, true ) );
+	}
+
+	function openMobileSubpanel( drawer, secondary, name, label, href, opener ) {
+		const panel = document.querySelector( `.megamenu-panel[data-menu="${ name }"]` );
+		if ( ! panel ) return;
+
+		secondary._opener = opener;
+
+		secondary.innerHTML = `
+			<div class="mobile-drawer__secondary-inner">
+				<button class="mobile-drawer-back" aria-label="Back to main menu">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+						<path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+					Back
+				</button>
+				<div class="mobile-drawer__panel-content"></div>
+				${ href
+					? `<a class="mobile-drawer__view-all" href="${ href }">View All ${ label } <span aria-hidden="true">→</span></a>`
+					: '' }
+			</div>
+		`;
+
+		const cloned = panel.cloneNode( true );
+		secondary.querySelector( '.mobile-drawer__panel-content' ).appendChild( cloned );
+
+		// Reading a layout property forces a reflow so the browser registers
+		// the secondary panel's starting position before the class change that
+		// triggers the CSS transition. Without this, both DOM mutations land in
+		// the same frame and there's no "from" state to animate from.
+		void secondary.offsetWidth;
+
+		drawer.classList.add( 'is-secondary-open' );
+		secondary.setAttribute( 'aria-hidden', 'false' );
+		secondary.querySelector( '.mobile-drawer-back' )?.focus();
+	}
+
+	function closeMobileSubpanel( drawer, secondary, instant = false ) {
+		drawer.classList.remove( 'is-secondary-open' );
+		secondary.setAttribute( 'aria-hidden', 'true' );
+
+		if ( instant ) {
+			secondary.innerHTML = '';
+		} else {
+			secondary.addEventListener( 'transitionend', () => {
+				if ( ! drawer.classList.contains( 'is-secondary-open' ) ) {
+					secondary.innerHTML = '';
+				}
+			}, { once: true } );
+		}
+	}
 
 } () );

@@ -74,16 +74,21 @@ $title         = get_the_title();
 
     <?php // ── Featured image ─────────────────────────────────────────────── ?>
 
-    <?php if ( has_post_thumbnail() ) : ?>
     <figure style="aspect-ratio:16/9;">
         <a href="<?php echo esc_url( $permalink ); ?>" tabindex="-1" aria-hidden="true">
-            <?php the_post_thumbnail( 'large', [
-                'style' => 'width:100%;height:100%;object-fit:cover;',
-                'alt'   => '',  // decorative — title link below is the accessible label
-            ] ); ?>
+            <?php if ( has_post_thumbnail() ) :
+                the_post_thumbnail( 'large', [
+                    'style' => 'width:100%;height:100%;object-fit:cover;',
+                    'alt'   => '',  // decorative — title link below is the accessible label
+                ] );
+            else : ?>
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/default-card-image.webp' ); ?>"
+                     alt=""
+                     loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover;">
+            <?php endif; ?>
         </a>
     </figure>
-    <?php endif; ?>
 
     <?php // ── Card body ──────────────────────────────────────────────────── ?>
 
