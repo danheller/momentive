@@ -296,7 +296,8 @@
 		drawer.appendChild( primary );
 		drawer.appendChild( secondary );
 
-		// Intercept clicks on megamenu items when the mobile overlay is open.
+		// For each megamenu item, add a dedicated arrow toggle button.
+		// The link itself navigates normally; only the button opens the drawer.
 		nav.querySelectorAll( '.wp-block-navigation-item.has-megamenu' ).forEach( item => {
 			const link = item.querySelector( ':scope > .wp-block-navigation-item__content' );
 			if ( ! link ) return;
@@ -307,15 +308,17 @@
 					?.replace( 'megamenu--', '' );
 			if ( ! name ) return;
 
-			// Grab the destination URL and a clean label from the link.
-			const href  = link.getAttribute( 'href' );
 			const label = ( link.querySelector( '.wp-block-navigation-item__label' )?.textContent
 				?? link.textContent ).trim();
 
-			link.addEventListener( 'click', e => {
-				if ( ! overlay.classList.contains( 'is-menu-open' ) ) return;
-				e.preventDefault();
-				openMobileSubpanel( drawer, secondary, name, label, href, link );
+			const toggle = document.createElement( 'button' );
+			toggle.className = 'mobile-drawer-toggle';
+			toggle.setAttribute( 'aria-label', `Open ${ label } submenu` );
+			item.appendChild( toggle );
+
+			toggle.addEventListener( 'click', e => {
+				e.stopPropagation();
+				openMobileSubpanel( drawer, secondary, name, toggle );
 			} );
 		} );
 
@@ -332,11 +335,18 @@
 			?.addEventListener( 'click', () => closeMobileSubpanel( drawer, secondary, true ) );
 	}
 
-	function openMobileSubpanel( drawer, secondary, name, label, href, opener ) {
+	function openMobileSubpanel( drawer, secondary, name, opener ) {
 		const panel = document.querySelector( `.megamenu-panel[data-menu="${ name }"]` );
 		if ( ! panel ) return;
 
 		secondary._opener = opener;
+
+		// Clone first so we can extract the .read-more link before injecting.
+		const cloned   = panel.cloneNode( true );
+		const readMore = cloned.querySelector( '.read-more a' );
+		const viewAll  = readMore
+			? `<a class="mobile-drawer__view-all" href="${ readMore.getAttribute( 'href' ) }">${ readMore.textContent.trim() } <span aria-hidden="true">→</span></a>`
+			: '';
 
 		secondary.innerHTML = `
 			<div class="mobile-drawer__secondary-inner">
@@ -347,13 +357,11 @@
 					Back
 				</button>
 				<div class="mobile-drawer__panel-content"></div>
-				${ href
-					? `<a class="mobile-drawer__view-all" href="${ href }">View All ${ label } <span aria-hidden="true">→</span></a>`
-					: '' }
+				${ viewAll }
 			</div>
 		`;
 
-		const cloned = panel.cloneNode( true );
+		// .read-more is already hidden by the mobile panel CSS; no need to remove it from clone.
 		secondary.querySelector( '.mobile-drawer__panel-content' ).appendChild( cloned );
 
 		// Reading a layout property forces a reflow so the browser registers

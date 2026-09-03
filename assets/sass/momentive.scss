@@ -783,7 +783,7 @@ figure {
 	// ── Close button ──────────────────────────────────────────────────────────
 
 	&__responsive-container-close {
-		top: -4.25rem;
+		top: -2.25rem;
 		border: none;
 		right: 0;
 	}
@@ -831,6 +831,7 @@ figure {
 			width: 100%;
 			// Ensure link fills row but arrow stays separate
 			display: flex;
+			flex-direction: row;
 			flex-wrap: wrap;
 			align-items: center;
 			.wp-block-navigation-item__content {
@@ -848,7 +849,19 @@ figure {
 				}
 				&:hover {
 					background: var(--superlight-accent-color);
-				}			
+				}
+			}
+
+			// When a toggle button is present (megamenu items), keep link + button
+			// on one row: no wrapping, link shrinks to text width, button is fixed.
+			// Also hide the built-in ::after chevron; the button replaces it.
+			&.has-megamenu {
+				flex-wrap: nowrap;
+				> .wp-block-navigation-item__content {
+					width: auto;
+					flex-shrink: 1;
+					&::after { display: none; }
+				}
 			}
 			&.is-style-button {
 				margin-top: auto;
@@ -1040,6 +1053,35 @@ figure {
 		}
 	}
 
+	// ── Toggle button (chevron that opens the sub-panel) ─────────────────────
+
+	.mobile-drawer-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		background: none;
+		border: none;
+		cursor: pointer;
+		border-radius: .5rem;
+		color: inherit;
+
+		// Chevron — matches the existing has-megamenu ::after shape
+		&::after {
+			content: '';
+			display: block;
+			width: .45rem;
+			height: .45rem;
+			border-right: .1rem solid currentColor;
+			border-bottom: .1rem solid currentColor;
+			transform: rotate(-45deg) translateY(-.05rem);
+		}
+
+		&:hover { background: var(--superlight-accent-color); }
+	}
+
 	// "View All [Section]" link pinned to the bottom of the secondary panel
 	.mobile-drawer__view-all {
 		display: flex;
@@ -1056,6 +1098,11 @@ figure {
 			background: var(--superlight-accent-color);
 		}
 	}
+}
+
+// Toggle button is only meaningful inside the mobile overlay; hide on desktop.
+@media #{$large-up} {
+	.mobile-drawer-toggle { display: none; }
 }
 
 /*==============================================================
@@ -2199,6 +2246,9 @@ ul.is-style-circle-checks {
 			padding: 0;
 		}
 		@media #{$xlarge-up} {
+			padding: 0;
+		}
+		&.megamenu-panels {
 			padding: 0;
 		}
 	}
